@@ -1110,11 +1110,11 @@
                     let inv_state_text = "";
 
                     // Live Actual Main State
-                    if (inv_state == 0)    inv_state_text = "Power UP";
-                    else if (inv_state == 1)    inv_state_text = "Error";
-                    else if (inv_state == 2)    inv_state_text = "Idle";
-                    else if (inv_state == 3)    inv_state_text = "Operation";                 // Start/RUN state
-                    else if (inv_state == 4)    inv_state_text = "Maintenance";
+                    // if (inv_state == 0)    inv_state_text = "Power UP";
+                    if (inv_state == 1)    inv_state_text = "Idle";
+                    else if (inv_state == 2)    inv_state_text = "Operation";
+                    else if (inv_state == 3)    inv_state_text = "Error";                 // Start/RUN state
+                    // else if (inv_state == 4)    inv_state_text = "Maintenance";
                     else inv_state_text = "Unknown (" + inv_state + ")";
 
                     document.getElementById("inverter_state_text").innerHTML = inv_state_text;
