@@ -1,0 +1,1572 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Battery</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="battery_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Hithium Battery System Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_serno"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_fwver"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+                                    </div>
+                                </div>
+                            </form>                         
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Comms Connection:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        Hithium Date/Time:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="day"></span> / <span id="month"></span> / <span id="year"></span> - <span id="hour"></span>:<span id="minute"></span>:<span id="second"></span> 
+                                    </div>
+                                    <div class="col-sm-1">
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Heartbeat: <span id="handshake"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" id="battery_bank1_Hb" name="battery_bank1_Hb" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        IP Address (Local):
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" id="battery_ipaddr_local" name="battery_ipaddr_local" value="0.0.0.0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="battery_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Battery Status</h5>
+                    <div class="card-body">
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-striped table-bordered table-sm" style="border: 2px solid grey;">
+                                        <!--Table for standby and remote indicator-->
+                                        <tr>
+                                            <td>Connection Status:&emsp; <span id="connection_status" class="me-2"></span></td>
+                                        <tr>
+                                            <td>Racks Available:&emsp; <span id="rack_enabled_status" class="me-2"></span> <span id="rack_enabled_status_2"></span></td>
+                                        <tr>
+                                            <td>Contactors Enabled:&emsp; <span id="rack_online_status" class="me-2"></span> <span id="rack_online_status_2"></span></td>
+                                        <tr>
+                                            <td>Air Con Status:&emsp; <span id="air_con_unit_running_status" class="me-2"></span></td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-striped table-bordered table-sm" style="border: 2px solid grey;">
+                                        <tr><td>SBMU Alarm State:&emsp; 
+                                            <span id="sbmu_alarm_state" class="me-2"></span>
+                                        </td></tr>
+                                        <tr><td>Rack Warning I Summary:&emsp; 
+                                            <span id="rack_alarm_1_summary" class="me-2"></span>
+                                        </td></tr>
+                                        <tr><td>Rack Alarm II Summary:&emsp; 
+                                            <span id="rack_alarm_2_summary" class="me-2"></span>
+                                        </td></tr>
+                                        <tr><td>Rack Fault III Summary:&emsp; 
+                                            <span id="rack_alarm_3_summary" class="me-2"></span>
+                                        </td></tr>
+                                        <tr><td>SBMU CBMU Comms Alarm:&emsp; 
+                                            <span id="sbmu_cbmu_comms_fault_alarm" class="me-2"></span>
+                                            <span id="sbmu_cbmu_comms_fault_alarm_2"></span>
+                                        </td></tr>
+                                        <tr><td>Rack Fault Summary:&emsp; 
+                                            <span id="rack_fault_summary" class="me-2"></span>
+                                        </td></tr>
+                                        <tr><td>Other Alarms:&emsp; 
+                                            <span id="other_alarms" class="me-2"></span>
+                                        </td></tr>
+
+                                    </table>                                     
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="battery_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_state_of_charge" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                State of Charge (%):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_charge_state_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_SoC" name="battery_bank1_SoC" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_max_charge_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max Charge Power (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_WMaxChg_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_WMaxChg" name="battery_bank1_WMaxChg" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_state_of_health" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                State of Health (%):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_SoH_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_SoH" name="battery_bank1_SoH" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_max_discharge_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max Discharge Power (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_WMaxDisChg_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_WMaxDisChg" name="battery_bank1_WMaxDisChg" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                DC Bus Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_V_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_V" name="battery_bank1_V" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_maximum_cell_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max. Cell Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_maximum_cell_voltage_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellVMax" name="battery_bank1_CellVMax" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_current" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                DC Bus Current (A):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_A_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_A" name="battery_bank1_A" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_minimum_cell_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Min. Cell Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_minimum_cell_voltage_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellVMin" name="battery_bank1_CellVMin" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                DC Bus Power (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_W_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_W" name="battery_bank1_W" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_average_cell_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Avg. Cell Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_average_cell_voltage_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellVAvg" name="battery_bank1_CellVAvg" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_max_capacity" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max Capacity (kWh):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_max_capacity_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_max_cap" name="battery_bank1_max_cap" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_maximum_cell_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max. Cell Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_maximum_cell_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellTmpMax" name="battery_bank1_CellTmpMax" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_online_capacity" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Remaining Capacity (kWh):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_online_capacity_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_online_cap" name="battery_bank1_online_cap" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_minimum_cell_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Min. Cell Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_minimum_cell_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellTmpMin" name="battery_bank1_CellTmpMin" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_cycles" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Cycles:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_cycles_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_cyc" name="battery_bank1_cyc" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_average_cell_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Avg. Cell Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_average_cell_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellTmpAvg" name="battery_bank1_CellTmpAvg" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_warnings_count" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Warnings:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_warnings_count_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_warnings" name="battery_bank1_warnings" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                            </div>
+                                            <div class="col-md-4">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_alarms_count" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarms:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_alarms__count_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_alarms" name="battery_bank1_alarms" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                            </div>
+                                            <div class="col-md-4">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_faults_count" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Faults:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_faults_count_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_faults" name="battery_bank1_faults" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                            </div>
+                                            <div class="col-md-4">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_actions" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Last Action:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_actions_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_actions" name="battery_bank1_actions" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                            </div>
+                                            <div class="col-md-4">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="system-cards">
+            <div id="ac_meter_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Commands</h5>
+                    <div class="card-body">
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Override Controls:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="battery_output_override" name="battery_output_override" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="battery_output_override_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Override</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4"></div>
+                                            <div class="col-md-4" style="text-decoration: underline;">Actual State:</div>
+                                            <div class="col-sm-2" style="text-decoration: underline;">Last Input:</div>
+                                            <div class="col-sm-2"></div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4" style="text-decoration: underline;">Information:</div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable / Disable Contactors:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="hithium_busbar_on_off_state"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="hithium_busbar_on_off_output" name="hithium_busbar_on_off_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                1 = Connect, 2 = Disconnect
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Switch On:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="hithium_switch_on_state"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="hithium_switch_on_output" name="hithium_switch_on_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                1 = Switch On (Will merge if works)
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Switch Off:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="hithium_switch_off_state"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="hithium_switch_off_output" name="hithium_switch_off_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                1 = Switch Off (Will merge if works)
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div> -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Min Parallel Racks:
+                                            </div>
+                                            <div class="col-md-4">  
+                                                <span id="hithium_min_parallel_racks_state"></span>      
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="hithium_min_parallel_racks_output" name="hithium_min_parallel_racks_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Range: 0 - 10
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Insulation Sampling Function:
+                                            </div>
+                                            <div class="col-md-4">  
+                                                <span id="insulation_switch_state"></span>      
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="insulation_switch_output" name="insulation_switch_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                1 = Enabled, 2 = Disabled
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Reset PCS Alarm:
+                                            </div>
+                                            <div class="col-md-4">  
+                                                <span id="reset_PCS_state"></span>      
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="reset_PCS_output" name="reset_PCS_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                1 = Reset Alarms, 0 = Default
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Air Con Remote control:
+                                            </div>
+                                            <div class="col-md-4">  
+                                                <span id="air_con_rem_con_state"></span>      
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="air_con_rem_con_output" name="air_con_rem_con_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                1 = Open (On), 0 = Close (Off)
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Year:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="year_state"></span>    
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="year_output" name="year_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Range: 0 - 9999
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Month:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="month_state"></span>    
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="month_output" name="month_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Range: 1 - 12
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Day:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="day_state"></span>    
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="day_output" name="day_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Range: 1 - 31
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Hour:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="hour_state"></span>    
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="hour_output" name="hour_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Range: 0 - 23
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Minute:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="minute_state"></span>    
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="minute_output" name="minute_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Range: 0 - 59
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Second:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="second_state"></span>    
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="second_output" name="second_output" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Range: 0 - 59
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Rack 1 On Off:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="rack_1_on_off_state"></span>    
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="rack_1_on_off" name="rack_1_on_off" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Enabled = 1, Disabled = 2
+                                            </div>
+                                            <div class="col-md-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        let mismatchCounter = 0;
+        let isMismatched = false;
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Format JSON data to remove curly brackets and make the key bold
+        // function formatJSON(json) {
+        //     var formatted = "";
+        //     for (var key in json) {
+        //         formatted += " -\t" + key + " "; 
+        //     }
+        //     return formatted;
+        // }
+
+        // Function to update button styles based on variable values
+        // function updateButtonStyles() {
+        //     // updateButtonStyle('hithium_switch_on_state', 'hithium_switch_on_button');
+        //     // updateButtonStyle('hithium_switch_off_state', 'hithium_switch_off_button');
+        // }
+
+        // // Helper function to update the style of a specific button
+        // function updateButtonStyle(spanId, buttonId) {
+        //     var spanElement = document.getElementById(spanId);
+        //     var buttonElement = document.getElementById(buttonId);
+
+        //     if (spanElement.innerHTML === '1') {
+        //         buttonElement.innerHTML = 'ON';
+        //         buttonElement.style.backgroundColor = 'green';
+        //         buttonElement.style.color = 'white';
+        //     } else {
+        //         buttonElement.innerHTML = 'OFF';
+        //         buttonElement.style.backgroundColor = 'lightpink';
+        //         buttonElement.style.color = 'white';
+        //     }
+        // }
+
+        // Function to toggle the input value on button click
+        function toggleButton(inputId) {
+            var inputElement = document.getElementById(inputId);
+            var currentValue = inputElement.value;
+
+            if (currentValue === '1') {
+                inputElement.value = '0';
+            } else {
+                inputElement.value = '1';
+            }
+        }
+
+        // Request data for this page
+        // for development to print to console every 10 loops
+        var count = 97;
+
+        // Request data for this page
+        function pageLoad()
+        {
+            
+            fetch("/Mod/FlexMod_HithiumBattery" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_HithiumBattery" + "_(" + moduleUID + ")",
+                    {
+                        body: formData,
+                        method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }    
+
+                // Update Module Information
+                document.getElementById("battery_name").innerHTML = res["battery_name"];
+                document.getElementById("battery_man").innerHTML = res["battery_man"];
+                document.getElementById("battery_fwver").innerHTML = res["battery_fwver"];
+                document.getElementById("battery_serno").innerHTML = res["battery_serno"];
+                document.getElementById("battery_constate").innerHTML = res["battery_constate"];
+                document.getElementById("battery_ipaddr_local").value = res["battery_ipaddr_local"];
+
+                // Disable control buttons if manual override not set
+                if(res["battery_override"] == true)
+                {
+                    document.getElementById("hithium_busbar_on_off_output").disabled = false;
+                    // document.getElementById("hithium_switch_on_output").disabled = false;
+                    // document.getElementById("hithium_switch_off_output").disabled = false;
+                    document.getElementById("battery_ipaddr_local").disabled = false;
+                    document.getElementById("hithium_min_parallel_racks_output").disabled = false;
+                    document.getElementById("insulation_switch_output").disabled = false;
+                    document.getElementById("reset_PCS_output").disabled = false;
+                    document.getElementById("air_con_rem_con_output").disabled = false;
+                    document.getElementById("year_output").disabled = false;
+                    document.getElementById("month_output").disabled = false;
+                    document.getElementById("day_output").disabled = false;
+                    document.getElementById("hour_output").disabled = false;
+                    document.getElementById("minute_output").disabled = false;
+                    document.getElementById("second_output").disabled = false;
+                    // document.getElementById("rack_1_on_off").disabled = false;
+
+                    document.getElementById("battery_output_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    document.getElementById("hithium_busbar_on_off_output").disabled = true;
+                    // document.getElementById("hithium_switch_on_output").disabled = true;
+                    // document.getElementById("hithium_switch_off_output").disabled = true;
+                    document.getElementById("battery_ipaddr_local").disabled = true;
+                    document.getElementById("hithium_min_parallel_racks_output").disabled = true;
+                    document.getElementById("insulation_switch_output").disabled = true;
+                    document.getElementById("reset_PCS_output").disabled = true;
+                    document.getElementById("air_con_rem_con_output").disabled = true;
+                    document.getElementById("year_output").disabled = true;
+                    document.getElementById("month_output").disabled = true;
+                    document.getElementById("day_output").disabled = true;
+                    document.getElementById("hour_output").disabled = true;
+                    document.getElementById("minute_output").disabled = true;
+                    document.getElementById("second_output").disabled = true;
+                    // document.getElementById("rack_1_on_off").disabled = true;
+
+                    document.getElementById("battery_output_override_button").innerHTML = "Enable";
+                }
+                
+                    })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad(); // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_HithiumBattery" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+                
+                count++;
+
+                // make a count so it console logs res every 100 counts
+                if (count == 100)
+                {
+                    console.log(res);
+                    count = 0;
+                }
+
+                // Just assign all the required device_value_parsed data here
+                var deviceValuesParsed = res["device_values_parsed"];
+                
+                // enums
+                // document.getElementById("connect_disconnect").innerHTML = deviceValuesParsed["Connect Disconnect"];
+                document.getElementById("connection_status").innerHTML = deviceValuesParsed["Connection Status"];
+                document.getElementById("air_con_unit_running_status").innerHTML = deviceValuesParsed["Air con unit running status"];
+                // document.getElementById("tms_operating_state").innerHTML = deviceValuesParsed["TMS operating state"];
+                document.getElementById("handshake").innerHTML = deviceValuesParsed["SBMU Heartbeat"];
+
+                // bitfields
+                document.getElementById("rack_enabled_status").innerHTML = deviceValuesParsed["Rack Enabled Status"].join(', ');
+                document.getElementById("rack_enabled_status_2").innerHTML = deviceValuesParsed["Rack enable status 2"].join(', ');
+                document.getElementById("rack_online_status").innerHTML = deviceValuesParsed["Rack Online Status"].join(', ');
+                document.getElementById("rack_online_status_2").innerHTML = deviceValuesParsed["Rack online status 2"].join(', ');
+                document.getElementById("sbmu_alarm_state").innerHTML = deviceValuesParsed["SBMU Alarm State"].join(', ');
+                document.getElementById("rack_alarm_1_summary").innerHTML = deviceValuesParsed["Rack Alarm I Summary"].join(', ');
+                document.getElementById("rack_alarm_2_summary").innerHTML = deviceValuesParsed["Rack Alarm II Summary"].join(', ');
+                document.getElementById("rack_alarm_3_summary").innerHTML = deviceValuesParsed["Rack Alarm III Summary"].join(', ');
+                document.getElementById("sbmu_cbmu_comms_fault_alarm").innerHTML = deviceValuesParsed["SBMU CBMU comms fault alarm"].join(', ');
+                document.getElementById("sbmu_cbmu_comms_fault_alarm_2").innerHTML = deviceValuesParsed["SBMU CBMU comms fault alarm 2"].join(', ');
+                document.getElementById("rack_fault_summary").innerHTML = deviceValuesParsed["Rack fault summary"].join(', ');
+                document.getElementById("other_alarms").innerHTML = deviceValuesParsed["Alarm"].join(', ');
+
+                
+                // update to the register values
+                document.getElementById("year").innerHTML = String(res["year_state"]).slice(-2);
+                document.getElementById("month").innerHTML = String(res["month_state"]).padStart(2, '0');
+                document.getElementById("day").innerHTML = String(res["day_state"]).padStart(2, '0');
+                document.getElementById("hour").innerHTML = String(res["hour_state"]).padStart(2, '0');
+                document.getElementById("minute").innerHTML = String(res["minute_state"]).padStart(2, '0');
+                document.getElementById("second").innerHTML = String(res["second_state"]).padStart(2, '0');
+
+                // values
+
+
+
+
+                if(res["battery_bank"].length > 0)
+                {
+                    enable_state = String(res["battery_enablestate"]);
+
+                    document.getElementById("battery_bank1_Hb").value = parseInt(res["battery_bank"][0]);
+                    document.getElementById("battery_bank1_SoC").value = parseFloat(res["battery_bank"][2]).toFixed(1);
+                    document.getElementById("battery_bank1_SoH").value = parseFloat(res["battery_bank"][3]).toFixed(1);
+                    document.getElementById("battery_bank1_V").value = parseFloat(res["battery_bank"][4]).toFixed(1);
+                    document.getElementById("battery_bank1_A").value = parseFloat(res["battery_bank"][5]).toFixed(1);
+                    document.getElementById("battery_bank1_W").value = parseFloat(res["battery_bank"][6]).toFixed(1);
+
+                    // document.getElementById("connect_disconnect").value = res["connect_disconnect"];
+                    // document.getElementById("hithium_switch_on_state").innerHTML = res["hithium_switch_on_state"];
+                    // document.getElementById("hithium_switch_off_state").innerHTML = res["hithium_switch_off_state"];
+                    document.getElementById("hithium_busbar_on_off_state").innerHTML = deviceValuesParsed["Connection Status"];
+                    document.getElementById("hithium_min_parallel_racks_state").innerHTML = res["hithium_min_parallel_racks_state"];
+                    document.getElementById("insulation_switch_state").innerHTML = res["insulation_switch_state"];
+                    document.getElementById("reset_PCS_state").innerHTML = res["reset_PCS_state"];
+                    document.getElementById("air_con_rem_con_state").innerHTML = res["air_con_rem_con_state"];
+                    document.getElementById("year_state").innerHTML = res["year_state"];
+                    document.getElementById("month_state").innerHTML = res["month_state"];
+                    document.getElementById("day_state").innerHTML = res["day_state"];
+                    document.getElementById("hour_state").innerHTML = res["hour_state"];
+                    document.getElementById("minute_state").innerHTML = res["minute_state"];
+                    document.getElementById("second_state").innerHTML = res["second_state"];
+                    // document.getElementById("rack_1_on_off_state").innerHTML = res["rack_1_on_off_state"];
+
+
+                    document.getElementById("battery_charge_state_text").innerHTML = deviceValuesParsed["System Charge State"];
+
+                    document.getElementById("battery_bank1_WMaxChg").value = parseFloat(res["battery_bank"][8]/1000).toFixed(1);
+                    document.getElementById("battery_bank1_WMaxDisChg").value = parseFloat(res["battery_bank"][9]/1000).toFixed(1);
+                    document.getElementById("battery_bank1_CellVMin").value = parseFloat(res["battery_bank"][10]).toFixed(2);
+                    document.getElementById("battery_bank1_CellVMax").value = parseFloat(res["battery_bank"][11]).toFixed(2);
+                    document.getElementById("battery_bank1_CellVAvg").value = parseFloat(res["battery_bank"][12]).toFixed(2);
+                    document.getElementById("battery_bank1_CellTmpMin").value = parseFloat(res["battery_bank"][13]).toFixed(1);
+                    document.getElementById("battery_bank1_CellTmpMax").value = parseFloat(res["battery_bank"][14]).toFixed(1);
+                    document.getElementById("battery_bank1_CellTmpAvg").value = parseFloat(res["battery_bank"][15]).toFixed(1);
+                    document.getElementById("battery_bank1_cyc").value = parseFloat(res["battery_bank"][16]);
+                    document.getElementById("battery_bank1_max_cap").value = parseFloat(res["battery_bank"][17]).toFixed(1);
+                    document.getElementById("battery_bank1_online_cap").value = parseFloat(res["battery_bank"][18]).toFixed(1);
+                    document.getElementById("battery_bank1_warnings").value = parseInt(res["battery_bank"][20]);
+                    document.getElementById("battery_bank1_alarms").value = parseInt(res["battery_bank"][21]);
+                    document.getElementById("battery_bank1_faults").value = parseInt(res["battery_bank"][22]);
+                    document.getElementById("battery_bank1_actions").value = parseInt(res["battery_bank"][23]);
+                }
+
+                // Disable control buttons if manual override not set
+                if(res["battery_override"] == true)
+                {
+                    document.getElementById("battery_ipaddr_local").disabled = false;
+
+                    document.getElementById("battery_output_override_button").innerHTML = "Disable";
+                    document.getElementById("hithium_busbar_on_off_output").disabled = false;
+                    // document.getElementById("hithium_switch_on_output").disabled = false;
+                    // document.getElementById("hithium_switch_off_output").disabled = false;
+                    document.getElementById("hithium_min_parallel_racks_output").disabled = false;
+                    document.getElementById("insulation_switch_output").disabled = false;
+                    document.getElementById("reset_PCS_output").disabled = false;
+                    document.getElementById("air_con_rem_con_output").disabled = false;
+                    document.getElementById("year_output").disabled = false;
+                    document.getElementById("month_output").disabled = false;
+                    document.getElementById("day_output").disabled = false;
+                    document.getElementById("hour_output").disabled = false;
+                    document.getElementById("minute_output").disabled = false;
+                    document.getElementById("second_output").disabled = false;
+                    // document.getElementById("rack_1_on_off").disabled = false;
+
+                }
+                else
+                {
+                    document.getElementById("battery_ipaddr_local").disabled = true;
+
+                    document.getElementById("battery_output_override_button").innerHTML = "Enable";
+                    document.getElementById("hithium_busbar_on_off_output").disabled = true;
+                    // document.getElementById("hithium_switch_on_output").disabled = true;
+                    // document.getElementById("hithium_switch_off_output").disabled = true;
+                    document.getElementById("hithium_min_parallel_racks_output").disabled = true;
+                    document.getElementById("insulation_switch_output").disabled = true;
+                    document.getElementById("reset_PCS_output").disabled = true;
+                    document.getElementById("air_con_rem_con_output").disabled = true;
+                    document.getElementById("year_output").disabled = true;
+                    document.getElementById("month_output").disabled = true;
+                    document.getElementById("day_output").disabled = true;
+                    document.getElementById("hour_output").disabled = true;
+                    document.getElementById("minute_output").disabled = true;
+                    document.getElementById("second_output").disabled = true;
+                    // document.getElementById("rack_1_on_off").disabled = true;
+
+                }
+
+            // Update button states based on the latest data
+
+            // document.getElementById("hithium_switch_on_state").innerHTML = res["hithium_switch_on_state"];
+            // document.getElementById("hithium_switch_off_state").innerHTML = res["hithium_switch_off_state"];
+            document.getElementById("hithium_busbar_on_off_state").innerHTML = deviceValuesParsed["Connection Status"];
+            document.getElementById("hithium_min_parallel_racks_state").innerHTML = res["hithium_min_parallel_racks_state"];
+            document.getElementById("insulation_switch_state").innerHTML = res["insulation_switch_state"];
+            document.getElementById("reset_PCS_state").innerHTML = res["reset_PCS_state"];
+            document.getElementById("air_con_rem_con_state").innerHTML = res["air_con_rem_con_state"];
+            document.getElementById("year_state").innerHTML = res["year_state"];
+            document.getElementById("month_state").innerHTML = res["month_state"];
+            document.getElementById("day_state").innerHTML = res["day_state"];
+            document.getElementById("hour_state").innerHTML = res["hour_state"];
+            document.getElementById("minute_state").innerHTML = res["minute_state"];
+            document.getElementById("second_state").innerHTML = res["second_state"];
+            // document.getElementById("rack_1_on_off_state").innerHTML = res["rack_1_on_off_state"];
+
+
+            // Call updateButtonStyles here
+            // updateButtonStyles();
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>

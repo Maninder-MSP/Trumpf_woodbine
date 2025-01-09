@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+    <head>
+
+        <!-- Required Meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    </head>
+    <body>
+
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Edit</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="edit_button" onclick = "save_layout()"  href="/">Save</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <script src="https://unpkg.com/gojs@2.2.16/release/go.js"></script> <!--2.2.16-->
+
+        <!-- The HMI Window -->
+        <div id="hmi">
+            <div style="width: 100%; height:93vh; display: flex; justify-content: space-between">
+                <!-- Toolbox -->
+                <div style="width: 135px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black;">
+                    <div class="tabs">
+                        <div class="tab">
+                            <!-- This would be a Flex Module in a radio group. Styling comes later -->
+                            <input type="radio" id="rd1" name="rd" checked="true">
+                            <label class="tab-label" for="rd1">Flex Modules</label>
+                            <div class="tab-content">
+                                <div id="myFlexModules" style="width: 140px; height:87vh; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0); cursor: auto;">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- HMI -->
+                <div id="myDiagramDiv" style="flex-grow: 1; height: 100%; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0); cursor: auto;">
+                    <canvas tabindex="0" width="917" height="498" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 917px; height: 498px; cursor: auto;">
+                        This text is displayed if your browser does not support the Canvas HTML element.
+                    </canvas>
+                    <div style="position: absolute; overflow: auto; width: 917px; height: 498px; z-index: 1;">
+                        <div style="position: absolute; width: 1px; height: 1px;">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <pre id="savedModel" style="height:250px; display:none">{ "class": "GraphLinksModel",
+                "nodeDataArray": [
+                    {"name":"G3","isGroup":true,"pos":"-100 200","size":"700 250"},
+                    {"name":"b","color":"#81D4FA","pos":"-50 250","group":"G3"},
+                    {"name":"g","color":"#B2FF59","pos":"-50 350","group":"G3"},
+                    {"name":"y","color":"#FFEB3B","pos":"50 250","group":"G3"},
+                    {"name":"G22","isGroup":true,"pos":"-100 -100","size":"700 250"},
+                    {"name":"b32","color":"#81D4FA","pos":"0 -50","group":"G22"}
+                ],
+                "linkDataArray": []}
+            </pre>
+        </div>
+
+        <!-- Bootstrap CSS -->
+        <style>
+            body {
+                background-color: #F1F6F9;
+            }
+
+            .navbar-custom {
+                background-color: #9BA4B4;
+                font-size: 1.2vw;
+                height: 7vh;
+            }
+
+            .navbar-brand {
+                font-size: 1.2vw;
+            }
+        </style>
+
+        <!-- GoJS CSS -->
+        <style type="text/css">
+            /* This CSS is used to create the accordion for the Palettes */
+            input {
+                position: absolute;
+                opacity: 0;
+                z-index: -1;
+            }
+
+            /* Accordion styles */
+            .tabs {
+                overflow: hidden;
+            }
+
+            .tab {
+                width: 100%;
+                color: white;
+                overflow: hidden;
+            }
+            .tab-label {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.5em;
+                background: #1F4963;
+                cursor: pointer;
+            }
+            .tab-label:hover {
+                background: #627f91;
+            }
+            .tab-label::after {
+                content: "❯";
+                width: 1em;
+                height: 1em;
+                text-align: center;
+                transition: all 0.35s;
+            }
+            .tab-content {
+                max-height: 0;
+                color: #2c3e50;
+                background: white;
+            }
+            .tab-close {
+                display: flex;
+                justify-content: flex-end;
+                padding: 1em;
+                font-size: 0.75em;
+                background: #2c3e50;
+                cursor: pointer;
+            }
+            .tab-close:hover {
+                background: #1a252f;
+            }
+
+            input:checked + .tab-label {
+                background: #1a252f;
+            }
+            input:checked + .tab-label::after {
+                transform: rotate(90deg);
+            }
+            input:checked ~ .tab-content {
+                max-height: 100vh;
+            }
+        </style>
+
+        <!-- Javascript handling the graphical system view -->
+        <script id="code">
+
+            // Initialise the GoJS GUI
+            var AllowTopLevel = false;
+            var CellSize = new go.Size(50, 50);
+            var layout = null
+
+            function init()
+            {
+                // Configure GoJS
+                if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+                // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+                // For details, see https://gojs.net/latest/intro/buildingObjects.html
+                const $ = go.GraphObject.make;
+
+                myDiagram =
+                $(go.Diagram, "myDiagramDiv",
+					{
+						grid: $(go.Panel, "Grid",
+							{ gridCellSize: CellSize },
+							$(go.Shape, "LineH", { stroke: "lightgray" }),
+							$(go.Shape, "LineV", { stroke: "lightgray" })
+						),
+
+						// Support grid snapping when dragging and when resizing
+						"draggingTool.isGridSnapEnabled": true,
+						"draggingTool.gridSnapCellSpot": go.Spot.Center,
+						"resizingTool.isGridSnapEnabled": true,
+						//"LinkReshapingTool.isEnabled": false,
+						//"LinkingTool.isEnabled": false,
+
+						// For this sample, automatically show the state of the diagram's model on the page
+						"ModelChanged": e => {
+
+							if (e.isTransactionFinished) {
+
+                                // Animate the flow in the pipes
+                                var animation = new go.Animation();
+                                animation.easing = go.Animation.EaseLinear;
+                                myDiagram.links.each(link => animation.add(link.findObject("PIPEFLOW"), "strokeDashOffset", 20, 0));
+
+                                // Run indefinitely
+                                animation.runCount = Infinity;
+                                animation.start();
+							}
+						},
+						"animationManager.isEnabled": true,
+						"undoManager.isEnabled": true,
+					}
+				);
+
+                // Define a function for creating a "port" that is normally transparent.
+                // The "name" is used as the GraphObject.portId, the "spot" is used to control how links connect
+                // and where the port is positioned on the node, and the boolean "output" and "input" arguments
+                // control whether the user can draw links from or to the port.
+
+                function makePort(name, spot, output, input) {
+                    // the port is basically just a small transparent circle
+                    return $(go.Shape, "Circle",
+                    {
+                        fill: null,  // not seen, by default; set to a translucent gray by showSmallPorts, defined below
+                        stroke: null,
+                        desiredSize: new go.Size(7, 7),
+                        alignment: spot,  // align the port on the main Shape
+                        alignmentFocus: spot,  // just inside the Shape
+                        portId: name,  // declare this object to be a "port"
+                        fromSpot: spot, toSpot: spot,  // declare where links may connect at this port
+                        fromLinkable: output, toLinkable: input,  // declare whether the user may draw links to/from here
+                        cursor: "pointer"  // show a different cursor to indicate potential link point
+                    });
+                }
+
+                // Regular Nodes represent items to be put onto racks.
+                // Nodes are currently resizable, but if that is not desired, just set resizable to false.
+                myDiagram.nodeTemplate =
+                $(go.Node, "Auto",
+					{
+						resizable: true, resizeObjectName: "SHAPE",
+
+						// Because the gridSnapCellSpot is Center, offset the Node's location
+						locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+
+						// Provide a visual warning about dropping anything onto an "item"
+						mouseDragEnter: (e, node) => {
+							e.handled = true;
+							node.findObject("SHAPE").fill = "red";
+							e.diagram.currentCursor = "not-allowed";
+							highlightGroup(node.containingGroup, false);
+						},
+						mouseDragLeave: (e, node) => node.updateTargetBindings(),
+						click: nodeClick,
+
+						// Disallow dropping anything onto an "item"
+						mouseDrop: (e, node) => {
+						    node.diagram.currentTool.doCancel();
+						    console.log("Item dropped!");
+						}
+					},
+
+					// Always save/load the point that is the top-left corner of the node, not the location
+					new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+
+					// This is the primary thing people see
+					$(go.Shape, "RoundedRectangle",
+					{
+						name: "SHAPE",
+						fill: "white",
+						minSize: CellSize,
+						desiredSize: CellSize,  // initially 1x1 cell
+						portId: "", fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides
+					},
+					//new go.Binding("fill", "color"),                                                                        // Colour of the module
+
+					new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
+
+                    $(go.Picture, {width: 50, height: 50},
+                        new go.Binding("source", "icon"),
+                        new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
+                    ),
+
+                    $(go.TextBlock, { stretch: go.GraphObject.Horizontal, textAlign: "center", alignment: go.Spot.Bottom},
+                        new go.Binding("text", "status")
+                        //new go.Binding("background", "color")
+                    ),
+
+                    // four small named ports, one on each side:
+                    makePort("T", go.Spot.Top, true, true),
+                    makePort("L", go.Spot.Left, true, true),
+                    makePort("R", go.Spot.Right, true, true),
+                    makePort("B", go.Spot.Bottom, true, true),
+                    { // handle mouse enter/leave events to show/hide the ports
+                        mouseEnter: (e, node) => showSmallPorts(node, true),
+                        mouseLeave: (e, node) => showSmallPorts(node, false)
+                    }
+                );  // End Node
+
+                function showSmallPorts(node, show) {
+                    node.ports.each(port => {
+                        if (port.portId !== "")
+                        {  // don't change the default port, which is the big shape
+                            port.fill = show ? "rgba(0,0,0,.3)" : null;
+                        }
+                    });
+                }
+
+                myDiagram.linkTemplate =
+                $(go.Link,
+                    { routing: go.Link.AvoidsNodes, curve: go.Link.JumpGap, corner: 10, reshapable: true, toShortLength: 0 },
+                    new go.Binding("points").makeTwoWay(),
+                    new go.Binding("wireType", "type"),
+
+                    // mark each Shape to get the link geometry with isPanelMain: true
+                    $(go.Shape, { isPanelMain: true, stroke: "black", strokeWidth: 5, name: "PIPEWALL"}),
+                    $(go.Shape, { isPanelMain: true, stroke: "transparent", strokeWidth: 5, name: "PIPEFILL"}),
+                    $(go.Shape, { isPanelMain: true, stroke: "transparent", strokeWidth: 3, name: "PIPEFLOW", strokeDashArray: [10, 10] }),
+
+                    $(go.Panel, "Auto",  // this whole Panel is a link label
+                        $(go.Shape, "RoundedRectangle", { fill: "white", stroke: "black" }),
+                        $(go.TextBlock, { margin: 3 }, new go.Binding("text", "text"))
+                    ),
+                    //$(go.Shape, { toArrow: "Standard", scale: 1.3, fill: "gray", stroke: null }),
+                    {
+                        click: linkClick,
+                    }
+                );
+
+                // Groups represent racks where items (Nodes) can be placed.
+                // Currently they are movable and resizable, but you can change that
+                // if you want the racks to remain "fixed".
+                // Groups provide feedback when the user drags nodes onto them.
+
+                function highlightGroup(grp, show)
+                {
+                    if (!grp) return false;
+
+                    // Check that the drop may really happen into the Group
+                    var tool = grp.diagram.toolManager.draggingTool;
+                    grp.isHighlighted = show && grp.canAddMembers(tool.draggingParts);
+                    return grp.isHighlighted;
+                }
+
+                var groupFill = "transparent";  //"rgba(128,128,128,0.2)";
+                var groupStroke = "transparent";    //"gray";
+                var dropFill = "rgba(128,255,255,0.2)";
+                var dropStroke = "red";
+
+                myDiagram.groupTemplate =
+                $(go.Group,
+					{
+						layerName: "Background",
+						resizable: true, resizeObjectName: "SHAPE",
+
+						// Because the gridSnapCellSpot is Center, offset the Group's location
+						locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2)
+					},
+
+					// Always save/load the point that is the top-left corner of the node, not the location
+					new go.Binding("position", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
+					{
+						// What to do when a drag-over or a drag-drop occurs on a Group
+						mouseDragEnter: (e, grp, prev) => {
+							if (!highlightGroup(grp, true)) e.diagram.currentCursor = "not-allowed"; else e.diagram.currentCursor = "";
+						},
+
+						mouseDragLeave: (e, grp, next) => highlightGroup(grp, false),
+						mouseDrop: (e, grp) => {
+							var ok = grp.addMembers(grp.diagram.selection, true);
+							if (!ok) grp.diagram.currentTool.doCancel();
+						}
+					},
+
+					$(go.Shape, "Rectangle",  // the rectangular shape around the members
+						{
+							name: "SHAPE",
+							fill: groupFill,
+							stroke: groupStroke,
+							//minSize: new go.Size(CellSize.width * 2, CellSize.height * 2)
+							minSize: CellSize,
+						    desiredSize: CellSize  // initially 1x1 cell
+						},
+
+						new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+						new go.Binding("fill", "isHighlighted", h => h ? dropFill : groupFill).ofObject(),
+						new go.Binding("stroke", "isHighlighted", h => h ? dropStroke : groupStroke).ofObject()
+					),
+
+                    $(go.Picture, {width: 50, height: 50,},
+                        new go.Binding("source", "icon"),
+                        new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify))
+                );
+
+                // Decide what kinds of Parts can be added to a Group
+                myDiagram.commandHandler.memberValidation = (grp, node) => {
+                    if (grp instanceof go.Group && node instanceof go.Group) return false;  // cannot add Groups to Groups
+                    // but dropping a Group onto the background is always OK
+                    return true;
+                };
+
+                // What to do when a drag-drop occurs in the Diagram's background
+                myDiagram.mouseDragOver = e => {
+                    if (!AllowTopLevel)
+                    {
+                        // OK to drop a group anywhere or any Node that is a member of a dragged Group
+                        var tool = e.diagram.toolManager.draggingTool;
+                        if (!tool.draggingParts.all(p => p instanceof go.Group ||
+                           (!p.isTopLevel && tool.draggingParts.contains(p.containingGroup))))
+                        {
+                            e.diagram.currentCursor = "not-allowed";
+                        }
+                        else
+                        {
+                            e.diagram.currentCursor = "";
+                        }
+                    }
+                };
+
+                myDiagram.mouseDrop = e => {
+                    console.log("Mousey Drop");
+					if (AllowTopLevel)
+					{
+						// When the selection is dropped in the diagram's background,
+						// make sure the selected Parts no longer belong to any Group
+						if (!e.diagram.commandHandler.addTopLevelParts(e.diagram.selection, true))
+						{
+							e.diagram.currentTool.doCancel();
+						}
+					}
+					else
+					{
+						// Disallow dropping any regular nodes onto the background, but allow dropping "racks",
+						// including any selected member nodes
+						if (!e.diagram.selection.all(p => {
+							return p instanceof go.Group || (!p.isTopLevel && p.containingGroup.isSelected);
+						})) {
+							e.diagram.currentTool.doCancel();
+						}
+					}
+				};
+
+				// start off with four "racks" that are positioned next to each other
+				myDiagram.model = new go.GraphLinksModel([
+					//{ name: "G1", isGroup: true, pos: "0 0", size: "200 200" }
+				]);
+
+				// initialize the first Palette
+				myFlexModules =
+				$(go.Palette, "myFlexModules",
+					{ // share the templates with the main Diagram
+						nodeTemplate: myDiagram.nodeTemplate,
+						groupTemplate: myDiagram.groupTemplate
+					}
+				);
+
+				var green = '#B2FF59';
+				var blue = '#81D4FA';
+				var yellow = '#FFEB3B';
+
+                fetch("/layout").then(res => res.json()).then(res => {
+
+                    if(Object.keys(res).length == 0)
+                    {
+                        console.log("No layout data there be!");
+                    }
+                    else
+                    {
+                        myDiagram.model = go.Model.fromJson(res);
+                        myDiagram.zoomToFit();
+
+                        myDiagram.links.each(function(obj) {
+                            // Update the wire graphic
+                            setWire(obj, obj.data.wireType);
+                        });
+                    }
+                }).catch(error => console.error('Error', error))
+
+				// MSP HMI Control
+
+                // Lets add the Flex Box outlines too as groups
+                myFlexModules.model.addNodeData({ name: "Flex-ESS 1000", icon: "/static/images/Flex-ESS-1000.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "Flex-ESS Micro", icon: "/static/images/Flex-ESS-Micro.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "CAB1000", icon: "/static/images/CAB1000.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "REFUstor", icon: "/static/images/REFUstor.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "Site Box", icon: "/static/images/Site-Box.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "ABB T175Charger", icon: "/static/images/ABB-T175.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "Flex-ID Ctrl", icon: "/static/images/Flex-ID-Ctrl.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "Flex-ID Batt", icon: "/static/images/Flex-ID-Batt.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "Transformer", icon: "/static/images/Transformer.png", isGroup: true, pos: "0 0"});
+                myFlexModules.model.addNodeData({ name: "Flex-ESS Hithium", icon: "/static/images/Hithium.png", isGroup: true, pos: "0 0"});
+
+                var pageInterval = setInterval(function()
+                {
+                    // Set the clock
+                    var date = new Date();
+                    clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+                    fetch("/Edit_data").then(res => res.json()).then(res => {
+
+                        // We receive a list of modules from Flex3.py
+                        // So for each one we need to add their icon and data to the module list.
+                        for(x=0;x<Object.keys(res).length;x++)
+                        {
+                            // Check that we haven't already loaded the module in the palette (note: no two FlexModules can have the same serial number)
+                            if(myFlexModules.findNodeForKey(res[x][0]) == null)
+                            {
+                                myFlexModules.model.addNodeData({ key: res[x][0], uid: 0, type: res[x][1], icon: res[x][2], website: res[x][8], status: ""});
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error', error))
+                }, 1000);
+			}
+
+			function nodeClick(e, obj)
+			{
+                console.log("Node Clicked");
+            }
+
+            function linkClick(e, obj)
+			{
+			    console.log("Link Clicked!");
+
+			    // If a user clicks a link, we want to cycle between three types; AC power, DC power, Communications
+
+                myDiagram.model.startTransaction("Link Modify");
+                if(typeof(obj.data.wireType) != "string")
+                    obj.data.wireType = "Default";
+
+                // Toggle the wire type
+                if(obj.data.wireType == "PVW")
+                    obj.data.wireType = "Default";
+                else if(obj.data.wireType == "Default")
+                    obj.data.wireType = "CANbus";
+                else if(obj.data.wireType == "CANbus")
+                    obj.data.wireType = "ModbusTCP";
+                else if(obj.data.wireType == "ModbusTCP")
+                    obj.data.wireType = "ModbusRTU";
+                else if(obj.data.wireType == "ModbusRTU")
+                    obj.data.wireType = "TCP-IP";
+                else if(obj.data.wireType == "TCP-IP")
+                    obj.data.wireType = "ACV";
+                else if(obj.data.wireType == "ACV")
+                    obj.data.wireType = "ACI";
+                else if(obj.data.wireType == "ACI")
+                    obj.data.wireType = "ACW";
+                else if(obj.data.wireType == "ACW")
+                    obj.data.wireType = "DCV";
+                else if(obj.data.wireType == "DCV")
+                    obj.data.wireType = "DCI";
+                else if(obj.data.wireType == "DCI")
+                    obj.data.wireType = "DCW";
+                else if(obj.data.wireType == "DCW")
+                    obj.data.wireType = "PVV";
+                else if(obj.data.wireType == "PVV")
+                    obj.data.wireType = "PVI";
+                else if(obj.data.wireType == "PVI")
+                    obj.data.wireType = "PVW";
+
+                setWire(obj, obj.data.wireType);
+                console.log(obj.data.wireType);
+
+                myDiagram.model.commitTransaction("Link Modify");
+            }
+
+            function setWire(obj, type)
+            {
+                if(type == "Default")
+                {
+                    myDiagram.model.set(obj.elt(0), "stroke", "black");                             // Pipe wall
+                    myDiagram.model.set(obj.elt(0), "strokeWidth", "5");                            // Pipe width
+                    myDiagram.model.set(obj.elt(1), "stroke", "transparent");                       // Pipe fill
+                    myDiagram.model.set(obj.elt(2), "stroke", "transparent");                       // "Dashed" Pipe flow
+                    myDiagram.model.set(obj.elt(3).elt(1), "text", "WIRE");
+                }
+                else if(type == "CANbus")
+                {
+                    myDiagram.model.set(obj.elt(0), "stroke", "lightgreen");
+                    myDiagram.model.set(obj.elt(0), "strokeWidth", "5");
+                    myDiagram.model.set(obj.elt(1), "stroke", "transparent");
+                    myDiagram.model.set(obj.elt(2), "stroke", "transparent");
+                    myDiagram.model.set(obj.elt(3).elt(1), "text", "CAN");
+                }
+                else if(type == "ModbusTCP")
+                {
+                    myDiagram.model.set(obj.elt(0), "stroke", "lightblue");
+                    myDiagram.model.set(obj.elt(0), "strokeWidth", "5");
+                    myDiagram.model.set(obj.elt(1), "stroke", "transparent");
+                    myDiagram.model.set(obj.elt(2), "stroke", "transparent");
+                    myDiagram.model.set(obj.elt(3).elt(1), "text", "MB-TCP");
+                }
+                else if(type == "ModbusRTU")
+                {
+                    myDiagram.model.set(obj.elt(0), "stroke", "orange");
+                    myDiagram.model.set(obj.elt(0), "strokeWidth", "5");
+                    myDiagram.model.set(obj.elt(1), "stroke", "transparent");
+                    myDiagram.model.set(obj.elt(2), "stroke", "transparent");
+                    myDiagram.model.set(obj.elt(3).elt(1), "text", "MB-RTU");
+                }
+                else if(type == "TCP-IP")
+                {
+                    myDiagram.model.set(obj.elt(0), "stroke", "purple");
+                    myDiagram.model.set(obj.elt(0), "strokeWidth", "5");
+                    myDiagram.model.set(obj.elt(1), "stroke", "transparent");
+                    myDiagram.model.set(obj.elt(2), "stroke", "transparent");
+                    myDiagram.model.set(obj.elt(3).elt(1), "text", "TCP-IP");
+                }
+                else if((type == "ACV") || (type == "ACI") || (type == "ACW"))
+                {
+                    myDiagram.model.set(obj.elt(0), "stroke", "black");
+                    myDiagram.model.set(obj.elt(0), "strokeWidth", "7");
+                    myDiagram.model.set(obj.elt(1), "stroke", "blue");
+                    myDiagram.model.set(obj.elt(1), "strokeWidth", "5");
+                    myDiagram.model.set(obj.elt(2), "stroke", "white");
+                    myDiagram.model.set(obj.elt(2), "strokeWidth", "3");
+
+                    if (type == "ACV")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "AC V");
+                    else if (type == "ACI")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "AC A");
+                    else if (type == "ACW")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "AC kW");
+                }
+                else if((type == "DCV") || (type == "DCI") || (type == "DCW"))
+                {
+                    myDiagram.model.set(obj.elt(0), "stroke", "black");
+                    myDiagram.model.set(obj.elt(0), "strokeWidth", "7");
+                    myDiagram.model.set(obj.elt(1), "stroke", "limegreen");
+                    myDiagram.model.set(obj.elt(1), "strokeWidth", "5");
+                    myDiagram.model.set(obj.elt(2), "stroke", "white");
+                    myDiagram.model.set(obj.elt(2), "strokeWidth", "3");
+
+                    if (type == "DCV")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "DC V");
+                    else if (type == "DCI")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "DC A");
+                    else if (type == "DCW")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "DC kW");
+                }
+                else if((type == "PVV") || (type == "PVI") || (type == "PVW"))
+                {
+                    myDiagram.model.set(obj.elt(0), "stroke", "black");
+                    myDiagram.model.set(obj.elt(0), "strokeWidth", "7");
+                    myDiagram.model.set(obj.elt(1), "stroke", "orange");
+                    myDiagram.model.set(obj.elt(1), "strokeWidth", "5");
+                    myDiagram.model.set(obj.elt(2), "stroke", "white");
+                    myDiagram.model.set(obj.elt(2), "strokeWidth", "3");
+
+                    if (type == "PVV")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "PV V");
+                    else if (type == "PVI")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "PV A");
+                    else if (type == "PVW")
+                        myDiagram.model.set(obj.elt(3).elt(1), "text", "PV kW");
+                }
+            }
+
+			window.addEventListener('DOMContentLoaded', init);
+
+			// Returns the new layout when leaving the page
+			function save_layout() {
+
+                var moduleUID = 1
+
+                myDiagram.nodes.each(function(obj) {
+                    if("website" in obj.data)                                                       // Safe to mangle the website address with a UID
+                    {
+                        // Also check we're not modifying an actual URL...check for "/Mod"
+                        if(obj.data.website.includes("FlexMod_"))
+                        {
+                            var ws = obj.data.website.split("_(")[0];                               // Remove moduleUID if already set from a previous edit
+                            myDiagram.model.set(obj.data, "website", ws + "_(" + moduleUID + ")");  // Add the new one
+                            myDiagram.model.set(obj.data, "uid", moduleUID);
+                            moduleUID += 1;
+                        }
+                    }
+                });
+
+                // Save the jsonified layout
+                document.getElementById("savedModel").textContent = myDiagram.model.toJson();
+                layout = myDiagram.model.toJson();
+
+                // Send it back to Python to extract the components
+                if(layout != null)
+                {
+                    fetch("/Edit", {
+                        method: "post",
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+
+                        // Make sure to serialize your JSON body
+                        body: layout
+                    })
+                }
+            }
+
+        </script>
+
+        <!-- JQuery and Bootstrap JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    </body>
+</html>

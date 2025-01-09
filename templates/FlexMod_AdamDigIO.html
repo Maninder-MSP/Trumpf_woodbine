@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Digital IO</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="digio_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+<!--                                        <b>Control</b>-->
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="digio_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        System Enable:-->
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <span id="digio_enable_echo"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="digio_enable" name="digio_enable" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="digio_enable_set" name="digio_enable_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="digio_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        Remote Pilot:-->
+                                    </div>
+                                    <div class="col-md-1">
+<!--                                        <span id="digio_pilot_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="digio_pilot" name="digio_pilot" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="digio_pilot_set" name="digio_pilot_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="digio_fwver"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="digio_serno"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="digio_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        IP Address (Local):
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="digio_ipaddr_local" name="digio_ipaddr_local" value="0.0.0.0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="digio_ipaddr_local_set" name="digio_ipaddr_local_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="digio_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Override Controls:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="digio_output_override" name="digio_output_override" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="digio_output_override_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Override</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <br>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Digital Inputs</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Digital Input 0:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_input_0_state" name="digio_input_0_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Digital Input 1:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_input_1_state" name="digio_input_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Digital Input 2:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_input_2_state" name="digio_input_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Digital Input 3:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_input_3_state" name="digio_input_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Digital Input 4:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_input_4_state" name="digio_input_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Digital Input 5:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_input_5_state" name="digio_input_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Digital Outputs</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 0:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_output_0_state" name="digio_output_0_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 0 Test:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="digio_output_0_test" name="digio_output_0_test" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="digio_output_0_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Test</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 1:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_output_1_state" name="digio_output_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 1 Test:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="digio_output_1_test" name="digio_output_1_test" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="digio_output_1_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Test</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 2:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_output_2_state" name="digio_output_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 2 Test:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="digio_output_2_test" name="digio_output_2_test" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="digio_output_2_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Test</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 3:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_output_3_state" name="digio_output_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 3 Test:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="digio_output_3_test" name="digio_output_3_test" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="digio_output_3_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Test</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 4:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_output_4_state" name="digio_output_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 4 Test:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="digio_output_4_test" name="digio_output_4_test" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="digio_output_4_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Test</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 5:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="digio_output_5_state" name="digio_output_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Relay Output 5 Test:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="digio_output_5_test" name="digio_output_5_test" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="digio_output_5_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Test</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Request data for this page
+        function pageLoad()
+        {
+            fetch("/Mod/FlexMod_AdamDigIO" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_AdamDigIO" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("digio_name").innerHTML = res["digio_name"];
+                document.getElementById("digio_man").innerHTML = res["digio_man"];
+                document.getElementById("digio_fwver").innerHTML = res["digio_fwver"];
+                document.getElementById("digio_serno").innerHTML = res["digio_serno"];
+                document.getElementById("digio_constate").innerHTML = res["digio_constate"];
+                document.getElementById("digio_ipaddr_local").value = res["digio_ipaddr_local"];
+
+                // Disable manual override buttons
+                if(res["digio_override"] == true)
+                {
+                    for(x=0;x<6;x++)
+                    {
+                        document.getElementById("digio_output_" + parseInt(x) + "_button").disabled = false;
+                    }
+                    document.getElementById("digio_ipaddr_local").disabled = false;
+                    document.getElementById("digio_output_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    for(x=0;x<6;x++)
+                    {
+                        document.getElementById("digio_output_" + parseInt(x) + "_button").disabled = true;
+                    }
+                    document.getElementById("digio_ipaddr_local").disabled = true;
+                    document.getElementById("digio_output_override_button").innerHTML = "Enable";
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_AdamDigIO" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                if(res["digio_data"].length > 0)
+                {
+                    // Update the Input States
+                    document.getElementById("digio_input_0_state").value = (res["digio_data"][4] >> 0) & 0x01;
+                    document.getElementById("digio_input_1_state").value = (res["digio_data"][4] >> 1) & 0x01;
+                    document.getElementById("digio_input_2_state").value = (res["digio_data"][4] >> 2) & 0x01;
+                    document.getElementById("digio_input_3_state").value = (res["digio_data"][4] >> 3) & 0x01;
+                    document.getElementById("digio_input_4_state").value = (res["digio_data"][4] >> 4) & 0x01;
+                    document.getElementById("digio_input_5_state").value = (res["digio_data"][4] >> 5) & 0x01;
+
+                    // Update the Output states
+                    document.getElementById("digio_output_0_state").value = (res["digio_data"][5] >> (0*2)) & 0x03;
+                    document.getElementById("digio_output_1_state").value = (res["digio_data"][5] >> (1*2)) & 0x03;
+                    document.getElementById("digio_output_2_state").value = (res["digio_data"][5] >> (2*2)) & 0x03;
+                    document.getElementById("digio_output_3_state").value = (res["digio_data"][5] >> (3*2)) & 0x03;
+                    document.getElementById("digio_output_4_state").value = (res["digio_data"][5] >> (4*2)) & 0x03;
+                    document.getElementById("digio_output_5_state").value = (res["digio_data"][5] >> (5*2)) & 0x03;
+
+                    // Disable test buttons if manual override not set
+                    if(res["digio_override"] == true)
+                    {
+                        for(x=0;x<6;x++)
+                        {
+                            document.getElementById("digio_output_" + parseInt(x) + "_button").disabled = false;
+                        }
+                        document.getElementById("digio_ipaddr_local").disabled = false;
+                        document.getElementById("digio_output_override_button").innerHTML = "Disable";
+                    }
+                    else
+                    {
+                        for(x=0;x<6;x++)
+                        {
+                            document.getElementById("digio_output_" + parseInt(x) + "_button").disabled = true;
+                        }
+                        document.getElementById("digio_ipaddr_local").disabled = true;
+                        document.getElementById("digio_output_override_button").innerHTML = "Enable";
+                    }
+                }
+            })
+            .catch(error => console.error('Error', error))
+
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>

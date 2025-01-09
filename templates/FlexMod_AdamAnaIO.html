@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Analogue IO</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="anaio_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+<!--                                        <b>Control</b>-->
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="anaio_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        System Enable:-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <span id="anaio_enable_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="anaio_enable" name="anaio_enable" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="anaio_enable_set" name="anaio_enable_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="anaio_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        Remote Pilot:-->
+                                    </div>
+                                    <div class="col-md-1">
+<!--                                        <span id="anaio_pilot_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="anaio_pilot" name="anaio_pilot" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="anaio_pilot_set" name="anaio_pilot_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="anaio_fwver"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="anaio_serno"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="anaio_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        IP Address (Local):
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="anaio_ipaddr_local" name="anaio_ipaddr_local" value="0.0.0.0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="anaio_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Override Controls:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="anaio_input_override" name="anaio_input_override" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="anaio_input_override_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Override</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <br>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Analogue Inputs</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                RTD Input 0 (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="anaio_input_0_range" id="anaio_input_0_range" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="anaio_input_0_range_1">PT100 -50/+150</option>
+                                                    <option value="anaio_input_0_range_2">PT100   0/+100</option>
+                                                    <option value="anaio_input_0_range_3">PT100   0/+200</option>
+                                                    <option value="anaio_input_0_range_4">PT100   0/+400</option>
+                                                    <option value="anaio_input_0_range_5">PT100   -100/+100</option>
+                                                    <option value="anaio_input_0_range_6">PT100   -200/+200</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="anaio_input_0_state" name="anaio_input_0_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                RTD Input 1 (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="anaio_input_1_range" id="anaio_input_1_range" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="anaio_input_1_range_1">PT100 -50/+150</option>
+                                                    <option value="anaio_input_1_range_2">PT100   0/+100</option>
+                                                    <option value="anaio_input_1_range_3">PT100   0/+200</option>
+                                                    <option value="anaio_input_1_range_4">PT100   0/+400</option>
+                                                    <option value="anaio_input_1_range_5">PT100   -100/+100</option>
+                                                    <option value="anaio_input_1_range_6">PT100   -200/+200</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="anaio_input_1_state" name="anaio_input_1_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                RTD Input 2 (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="anaio_input_2_range" id="anaio_input_2_range" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="anaio_input_2_range_1">PT100 -50/+150</option>
+                                                    <option value="anaio_input_2_range_2">PT100   0/+100</option>
+                                                    <option value="anaio_input_2_range_3">PT100   0/+200</option>
+                                                    <option value="anaio_input_2_range_4">PT100   0/+400</option>
+                                                    <option value="anaio_input_2_range_5">PT100   -100/+100</option>
+                                                    <option value="anaio_input_2_range_6">PT100   -200/+200</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="anaio_input_2_state" name="anaio_input_2_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                RTD Input 3 (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="anaio_input_3_range" id="anaio_input_3_range" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="anaio_input_3_range_1">PT100 -50/+150</option>
+                                                    <option value="anaio_input_3_range_2">PT100   0/+100</option>
+                                                    <option value="anaio_input_3_range_3">PT100   0/+200</option>
+                                                    <option value="anaio_input_3_range_4">PT100   0/+400</option>
+                                                    <option value="anaio_input_3_range_5">PT100   -100/+100</option>
+                                                    <option value="anaio_input_3_range_6">PT100   -200/+200</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="anaio_input_3_state" name="anaio_input_3_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                RTD Input 4 (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="anaio_input_4_range" id="anaio_input_4_range" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="anaio_input_4_range_1">PT100 -50/+150</option>
+                                                    <option value="anaio_input_4_range_2">PT100   0/+100</option>
+                                                    <option value="anaio_input_4_range_3">PT100   0/+200</option>
+                                                    <option value="anaio_input_4_range_4">PT100   0/+400</option>
+                                                    <option value="anaio_input_4_range_5">PT100   -100/+100</option>
+                                                    <option value="anaio_input_4_range_6">PT100   -200/+200</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="anaio_input_4_state" name="anaio_input_4_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                RTD Input 5 (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="anaio_input_5_range" id="anaio_input_5_range" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="anaio_input_5_range_1">PT100 -50/+150</option>
+                                                    <option value="anaio_input_5_range_2">PT100   0/+100</option>
+                                                    <option value="anaio_input_5_range_3">PT100   0/+200</option>
+                                                    <option value="anaio_input_5_range_4">PT100   0/+400</option>
+                                                    <option value="anaio_input_5_range_5">PT100   -100/+100</option>
+                                                    <option value="anaio_input_5_range_6">PT100   -200/+200</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="anaio_input_5_state" name="anaio_input_5_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                RTD Input 6 (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="anaio_input_6_range" id="anaio_input_6_range" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="anaio_input_6_range_1">PT100 -50/+150</option>
+                                                    <option value="anaio_input_6_range_2">PT100   0/+100</option>
+                                                    <option value="anaio_input_6_range_3">PT100   0/+200</option>
+                                                    <option value="anaio_input_6_range_4">PT100   0/+400</option>
+                                                    <option value="anaio_input_6_range_5">PT100   -100/+100</option>
+                                                    <option value="anaio_input_6_range_6">PT100   -200/+200</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="anaio_input_6_state" name="anaio_input_6_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Request data for this page
+        function pageLoad()
+        {
+            fetch("/Mod/FlexMod_AdamAnaIO" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_AdamAnaIO" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("anaio_name").innerHTML = res["anaio_name"];
+                document.getElementById("anaio_man").innerHTML = res["anaio_man"];
+                document.getElementById("anaio_fwver").innerHTML = res["anaio_fwver"];
+                document.getElementById("anaio_serno").innerHTML = res["anaio_serno"];
+                document.getElementById("anaio_constate").innerHTML = res["anaio_constate"];
+                document.getElementById("anaio_ipaddr_local").value = res["anaio_ipaddr_local"];
+
+                // Update dropdown defaults
+                let warning_temp_min = document.getElementById("anaio_warning_temp_min");
+                let warning_temp_max = document.getElementById("anaio_warning_temp_max");
+                let alarm_temp_min = document.getElementById("anaio_alarm_temp_min");
+                let alarm_temp_max = document.getElementById("anaio_alarm_temp_max");
+                let fault_temp_min = document.getElementById("anaio_fault_temp_min");
+                let fault_temp_max = document.getElementById("anaio_fault_temp_max");
+
+                document.getElementById("anaio_input_0_range").value = res["anaio_input_0_range"];
+                document.getElementById("anaio_input_1_range").value = res["anaio_input_1_range"];
+                document.getElementById("anaio_input_2_range").value = res["anaio_input_2_range"];
+                document.getElementById("anaio_input_3_range").value = res["anaio_input_3_range"];
+                document.getElementById("anaio_input_4_range").value = res["anaio_input_4_range"];
+                document.getElementById("anaio_input_5_range").value = res["anaio_input_5_range"];
+                document.getElementById("anaio_input_6_range").value = res["anaio_input_6_range"];
+
+                // Disable manual override buttons
+                if(res["anaio_override"] == true)
+                {
+                    for(x=0;x<7;x++)
+                    {
+                        document.getElementById("anaio_input_" + parseInt(x) + "_range").disabled = false;
+                    }
+                    document.getElementById("anaio_ipaddr_local").disabled = false;
+                    document.getElementById("anaio_input_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    for(x=0;x<7;x++)
+                    {
+                        document.getElementById("anaio_input_" + parseInt(x) + "_range").disabled = true;
+                    }
+                    document.getElementById("anaio_ipaddr_local").disabled = true;
+                    document.getElementById("anaio_input_override_button").innerHTML = "Enable";
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_AdamAnaIO" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                //for(var x=0; x<res["anaio_data"].length/2; x++)                                  // Divide by 2 to get sensor count (the rest is debug)
+                for(var x=0; x<res["anaio_data"][2]; x++)
+                {
+                    // Update the temperature readings
+                    sensor = document.getElementById("anaio_input_" + parseInt(x) + "_state");
+                    sensor.value = res["anaio_data"][x+4];
+                }
+
+                // Disable manual override buttons
+                if(res["anaio_override"] == true)
+                {
+                    for(x=0;x<7;x++)
+                    {
+                        document.getElementById("anaio_input_" + parseInt(x) + "_range").disabled = false;
+                    }
+                    document.getElementById("anaio_ipaddr_local").disabled = false;
+                    document.getElementById("anaio_input_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    for(x=0;x<7;x++)
+                    {
+                        document.getElementById("anaio_input_" + parseInt(x) + "_range").disabled = true;
+                    }
+                    document.getElementById("anaio_ipaddr_local").disabled = true;
+                    document.getElementById("anaio_input_override_button").innerHTML = "Enable";
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>

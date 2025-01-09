@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - DC Solar</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="dc_solar_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+<!--                                        <b>Control</b>-->
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="dc_solar_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        System Enable:-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <span id="dc_solar_enable_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="dc_solar_enable" name="dc_solar_enable" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="dc_solar_enable_set" name="dc_solar_enable_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="dc_solar_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        Remote Pilot:-->
+                                    </div>
+                                    <div class="col-md-1">
+<!--                                        <span id="dc_solar_pilot_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="dc_solar_pilot" name="dc_solar_pilot" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="dc_solar_pilot_set" name="dc_solar_pilot_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="dc_solar_fwver"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="dc_solar_serno"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Number of Devices:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="dc_solar_number_devices"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="dc_solar_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        IP Address (Local):
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="dc_solar_ipaddr_local" name="dc_solar_ipaddr_local" value="0.0.0.0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="dc_solar_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>DC Solar</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable State:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="dc_solar_enable_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="dc_solar_enable" name="dc_solar_enable" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Heartbeat:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="dc_solar_heartbeat_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="dc_solar_heartbeat" name="dc_solar_heartbeat" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Calculations</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Bus Voltage Out:
+                                            </div>
+                                            <div class="col-md-4">
+                                                (V)<span id="average_bus_voltage_out_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="average_bus_voltage_out" name="average_bus_voltage_out" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                        <div>
+                                        </div>
+                                </div>
+                            </div>                          
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Total Current Out:
+                                            </div>
+                                            <div class="col-md-4">
+                                                (A)<span id="total_current_out_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="total_current_out" name="total_current_out" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Total Power Out:
+                                            </div>
+                                            <div class="col-md-4">
+                                                (kW)<span id="total_power_out_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="total_power_out" name="total_power_out" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Total Daily Energy:
+                                            </div>
+                                            <div class="col-md-4">
+                                                (kWh)<span id="dc_solar_daily_energy_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="dc_solar_daily_energy" name="dc_solar_daily_energy" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Cumulative Energy DC:
+                                            </div>
+                                            <div class="col-md-4">
+                                                (kWh)<span id="reconstructed_DCkWh_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="reconstructed_DCkWh" name="reconstructed_DCkWh" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Request data for this page
+        function pageLoad()
+        {
+            fetch("/Mod/FlexMod_AmptDCSolar" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_AmptDCSolar" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("dc_solar_name").innerHTML = res["dc_solar_name"];
+                document.getElementById("dc_solar_man").innerHTML = res["dc_solar_man"];
+                document.getElementById("dc_solar_fwver").innerHTML = res["dc_solar_fwver"];
+                document.getElementById("dc_solar_serno").innerHTML = res["dc_solar_serno"];
+                document.getElementById("dc_solar_constate").innerHTML = res["dc_solar_constate"];
+                document.getElementById("dc_solar_ipaddr_local").value = res["dc_solar_ipaddr_local"];
+                document.getElementById("dc_solar_number_devices").innerHTML = res["dc_solar_number_devices"];
+                // document.getElementById("dc_solar_weather_icon").src = res["dc_solar_weather_icon"];
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             
+            // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate() {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_AmptDCSolar" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                enable_state = String(res["dc_solar_enablestate"]);
+                document.getElementById("dc_solar_enable").value = enable_state[0].toUpperCase() + enable_state.substring(1);
+                document.getElementById("dc_solar_heartbeat").value = parseInt(res["dc_solar_data"][0]);
+                reconstructed_DCkWh = ((parseFloat(res["dc_solar_data"][14]) << 16) + parseFloat(res["dc_solar_data"][15]));
+                document.getElementById("reconstructed_DCkWh").value = (reconstructed_DCkWh / 10).toFixed(2); // as a SF1 was applied to the data in the python code
+                document.getElementById("average_bus_voltage_out").value = (parseFloat(res["dc_solar_data"][5])).toFixed(2); // as a SF1 was applied to the data in the python code
+                document.getElementById("total_current_out").value = (parseFloat(res["dc_solar_data"][6])).toFixed(2); // as a SF1 was applied to the data in the python code
+                document.getElementById("total_power_out").value = (parseFloat(res["dc_solar_data"][7])).toFixed(2); // as a SF1 was applied to the data in the python code
+                document.getElementById("dc_solar_daily_energy").value = (parseFloat(res["dc_solar_daily_energy"] / 10).toFixed(2));
+
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+
+        }, 1000);
+
+        </script>
+    </body>
+</html>

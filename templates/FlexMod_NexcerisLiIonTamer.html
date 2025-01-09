@@ -1,0 +1,1728 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Li-Ion Tamer</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="li_ion_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="li_ion_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="li_ion_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+
+                                    </div>
+                                    <div class="col-md-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="li_ion_fwver"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="li_ion_serno"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="li_ion_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        IP Address (Local):
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="li_ion_ipaddr_local" name="li_ion_ipaddr_local" value="0.0.0.0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="li_ion_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Override Controls:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="li_ion_override" name="li_ion_override" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="li_ion_override_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Override</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <br>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Control</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Allow Shutdown:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+<!--                                                <input id="li_ion_override" name="li_ion_override" style="display:none">-->
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="li_ion_allow_shutdown" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <br>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Hardware Version:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="li_ion_hw_gen" id="li_ion_hw_gen" style="width:100%">
+                                                    <option value="gen2">Generation 2</option>
+                                                    <option value="gen3">Generation 3</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <br>
+                            <div id="gen2_data" style="display: block">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <u>Sensor Alarms</u>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <u>Sensor Errors</u>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 1 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_1_state" name="li_ion_alarm_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 1 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_1_state" name="li_ion_error_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 2 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_2_state" name="li_ion_alarm_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 2 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_2_state" name="li_ion_error_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 3 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_3_state" name="li_ion_alarm_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 3 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_3_state" name="li_ion_error_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 4 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_4_state" name="li_ion_alarm_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 4 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_4_state" name="li_ion_error_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 5 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_5_state" name="li_ion_alarm_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 5 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_5_state" name="li_ion_error_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 6 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_6_state" name="li_ion_alarm_6_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 6 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_6_state" name="li_ion_error_6_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 7 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_7_state" name="li_ion_alarm_7_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 7 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_7_state" name="li_ion_error_7_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 8 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_8_state" name="li_ion_alarm_8_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 8 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_8_state" name="li_ion_error_8_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 9 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_9_state" name="li_ion_alarm_9_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 9 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_9_state" name="li_ion_error_9_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 10 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_10_state" name="li_ion_alarm_10_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 10 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_10_state" name="li_ion_error_10_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 11 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_11_state" name="li_ion_alarm_11_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 11 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_11_state" name="li_ion_error_11_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 12 Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarm_12_state" name="li_ion_alarm_12_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor 12 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_error_12_state" name="li_ion_error_12_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <u>System</u>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <u>Reference</u>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_alarms_any_state" name="li_ion_alarms_any_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Reference 1 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_ref_1_state" name="li_ion_ref_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Sensor Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_sensor_error_state" name="li_ion_sensor_error_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Reference 2 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_ref_2_state" name="li_ion_ref_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    System Alarm:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_system_alarm_state" name="li_ion_system_alarm_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Reference 3 Error:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_ref_3_state" name="li_ion_ref_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    Heartbeat:
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" id="li_ion_heartbeat_state" name="li_ion_heartbeat_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-sm-2">
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="gen3_data" style="display: None">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u></u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Sensor ID</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Temp. (°C)</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Humidity (%)</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Scalar Value</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Zone ID</u>
+                                                </div>
+
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Type</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Unplugged</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Inactive</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Active</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Errors</u>
+                                                </div>
+                                                <div class="col-md-2" style="width:100%; padding:0px; text-align:center;">
+                                                    <u>Alarms</u>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor1_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 1:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_1_state" name="li_ion_gen3_id_1_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_1_state" name="li_ion_gen3_temp_1_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_1_state" name="li_ion_gen3_humidity_1_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_1_state" name="li_ion_gen3_scalar_1_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_1_state" name="li_ion_gen3_zone_1_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor1_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_1_state" name="li_ion_gen3_type_1_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_1_state" name="li_ion_gen3_unplugged_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_1_state" name="li_ion_gen3_inactive_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_1_state" name="li_ion_gen3_active_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_1_state" name="li_ion_gen3_errors_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_1_state" name="li_ion_gen3_alarms_1_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor2_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 2:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_2_state" name="li_ion_gen3_id_2_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_2_state" name="li_ion_gen3_temp_2_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_2_state" name="li_ion_gen3_humidity_2_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_2_state" name="li_ion_gen3_scalar_2_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_2_state" name="li_ion_gen3_zone_2_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor2_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_2_state" name="li_ion_gen3_type_2_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_2_state" name="li_ion_gen3_unplugged_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_2_state" name="li_ion_gen3_inactive_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_2_state" name="li_ion_gen3_active_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_2_state" name="li_ion_gen3_errors_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_2_state" name="li_ion_gen3_alarms_2_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor3_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 3:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_3_state" name="li_ion_gen3_id_3_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_3_state" name="li_ion_gen3_temp_3_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_3_state" name="li_ion_gen3_humidity_3_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_3_state" name="li_ion_gen3_scalar_3_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_3_state" name="li_ion_gen3_zone_3_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor3_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_3_state" name="li_ion_gen3_type_3_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_3_state" name="li_ion_gen3_unplugged_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_3_state" name="li_ion_gen3_inactive_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_3_state" name="li_ion_gen3_active_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_3_state" name="li_ion_gen3_errors_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_3_state" name="li_ion_gen3_alarms_3_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor4_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 4:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_4_state" name="li_ion_gen3_id_4_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_4_state" name="li_ion_gen3_temp_4_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_4_state" name="li_ion_gen3_humidity_4_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_4_state" name="li_ion_gen3_scalar_4_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_4_state" name="li_ion_gen3_zone_4_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor4_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_4_state" name="li_ion_gen3_type_4_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_4_state" name="li_ion_gen3_unplugged_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_4_state" name="li_ion_gen3_inactive_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_4_state" name="li_ion_gen3_active_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_4_state" name="li_ion_gen3_errors_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_4_state" name="li_ion_gen3_alarms_4_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor5_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 5:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_5_state" name="li_ion_gen3_id_5_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_5_state" name="li_ion_gen3_temp_5_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_5_state" name="li_ion_gen3_humidity_5_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_5_state" name="li_ion_gen3_scalar_5_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_5_state" name="li_ion_gen3_zone_5_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor5_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_5_state" name="li_ion_gen3_type_5_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_5_state" name="li_ion_gen3_unplugged_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_5_state" name="li_ion_gen3_inactive_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_5_state" name="li_ion_gen3_active_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_5_state" name="li_ion_gen3_errors_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_5_state" name="li_ion_gen3_alarms_5_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor6_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 6:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_6_state" name="li_ion_gen3_id_6_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_6_state" name="li_ion_gen3_temp_6_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_6_state" name="li_ion_gen3_humidity_6_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_6_state" name="li_ion_gen3_scalar_6_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_6_state" name="li_ion_gen3_zone_6_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor6_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_6_state" name="li_ion_gen3_type_6_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_6_state" name="li_ion_gen3_unplugged_6_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_6_state" name="li_ion_gen3_inactive_6_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_6_state" name="li_ion_gen3_active_6_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_6_state" name="li_ion_gen3_errors_6_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_6_state" name="li_ion_gen3_alarms_6_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor7_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 7:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_7_state" name="li_ion_gen3_id_7_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_7_state" name="li_ion_gen3_temp_7_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_7_state" name="li_ion_gen3_humidity_7_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_7_state" name="li_ion_gen3_scalar_7_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_7_state" name="li_ion_gen3_zone_7_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor7_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_7_state" name="li_ion_gen3_type_7_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_7_state" name="li_ion_gen3_unplugged_7_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_7_state" name="li_ion_gen3_inactive_7_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_7_state" name="li_ion_gen3_active_7_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_7_state" name="li_ion_gen3_errors_7_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_7_state" name="li_ion_gen3_alarms_7_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor8_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 8:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_8_state" name="li_ion_gen3_id_8_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_8_state" name="li_ion_gen3_temp_8_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_8_state" name="li_ion_gen3_humidity_8_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_8_state" name="li_ion_gen3_scalar_8_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_8_state" name="li_ion_gen3_zone_8_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor8_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_8_state" name="li_ion_gen3_type_8_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_8_state" name="li_ion_gen3_unplugged_8_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_8_state" name="li_ion_gen3_inactive_8_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_8_state" name="li_ion_gen3_active_8_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_8_state" name="li_ion_gen3_errors_8_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_8_state" name="li_ion_gen3_alarms_8_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor9_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 9:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_9_state" name="li_ion_gen3_id_9_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_9_state" name="li_ion_gen3_temp_9_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_9_state" name="li_ion_gen3_humidity_9_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_9_state" name="li_ion_gen3_scalar_9_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_9_state" name="li_ion_gen3_zone_9_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor9_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_9_state" name="li_ion_gen3_type_9_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_9_state" name="li_ion_gen3_unplugged_9_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_9_state" name="li_ion_gen3_inactive_9_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_9_state" name="li_ion_gen3_active_9_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_9_state" name="li_ion_gen3_errors_9_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_9_state" name="li_ion_gen3_alarms_9_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="li_ion_sensor10_col1" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    Sensor 10:
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_id_10_state" name="li_ion_gen3_id_10_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_temp_10_state" name="li_ion_gen3_temp_10_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_humidity_10_state" name="li_ion_gen3_humidity_10_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_scalar_10_state" name="li_ion_gen3_scalar_10_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_zone_10_state" name="li_ion_gen3_zone_10_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6" id="li_ion_sensor10_col2" style="display: None">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_type_10_state" name="li_ion_gen3_type_10_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_unplugged_10_state" name="li_ion_gen3_unplugged_10_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_inactive_10_state" name="li_ion_gen3_inactive_10_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_active_10_state" name="li_ion_gen3_active_10_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_errors_10_state" name="li_ion_gen3_errors_10_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="text" id="li_ion_gen3_alarms_10_state" name="li_ion_gen3_alarms_10_state" readonly="readonly" value="False" style="width:100%; padding:0px; text-align:center;">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+        var dev_hb = 0;
+        var dev_hb_echo = 0;
+
+        // Request data for this page
+        function pageLoad()
+        {
+            fetch("/Mod/FlexMod_NexcerisLiIonTamer" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_NexcerisLiIonTamer" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("li_ion_name").innerHTML = res["li_ion_name"];
+                document.getElementById("li_ion_man").innerHTML = res["li_ion_man"];
+                document.getElementById("li_ion_fwver").innerHTML = res["li_ion_fwver"];
+                document.getElementById("li_ion_serno").innerHTML = res["li_ion_serno"];
+                document.getElementById("li_ion_constate").innerHTML = res["li_ion_constate"];
+                document.getElementById("li_ion_ipaddr_local").value = res["li_ion_ipaddr_local"];
+
+                // Disable control buttons if manual override not set
+                if(res["li_ion_override"] == true)
+                {
+                    document.getElementById("li_ion_ipaddr_local").disabled = false;
+                    document.getElementById("li_ion_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    document.getElementById("li_ion_ipaddr_local").disabled = true;
+                    document.getElementById("li_ion_override_button").innerHTML = "Enable";
+                }
+
+                // Software hash
+                document.getElementById("li_ion_hw_gen").value = res["li_ion_hwgen"];
+
+                if(res["li_ion_hwgen"] == "gen2")
+                {
+                    document.getElementById("gen2_data").style.display = "Block";
+                    document.getElementById("gen3_data").style.display = "None";
+                }
+                else
+                {
+                    document.getElementById("gen2_data").style.display = "None";
+                    document.getElementById("gen3_data").style.display = "Block";
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_NexcerisLiIonTamer" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                if(res["li_ion_hwgen"] == "gen2")
+                {
+                    document.getElementById("gen2_data").style.display = "Block";
+                    document.getElementById("gen3_data").style.display = "None";
+
+                    if(res["li_ion_data"].length > 0)
+                    {
+                        for(var x=0; x<res["li_ion_data"][2]; x++)                                      // Sensor quantity
+                        {
+                            let sensor_alarm = document.getElementById("li_ion_alarm_" + parseInt(x+1) + "_state");
+                            let sensor_error = document.getElementById("li_ion_error_" + parseInt(x+1) + "_state");
+
+                            let alarm = String(res["li_ion_data"][x+3]);
+                            sensor_alarm.value = alarm.charAt(0).toUpperCase() + alarm.slice(1);
+                            if(sensor_alarm.value == "True")
+                                sensor_alarm.style.backgroundColor = "Moccasin";
+                            else
+                                sensor_alarm.style.backgroundColor = "White";
+
+                            let error = String(res["li_ion_data"][x+24]);
+                            sensor_error.value = error.charAt(0).toUpperCase() + error.slice(1);
+                            if(sensor_error.value == "True")
+                                sensor_error.style.backgroundColor = "LightYellow";
+                            else
+                                sensor_error.style.backgroundColor = "White";
+                        }
+                    }
+
+                    if(res["li_ion_data"].length > 0)                                                   // Global faults and Heartbeat status
+                    {
+                        let alarm_any_string = String(res["li_ion_data"][15]);
+                        let alarm_any = document.getElementById("li_ion_alarms_any_state");
+                        alarm_any.value = alarm_any_string.charAt(0).toUpperCase() + alarm_any_string.slice(1);
+                        if(alarm_any.value == "True")
+                            alarm_any.style.backgroundColor = "Moccasin";
+                        else
+                            alarm_any.style.backgroundColor = "White";
+
+                        let sensor_error_string = String(res["li_ion_data"][16]);
+                        let sensor_error = document.getElementById("li_ion_sensor_error_state");
+                        sensor_error.value = sensor_error_string.charAt(0).toUpperCase() + sensor_error_string.slice(1);
+                        if(sensor_error.value == "True")
+                            sensor_error.style.backgroundColor = "LightYellow";
+                        else
+                            sensor_error.style.backgroundColor = "White";
+
+                        let system_alarm_string = String(res["li_ion_data"][17]);
+                        let system_alarm = document.getElementById("li_ion_system_alarm_state");
+                        system_alarm.value = system_alarm_string.charAt(0).toUpperCase() + system_alarm_string.slice(1);
+                        if(system_alarm.value == "True")
+                            system_alarm.style.backgroundColor = "Moccasin";
+                        else
+                            system_alarm.style.backgroundColor = "White";
+
+                        // Unless we measure the heartbeat fault here there's no point in recolouring...yet
+                        document.getElementById("li_ion_heartbeat_state").value = res["li_ion_data"][0];
+                        dev_hb = res["li_ion_data"][0];
+
+                        if(typeof(dev_hb) != "number")
+                            dev_hb = 0;
+                        else
+                            dev_hb_echo = dev_hb;                                                       // Keep reference
+                    }
+
+                    if(res["li_ion_data"].length > 0)                                                   // Reference Errors
+                    {
+                        for(var x=0; x<3; x++)                                                          // There's only 3, this can stay for now
+                        {
+                            let ref_state = document.getElementById("li_ion_ref_" + parseInt(x+1) + "_state");
+
+                            let ref = String(res["li_ion_data"][x+36]);
+                            ref_state.value = ref.charAt(0).toUpperCase() + ref.slice(1);
+                            if(ref_state.value == "True")
+                                ref_state.style.backgroundColor = "LightYellow";
+                            else
+                                ref_state.style.backgroundColor = "White";
+                        }
+                    }
+
+                    // Disable control buttons if manual override not set
+                    if(res["li_ion_override"] == true)
+                    {
+                        document.getElementById("li_ion_ipaddr_local").disabled = false;
+                        document.getElementById("li_ion_override_button").innerHTML = "Disable";
+                    }
+                    else
+                    {
+                        document.getElementById("li_ion_ipaddr_local").disabled = true;
+                        document.getElementById("li_ion_override_button").innerHTML = "Enable";
+                    }
+                }
+                else
+                {
+                    document.getElementById("gen2_data").style.display = "None";
+                    document.getElementById("gen3_data").style.display = "Block";
+
+                    if(res["li_ion_data"].length > 0)
+                    {
+                        for(var x=0; x<res["li_ion_data"][2]; x++)
+                        {
+                            document.getElementById("li_ion_sensor" + parseInt(x+1) + "_col1").style.display = "Block";
+                            document.getElementById("li_ion_sensor" + parseInt(x+1) + "_col2").style.display = "Block";
+
+                            sensor_alarm = document.getElementById("li_ion_gen3_alarms_" + parseInt(x+1) + "_state");
+                            sensor_error = document.getElementById("li_ion_gen3_errors_" + parseInt(x+1) + "_state");
+
+                            sensor_id = document.getElementById("li_ion_gen3_id_" + parseInt(x+1) + "_state");
+                            sensor_temp = document.getElementById("li_ion_gen3_temp_" + parseInt(x+1) + "_state");
+                            sensor_humidity = document.getElementById("li_ion_gen3_humidity_" + parseInt(x+1) + "_state");
+                            sensor_scalar = document.getElementById("li_ion_gen3_scalar_" + parseInt(x+1) + "_state");
+                            sensor_zone = document.getElementById("li_ion_gen3_zone_" + parseInt(x+1) + "_state");
+                            sensor_type = document.getElementById("li_ion_gen3_type_" + parseInt(x+1) + "_state");
+                            sensor_unplugged = document.getElementById("li_ion_gen3_unplugged_" + parseInt(x+1) + "_state");
+                            sensor_inactive = document.getElementById("li_ion_gen3_inactive_" + parseInt(x+1) + "_state");
+                            sensor_active = document.getElementById("li_ion_gen3_active_" + parseInt(x+1) + "_state");
+
+                            sensor_id.value = res["li_ion_data"][x+39];
+                            sensor_temp.value = res["li_ion_data"][x+54];
+                            sensor_humidity.value = res["li_ion_data"][x+69];
+                            sensor_scalar.value = res["li_ion_data"][x+84];
+                            sensor_zone.value = (res["li_ion_data"][x+99] >> 9) & 0x7F; // This should be 0xFF but I thin there's an incorrect bit offset, as Zone 1 reads as Zone 2
+                            sensor_type.value = (res["li_ion_data"][x+99] >> 5) & 0x01 ? "Reference" : "Monitoring";
+                            sensor_unplugged.value = (res["li_ion_data"][x+99] >> 4) & 0x01 ? "True" : "False";
+                            sensor_inactive.value = (res["li_ion_data"][x+99] >> 3) & 0x01 ? "True" : "False";
+                            sensor_active.value = (res["li_ion_data"][x+99] >> 2) & 0x01 ? "True" : "False";
+
+                            let error = String(res["li_ion_data"][x+24]);
+                            sensor_error.value = error.charAt(0).toUpperCase() + error.slice(1);
+<!--                            if(sensor_error.value == "True")-->
+<!--                                sensor_error.style.backgroundColor = "LightYellow";-->
+<!--                            else-->
+<!--                                sensor_error.style.backgroundColor = "White";-->
+
+                            let alarm = String(res["li_ion_data"][x+3]);
+                            sensor_alarm.value = alarm.charAt(0).toUpperCase() + alarm.slice(1);
+<!--                            if(sensor_alarm.value == "True")-->
+<!--                                sensor_alarm.style.backgroundColor = "Moccasin";-->
+<!--                            else-->
+<!--                                sensor_alarm.style.backgroundColor = "White";-->
+                        }
+                    }
+                }
+            })
+            .catch(error => console.error('Error', error))
+
+            // Check the heartbeat is still running
+            dev_hb_echo += 1;
+            hb_input = document.getElementById("li_ion_heartbeat_state");
+            if(dev_hb_echo - dev_hb >= 5)
+                hb_input.style.backgroundColor = "LightPink";
+            else
+                hb_input.style.backgroundColor = "White";
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>

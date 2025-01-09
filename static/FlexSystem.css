@@ -1,0 +1,140 @@
+body {
+    background-color: #F1F6F9;
+}
+
+/* Font sizing. Will need to be subject to media queries also */
+/*
+td {
+    font-size: 1vw;
+}
+th {
+    font-size: 1vw;
+}
+h5 {
+    font-size: 1vw;
+}
+select {
+    font-size: 1vw;
+}
+.form-control {
+    font-size: 1vw;
+}
+input[type="text"] {
+    font-size: 1vw;
+}
+
+*/
+
+/* Something is different between the home top bar height and the module top bars and I don't like it */
+.navbar-custom {
+    background-color: #9BA4B4;
+    font-size: 1.2vw;
+}
+
+.navbar-brand {
+    font-size: 1.2vw;
+}
+
+/*
+.row1 {
+
+}
+
+.row {
+    display: flex;
+    width: 100vw;
+}
+
+.top-bar {
+    width: 100vw;
+}
+*/
+/*
+.chart-container {
+    width: 50vw;
+    position: relative;
+}
+*/
+/*body, html {
+  background-color: #111;
+}*/
+/*
+.chartjs-wrapper {
+  margin: 0 auto;
+  width: 32vw;
+  height: auto;
+  padding: 20px;
+}
+*/
+/* Highcharts Aircon Info */
+
+.system-cards {
+  padding: 1rem 2rem;
+}
+/*
+#boxtemps {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+*/
+
+/* Highcharts Inverter Info */
+/*
+#inv1_digital_box, 
+#inv2_digital_box{
+    float:left; 
+    width:50%;
+}
+
+#inv1_command_box, 
+#inv2_command_box{
+    float:right;
+    width:50%;
+}
+.gauge1{
+    float:left;
+    width:50%;
+    height: 200px;
+}
+.gauge2{
+    float:right;
+    width:50%;
+    height: 200px;
+}
+
+.stat_vals{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height:180px;
+    flex-direction: column;
+    font-size: 60px;
+    text-align: center;
+}
+ 
+#inv1-real-power, 
+#inv2-real-power{
+    height: 200px;
+}
+#inv1-reactive-power, 
+#inv2-reactive-power{
+    height: 200px;
+}
+#inv1-real-current, 
+#inv2-real-current{
+    height: 200px;
+}
+#inv1-reactive-current, 
+#inv2-reactive-current{
+    height: 200px;
+}
+*/
+/*
+#container-power{
+    height: 200px;
+}
+#container-spare{
+    height: 200px;
+}
+*/

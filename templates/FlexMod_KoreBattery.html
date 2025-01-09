@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Battery</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="battery_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+<!--                                        <b>Control</b>-->
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        System Enable:-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <span id="battery_enable_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="battery_enable" name="battery_enable" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="battery_enable_set" name="battery_enable_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        Remote Pilot:-->
+                                    </div>
+                                    <div class="col-md-1">
+<!--                                        <span id="battery_pilot_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="battery_pilot" name="battery_pilot" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="battery_pilot_set" name="battery_pilot_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_fwver"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_serno"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="battery_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        IP Address (Local):
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="battery_ipaddr_local" name="battery_ipaddr_local" value="0.0.0.0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="battery_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+
+                        <div class="container-fluid" id="control" style="display:block">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Override Controls:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="battery_output_override" name="battery_output_override" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="battery_output_override_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Override</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <br>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Control</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Minimum Online Rack Qty:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="battery_min_online_rack_qty" id="battery_min_online_rack_qty" style="width:100%">
+                                                    <option value="0">0</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                    <option value="6">6</option>
+                                                    <option value="7">7</option>
+                                                    <option value="8">8</option>
+                                                    <option value="9">9</option>
+                                                    <option value="10">10</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+<!--                                                <input type="text" id="battery_min_online_rack_qty_set" name="inverter_control_source_set" value="0" style="width:100%; padding:0px; text-align:center;">-->
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_name" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Battery Bank 1</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_enable_state" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable State:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_enable_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_enable" name="battery_bank1_enable" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_max_capacity" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max Capacity (kWh):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_max_capacity_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_max_cap" name="battery_bank1_max_cap" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_contactor_state" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Contactor States:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_State_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_State" name="battery_bank1_State" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_online_capacity" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Online Capacity (kWh):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_online_capacity_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_online_cap" name="battery_bank1_online_cap" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_charge_state" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Charge State:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_charge_state_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_charge_St" name="battery_bank1_charge_St" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_max_charge_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max Charge Power (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_WMaxChg_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_WMaxChg" name="battery_bank1_WMaxChg" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_state_of_charge" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                State of Charge (%):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_SoC_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_SoC" name="battery_bank1_SoC" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_max_discharge_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max Discharge Power (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_WMaxDisChg_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_WMaxDisChg" name="battery_bank1_WMaxDisChg" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_state_of_health" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                State of Health (%):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_SoH_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_SoH" name="battery_bank1_SoH" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_minimum_cell_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Min. Cell Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_minimum_cell_voltage_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellVMin" name="battery_bank1_CellVMin" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                DC Bus Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_V_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_V" name="battery_bank1_V" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_maximum_cell_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max. Cell Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_maximum_cell_voltage_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellVMax" name="battery_bank1_CellVMax" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_current" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                DC Bus Current (A):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_A_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_A" name="battery_bank1_A" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_average_cell_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Avg. Cell Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_average_cell_voltage_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellVAvg" name="battery_bank1_CellVAvg" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                DC Bus Power (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_W_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_W" name="battery_bank1_W" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_minimum_cell_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Min. Cell Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_minimum_cell_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellTmpMin" name="battery_bank1_CellTmpMin" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_cycles" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Cycles:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_cycles_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_cyc" name="battery_bank1_cyc" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_maximum_cell_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Max. Cell Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_maximum_cell_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellTmpMax" name="battery_bank1_CellTmpMax" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="battery_bank1_heartbeat" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Heartbeat:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_heartbeat_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_Hb" name="battery_bank1_Hb" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="battery_bank1_average_cell_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Avg. Cell Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="battery_bank1_average_cell_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="battery_bank1_CellTmpAvg" name="battery_bank1_CellTmpAvg" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Request data for this page
+        function pageLoad()
+        {
+            fetch("/Mod/FlexMod_KoreBattery" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                //pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_KoreBattery" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    console.log("Form found!");
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("battery_name").innerHTML = res["battery_name"];
+                document.getElementById("battery_man").innerHTML = res["battery_man"];
+                document.getElementById("battery_fwver").innerHTML = res["battery_fwver"];
+                document.getElementById("battery_serno").innerHTML = res["battery_serno"];
+                document.getElementById("battery_constate").innerHTML = res["battery_constate"];
+                document.getElementById("battery_ipaddr_local").value = res["battery_ipaddr_local"];
+
+                // Disable control buttons if manual override not set
+                if(res["battery_override"] == true)
+                {
+                    document.getElementById("battery_ipaddr_local").disabled = false;
+                    document.getElementById("battery_output_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    document.getElementById("battery_ipaddr_local").disabled = true;
+                    document.getElementById("battery_output_override_button").innerHTML = "Enable";
+                }
+
+                pageUpdate();
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_KoreBattery" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                if(res["battery_bank"].length > 0)
+                {
+                    enable_state = String(res["battery_enablestate"]);
+                    document.getElementById("battery_bank1_enable").value = enable_state[0].toUpperCase() + enable_state.substring(1);
+                    //document.getElementById("battery_bank_Qty").value = parseInt(res["battery_bank"][0]);
+                    document.getElementById("battery_bank1_Hb").value = parseInt(res["battery_bank"][0]);
+                    document.getElementById("battery_bank1_State").value = parseInt(res["battery_bank"][7]).toString(2);
+                    document.getElementById("battery_bank1_SoC").value = parseFloat(res["battery_bank"][2]).toFixed(1);
+                    document.getElementById("battery_bank1_SoH").value = parseFloat(res["battery_bank"][3]).toFixed(1);
+                    document.getElementById("battery_bank1_V").value = parseFloat(res["battery_bank"][4]).toFixed(1);
+                    document.getElementById("battery_bank1_A").value = parseFloat(res["battery_bank"][5]).toFixed(1);
+                    document.getElementById("battery_bank1_W").value = parseFloat(res["battery_bank"][6]).toFixed(1);
+                    document.getElementById("battery_bank1_charge_St").value = res["battery_bank"][1];
+
+                    let battery_charge_state = res["battery_bank"][1];
+                    let battery_charge_state_text = "";
+
+                    if (battery_charge_state == 0)         battery_charge_state_text = "Idle";
+                    else if (battery_charge_state == 1)    battery_charge_state_text = "Charge";
+                    else if (battery_charge_state == 2)    battery_charge_state_text = "Discharge";
+                    document.getElementById("battery_bank1_charge_state_text").innerHTML = battery_charge_state_text;
+
+                    document.getElementById("battery_bank1_WMaxChg").value = parseFloat(res["battery_bank"][8]/1000).toFixed(1);
+                    document.getElementById("battery_bank1_WMaxDisChg").value = parseFloat(res["battery_bank"][9]/1000).toFixed(1);
+                    document.getElementById("battery_bank1_CellVMin").value = parseFloat(res["battery_bank"][10]).toFixed(3);
+                    document.getElementById("battery_bank1_CellVMax").value = parseFloat(res["battery_bank"][11]).toFixed(3);
+                    document.getElementById("battery_bank1_CellVAvg").value = parseFloat(res["battery_bank"][12]).toFixed(3);
+                    document.getElementById("battery_bank1_CellTmpMin").value = parseFloat(res["battery_bank"][13]).toFixed(1);
+                    document.getElementById("battery_bank1_CellTmpMax").value = parseFloat(res["battery_bank"][14]).toFixed(1);
+                    document.getElementById("battery_bank1_CellTmpAvg").value = parseFloat(res["battery_bank"][15]).toFixed(1);
+                    document.getElementById("battery_bank1_cyc").value = parseFloat(res["battery_bank"][16]);
+                    document.getElementById("battery_bank1_max_cap").value = parseFloat(res["battery_bank"][17]).toFixed(1);
+                    document.getElementById("battery_bank1_online_cap").value = parseFloat(res["battery_bank"][18]).toFixed(1);
+                }
+
+                // Disable control buttons if manual override not set
+                if(res["battery_override"] == true)
+                {
+                    document.getElementById("battery_ipaddr_local").disabled = false;
+                    document.getElementById("battery_output_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    document.getElementById("battery_ipaddr_local").disabled = true;
+                    document.getElementById("battery_output_override_button").innerHTML = "Enable";
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>

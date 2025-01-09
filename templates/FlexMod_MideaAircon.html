@@ -1,0 +1,1882 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Midea Air Conditioning</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="aircon_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+<!--                                        <b>Control</b>-->
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="aircon_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        System Enable:-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <span id="aircon_enable_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="aircon_enable" name="aircon_enable" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="aircon_enable_set" name="aircon_enable_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="aircon_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        Remote Pilot:-->
+                                    </div>
+                                    <div class="col-md-1">
+<!--                                        <span id="aircon_pilot_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="aircon_pilot" name="aircon_pilot" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="aircon_pilot_set" name="aircon_pilot_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="aircon_fwver"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="aircon_serno"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="aircon_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        Com Port (Local):
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select name="aircon_com_port" id="aircon_com_port">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="aircon_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Override Controls:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="aircon_output_override" name="aircon_output_override" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="aircon_output_override_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Override</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Control</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable all AC Units:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input id="aircon_toggle" name="aircon_toggle" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="aircon_toggle_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Reset all AC Units:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input id="aircon_reset" name="aircon_reset" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="aircon_reset_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Reset</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                HVAC Address Offset:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="aircon_address_offset" id="aircon_address_offset" style="width:100%">
+                                                    <option value=0>0</option>
+                                                    <option value=1>1</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                HVAC Indoor Unit Qty:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="aircon_indoor_qty" id="aircon_indoor_qty" style="width:100%">
+                                                    <option value=0>None</option>
+                                                    <option value=1>1 Indoor Unit</option>
+                                                    <option value=2>2 Indoor Units</option>
+                                                    <option value=3>3 Indoor Units</option>
+                                                    <option value=4>4 Indoor Units</option>
+                                                    <option value=5>5 Indoor Units</option>
+                                                    <option value=6>6 Indoor Units</option>
+                                                    <option value=7>7 Indoor Units</option>
+                                                    <option value=8>8 Indoor Units</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="aircon_temp_setpoint" id="aircon_temp_setpoint" style="width:100%">
+                                                    <option>0</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="aircon_fan_mode" id="aircon_fan_mode" style="width:100%">
+                                                    <option>[0] Auto</option>
+                                                    <option>[1] Heat</option>
+                                                    <option>[2] Dry</option>
+                                                    <option>[3] Fan</option>
+                                                    <option>[4] Cool</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="aircon_fan_speed" id="aircon_fan_speed" style="width:100%">
+                                                    <option>[0] Auto</option>
+                                                    <option>[1] SP1</option>
+                                                    <option>[2] SP2</option>
+                                                    <option>[3] SP3</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id1_name" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Indoor Unit 1</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id2_name" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Indoor Unit 2</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id1_onoff" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                On/Off Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_1_en"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_1_onoff" name="aircon_1_onoff" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id2_onoff" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                On/Off Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_2_en"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_2_onoff" name="aircon_2_onoff" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id1_fan_mode" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_1_mode"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_1_fan_mode" name="aircon_1_fan_mode" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id2_fan_mode" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_2_mode"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_2_fan_mode" name="aircon_2_fan_mode" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id1_fan_speed" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_1_speed"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_1_fan_speed" name="aircon_1_fan_speed" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id2_fan_speed" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_2_speed"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_2_fan_speed" name="aircon_2_fan_speed" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id1_setpoint" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_1_setpoint" name="aircon_1_setpoint" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id2_setpoint" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_2_setpoint" name="aircon_2_setpoint" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id1_ambient" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ambient Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_1_ambient" name="aircon_1_ambient" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id2_ambient" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ambient Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_2_ambient" name="aircon_2_ambient" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id1_alarm" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarm Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_1_alarm"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_1_alarm_status" name="aircon_1_alarm_status" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id2_alarm" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarm Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_2_alarm"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_2_alarm_status" name="aircon_2_alarm_status" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id1_error" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Error Code:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <td><span id="aircon_1_error"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_1_error_code" name="aircon_1_error_code" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id2_error" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Error Code:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <td><span id="aircon_2_error"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_2_error_code" name="aircon_2_error_code" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            </br>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id3_name" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Indoor Unit 3</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id4_name" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Indoor Unit 4</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id3_onoff" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                On/Off Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_3_en"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_3_onoff" name="aircon_3_onoff" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id4_onoff" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                On/Off Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_4_en"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_4_onoff" name="aircon_4_onoff" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id3_fan_mode" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_3_mode"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_3_fan_mode" name="aircon_3_fan_mode" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id4_fan_mode" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_4_mode"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_4_fan_mode" name="aircon_4_fan_mode" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id3_fan_speed" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_3_speed"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_3_fan_speed" name="aircon_3_fan_speed" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id4_fan_speed" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_4_speed"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_4_fan_speed" name="aircon_4_fan_speed" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id3_setpoint" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_3_setpoint" name="aircon_3_setpoint" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id4_setpoint" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_4_setpoint" name="aircon_4_setpoint" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id3_ambient" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ambient Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_3_ambient" name="aircon_3_ambient" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id4_ambient" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ambient Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_4_ambient" name="aircon_4_ambient" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id3_alarm" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarm Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_3_alarm"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_3_alarm_status" name="aircon_3_alarm_status" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id4_alarm" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarm Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_4_alarm"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_4_alarm_status" name="aircon_4_alarm_status" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id3_error" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Error Code:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <td><span id="aircon_3_error"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_3_error_code" name="aircon_3_error_code" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id4_error" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Error Code:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <td><span id="aircon_4_error"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_4_error_code" name="aircon_4_error_code" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id5_name" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Indoor Unit 5</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id6_name" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Indoor Unit 6</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id5_onoff" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                On/Off Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_5_en"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_5_onoff" name="aircon_5_onoff" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id6_onoff" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                On/Off Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_6_en"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_6_onoff" name="aircon_6_onoff" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id5_fan_mode" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_5_mode"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_5_fan_mode" name="aircon_5_fan_mode" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id6_fan_mode" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_6_mode"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_6_fan_mode" name="aircon_6_fan_mode" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id5_fan_speed" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_5_speed"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_5_fan_speed" name="aircon_5_fan_speed" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id6_fan_speed" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_6_speed"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_6_fan_speed" name="aircon_6_fan_speed" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id5_setpoint" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_5_setpoint" name="aircon_5_setpoint" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id6_setpoint" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_6_setpoint" name="aircon_6_setpoint" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id5_ambient" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ambient Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_5_ambient" name="aircon_5_ambient" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id6_ambient" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ambient Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_6_ambient" name="aircon_6_ambient" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id5_alarm" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarm Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_5_alarm"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_5_alarm_status" name="aircon_5_alarm_status" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id6_alarm" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarm Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_6_alarm"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_6_alarm_status" name="aircon_6_alarm_status" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id5_error" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Error Code:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <td><span id="aircon_5_error"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_5_error_code" name="aircon_5_error_code" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id6_error" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Error Code:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <td><span id="aircon_6_error"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_6_error_code" name="aircon_6_error_code" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            </br>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id7_name" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Indoor Unit 7</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id8_name" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Indoor Unit 8</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id7_onoff" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                On/Off Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_7_en"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_7_onoff" name="aircon_7_onoff" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id8_onoff" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                On/Off Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_8_en"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_8_onoff" name="aircon_8_onoff" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id7_fan_mode" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_7_mode"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_7_fan_mode" name="aircon_7_fan_mode" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id8_fan_mode" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_8_mode"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_8_fan_mode" name="aircon_8_fan_mode" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id7_fan_speed" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_7_speed"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_7_fan_speed" name="aircon_7_fan_speed" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id8_fan_speed" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_8_speed"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_8_fan_speed" name="aircon_8_fan_speed" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id7_setpoint" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_7_setpoint" name="aircon_7_setpoint" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id8_setpoint" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Temperature Setpoint (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_8_setpoint" name="aircon_8_setpoint" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id7_ambient" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ambient Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_7_ambient" name="aircon_7_ambient" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id8_ambient" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ambient Temperature (°C):
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_8_ambient" name="aircon_8_ambient" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id7_alarm" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarm Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_7_alarm"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_7_alarm_status" name="aircon_7_alarm_status" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id8_alarm" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarm Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="aircon_8_alarm"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_8_alarm_status" name="aircon_8_alarm_status" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="aircon_id7_error" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Error Code:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <td><span id="aircon_7_error"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_7_error_code" name="aircon_7_error_code" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="aircon_id8_error" style="display:none">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Error Code:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <td><span id="aircon_8_error"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="aircon_8_error_code" name="aircon_8_error_code" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Request data for this page
+        function pageLoad()
+        {
+            fetch("/Mod/FlexMod_MideaAircon" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_MideaAircon" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("aircon_name").innerHTML = res["aircon_name"];
+                document.getElementById("aircon_man").innerHTML = res["aircon_man"];
+                document.getElementById("aircon_fwver").innerHTML = res["aircon_fwver"];
+                document.getElementById("aircon_serno").innerHTML = res["aircon_serno"];
+                document.getElementById("aircon_constate").innerHTML = res["aircon_constate"];
+
+                // Aircon comports
+                let comports = document.getElementById("aircon_com_port");
+
+                for(let port=0;port<res["aircon_comports"].length;port++)
+                {
+                    let comport_option = document.createElement("option");
+                    comport_option.text = String(res["aircon_comports"][port]);
+                    comports.add(comport_option);
+                }
+
+                document.getElementById("aircon_com_port").value = res["aircon_com_port"];
+
+                // Offset for HVAC Addressing
+                document.getElementById("aircon_address_offset").value = res["aircon_hvac_offset"];
+                document.getElementById("aircon_indoor_qty").value = res["aircon_indoor_qty"];
+
+                // Update dropdown defaults
+                let setpoints = document.getElementById("aircon_temp_setpoint");
+
+                for(let temp=17;temp<31;temp++)
+                {
+                    let setpoint_option = document.createElement("option");
+
+                    setpoint_option.text = String(temp);
+
+                    setpoints.add(setpoint_option);
+                }
+
+                // Get saved values from db
+                document.getElementById("aircon_temp_setpoint").value = res["aircon_temp_setpoint"];
+                document.getElementById("aircon_fan_mode").value = res["aircon_fan_mode"];
+                document.getElementById("aircon_fan_speed").value = res["aircon_fan_speed"];
+
+                // Disable manual override buttons
+                if(res["aircon_override"] == true)
+                {
+                    document.getElementById("aircon_com_port").disabled = false;
+                    document.getElementById("aircon_toggle_button").disabled = false;
+                    document.getElementById("aircon_reset_button").disabled = false;
+                    document.getElementById("aircon_address_offset").disabled = false;
+                    document.getElementById("aircon_indoor_qty").disabled = false;
+                    document.getElementById("aircon_temp_setpoint").disabled = false;
+                    document.getElementById("aircon_fan_mode").disabled = false;
+                    document.getElementById("aircon_fan_speed").disabled = false;
+                    document.getElementById("aircon_output_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    document.getElementById("aircon_com_port").disabled = true;
+                    document.getElementById("aircon_toggle_button").disabled = true;
+                    document.getElementById("aircon_reset_button").disabled = true;
+                    document.getElementById("aircon_address_offset").disabled = true;
+                    document.getElementById("aircon_indoor_qty").disabled = true;
+                    document.getElementById("aircon_temp_setpoint").disabled = true;
+                    document.getElementById("aircon_fan_mode").disabled = true;
+                    document.getElementById("aircon_fan_speed").disabled = true;
+                    document.getElementById("aircon_output_override_button").innerHTML = "Enable";
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            // Show or hide AC Units in use
+            let ac_qty = parseInt(document.getElementById("aircon_indoor_qty").value);
+
+            // Get the address offset (this needs to come from db)
+            hvac_offset_address = parseInt(document.getElementById("aircon_address_offset").value);
+
+            var x = 0;
+            for(x=0;x<ac_qty;x++)
+            {
+                document.getElementById("aircon_id" + parseInt(x+1) + "_name").style.display = "Block";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_onoff").style.display = "Block";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_fan_mode").style.display = "Block";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_fan_speed").style.display = "Block";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_setpoint").style.display = "Block";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_ambient").style.display = "Block";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_alarm").style.display = "Block";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_error").style.display = "Block";
+            }
+            for(x=ac_qty;x<8;x++)
+            {
+                document.getElementById("aircon_id" + parseInt(x+1) + "_name").style.display = "None";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_onoff").style.display = "None";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_fan_mode").style.display = "None";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_fan_speed").style.display = "None";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_setpoint").style.display = "None";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_ambient").style.display = "None";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_alarm").style.display = "None";
+                document.getElementById("aircon_id" + parseInt(x+1) + "_error").style.display = "None";
+            }
+
+            fetch("/Mod/FlexMod_MideaAircon" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+                let onoff_state = 0;
+                for(x=0;x<ac_qty;x++)
+                {
+                    //console.log(res["aircon_data"][x+24]);
+
+                    document.getElementById("aircon_" + parseInt(x+1) + "_onoff").value = res["aircon_data"][hvac_offset_address+x+24][0];
+                    document.getElementById("aircon_" + parseInt(x+1) + "_fan_mode").value = res["aircon_data"][hvac_offset_address+x+24][1];
+                    document.getElementById("aircon_" + parseInt(x+1) + "_fan_speed").value = res["aircon_data"][hvac_offset_address+x+24][2];
+                    document.getElementById("aircon_" + parseInt(x+1) + "_setpoint").value = res["aircon_data"][hvac_offset_address+x+24][4];
+                    document.getElementById("aircon_" + parseInt(x+1) + "_ambient").value = res["aircon_data"][hvac_offset_address+x+24][5];
+                    document.getElementById("aircon_" + parseInt(x+1) + "_alarm_status").value = res["aircon_data"][hvac_offset_address+x+24][6];
+                    document.getElementById("aircon_" + parseInt(x+1) + "_error_code").value = res["aircon_data"][hvac_offset_address+x+24][7];
+
+                    let onoff_text = document.getElementById("aircon_" + parseInt(x+1) + "_en");
+                    let onoff_val = res["aircon_data"][hvac_offset_address+x+24][0];
+                    if      (onoff_val == 0)
+                        onoff_text.innerHTML = "Off";
+                    else if (onoff_val == 1)
+                    {
+                        onoff_state += 1;
+                        onoff_text.innerHTML = "On";
+                    }
+
+                    if(res["aircon_hvac_enable"])
+                        document.getElementById("aircon_toggle_button").innerHTML = "Disable";
+                    else
+                        document.getElementById("aircon_toggle_button").innerHTML = "Enable";
+
+                    let mode_text = document.getElementById("aircon_" + parseInt(x+1) + "_mode");
+                    let mode_val = res["aircon_data"][hvac_offset_address+x+24][1];
+                    if      (mode_val == 0)    mode_text.innerHTML = "Auto";
+                    else if (mode_val == 1)    mode_text.innerHTML = "Heat";
+                    else if (mode_val == 2)    mode_text.innerHTML = "Dry";
+                    else if (mode_val == 3)    mode_text.innerHTML = "Fan";
+                    else if (mode_val == 4)    mode_text.innerHTML = "Cool";
+
+                    let speed_text = document.getElementById("aircon_" + parseInt(x+1) + "_speed");
+                    let speed_val = res["aircon_data"][hvac_offset_address+x+24][2];
+                    if      (speed_val == 0)    speed_text.innerHTML = "Auto";
+                    else if (speed_val == 1)    speed_text.innerHTML = "SP1";
+                    else if (speed_val == 2)    speed_text.innerHTML = "SP2";
+                    else if (speed_val == 3)    speed_text.innerHTML = "SP3";
+
+                    let alarm_text = document.getElementById("aircon_" + parseInt(x+1) + "_alarm");
+                    let alarm_val = res["aircon_data"][hvac_offset_address+x+24][6];
+                    if      (alarm_val == 0)    alarm_text.innerHTML = "";
+                    else if (alarm_val == 1)    alarm_text.innerHTML = "Alarm";
+
+                    let error_text = document.getElementById("aircon_" + parseInt(x+1) + "_error");
+                    let err_val = parseInt(res["aircon_data"][hvac_offset_address+x+24][7]);
+                    if      (err_val == 0)      error_text.innerHTML = "";
+                    else if (err_val == 1)      error_text.innerHTML = "Phase error or error in the phase sequence";
+                    else if (err_val == 2)      error_text.innerHTML = "Communication error";
+                    else if (err_val == 3)      error_text.innerHTML = "T1 sensor error";
+                    else if (err_val == 4)      error_text.innerHTML = "T2A sensor error";
+                    else if (err_val == 5)      error_text.innerHTML = "T2A sensor error";
+                    else if (err_val == 6)      error_text.innerHTML = "T3 temperature and T4 temperature Compressor discharge temperature sensors error";
+                    else if (err_val == 7)      error_text.innerHTML = "Zero cross error detection";
+                    else if (err_val == 8)      error_text.innerHTML = "EEPROM memory error";
+                    else if (err_val == 9)      error_text.innerHTML = "Indoor fan speed out of contro";
+                    else if (err_val == 10)     error_text.innerHTML = "Communication error between the main panel and the visualization panel";
+                    else if (err_val == 11)     error_text.innerHTML = "Compressor’s current overload error (4 times)";
+                    else if (err_val == 12)     error_text.innerHTML = "Inverter module protection";
+                    else if (err_val == 13)     error_text.innerHTML = "Cooling error";
+                    else if (err_val == 14)     error_text.innerHTML = "Outdoor unit fault protection";
+                    else if (err_val == 15)     error_text.innerHTML = "Water level fault detection";
+                    else if (err_val == 16)     error_text.innerHTML = "Other errors";
+                    else if (err_val == 101)    error_text.innerHTML = "Vaporizer temperature protection";
+                    else if (err_val == 102)    error_text.innerHTML = "Thawing or cold air protection";
+                    else if (err_val == 103)    error_text.innerHTML = "Condenser high temperatures protection";
+                    else if (err_val == 104)    error_text.innerHTML = "Compressor temperature protection";
+                    else if (err_val == 105)    error_text.innerHTML = "Evacuation duct temperature protection";
+                    else if (err_val == 106)    error_text.innerHTML = "Discharge high pressure protection";
+                    else if (err_val == 107)    error_text.innerHTML = "Discharge low pressure protection";
+                    else if (err_val == 108)    error_text.innerHTML = "Current overload or under load protection";
+                    else if (err_val == 109)    error_text.innerHTML = "Compressor’s current overload protection";
+                    else if (err_val == 110)    error_text.innerHTML = "Reserved";
+                    else if (err_val == 111)    error_text.innerHTML = "Reserved";
+                    else if (err_val == 112)    error_text.innerHTML = "Reserved";
+                    else if (err_val == 113)    error_text.innerHTML = "Reserved";
+                    else if (err_val == 114)    error_text.innerHTML = "Reserved";
+                    else if (err_val == 115)    error_text.innerHTML = "Reserved";
+                    else if (err_val == 116)    error_text.innerHTML = "Other protection measures";
+                    else if (err_val == -1)     error_text.innerHTML = "Error in the communication of INMBSMID008I000 with the AC unit";
+                    else if (err_val == -100)   error_text.innerHTML = "License error / Indoor units not supported by current license";
+                    else if (err_val == -200)   error_text.innerHTML = "Overconsumption error in EXY bus";
+                    else if (err_val == 65535)  error_text.innerHTML = "Error in the communication of INMBSMID008I000 with the AC unit";
+                    else error_text.innerHTML = "Error unknown";
+
+                    // Report  on any errors as the alarm bit will be set also. We don't want the box overheating
+                    if (err_val != 0)
+                        document.getElementById("aircon_" + parseInt(x+1) + "_error_code").style.backgroundColor = "Moccasin";
+                    else
+                        document.getElementById("aircon_" + parseInt(x+1) + "_error_code").style.backgroundColor = "White";
+                }
+
+                // Disable manual override buttons
+                if(res["aircon_override"] == true)
+                {
+                    document.getElementById("aircon_com_port").disabled = false;
+                    document.getElementById("aircon_toggle_button").disabled = false;
+                    document.getElementById("aircon_reset_button").disabled = false;
+                    document.getElementById("aircon_address_offset").disabled = false;
+                    document.getElementById("aircon_indoor_qty").disabled = false;
+                    document.getElementById("aircon_temp_setpoint").disabled = false;
+                    document.getElementById("aircon_fan_mode").disabled = false;
+                    document.getElementById("aircon_fan_speed").disabled = false;
+                    document.getElementById("aircon_output_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    document.getElementById("aircon_com_port").disabled = true;
+                    document.getElementById("aircon_toggle_button").disabled = true;
+                    document.getElementById("aircon_reset_button").disabled = true;
+                    document.getElementById("aircon_address_offset").disabled = true;
+                    document.getElementById("aircon_indoor_qty").disabled = true;
+                    document.getElementById("aircon_temp_setpoint").disabled = true;
+                    document.getElementById("aircon_fan_mode").disabled = true;
+                    document.getElementById("aircon_fan_speed").disabled = true;
+                    document.getElementById("aircon_output_override_button").innerHTML = "Enable";
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>

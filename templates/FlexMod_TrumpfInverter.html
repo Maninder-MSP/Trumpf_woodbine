@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Inverter</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="inverter_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+<!--                                        <b>Control</b>-->
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="inverter_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        System Enable:-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <span id="inverter_enable_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="inverter_enable" name="inverter_enable" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="inverter_enable_set" name="inverter_enable_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="inverter_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        Remote Pilot:-->
+                                    </div>
+                                    <div class="col-md-1">
+<!--                                        <span id="inverter_pilot_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="inverter_pilot" name="inverter_pilot" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="inverter_pilot_set" name="inverter_pilot_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- No firmware version found in Trumpf register -->
+                            <!-- <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="inverter_fwver"></span>
+                                    </div>
+                                </div>
+                            </form> -->
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="inverter_serno"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="inverter_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        IP Address (Local):
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="inverter_ipaddr_local" name="inverter_ipaddr_local" value="0.0.0.0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="inverter_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Override Controls:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="inverter_override" name="inverter_override" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="inverter_override_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Override</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Control</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+									<form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                AC Operation Mode:
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+											<div class="col-md-4">
+                                                <select name="inverter_OptMod" id="inverter_OptMod" style="width:45%; text-align-last:center;">
+                                                    <option value='ASYM'>ASYM</option>
+                                                    <option value='SYM'>SYM</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+							<div class="row">
+                                <div class="col-md-6">
+								<form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input id="inverter_enable_button_state" name="inverter_enable_button_state" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="inverter_enable_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fault Clearing:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="inverter_fault_clearing" id="inverter_fault_clearing" style="width:100%">
+                                                    <option value="Manual">Manual</option>
+                                                    <option value="Auto">Auto</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Clear Faults:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input id="inverter_fault_clear" name="inverter_fault_clear" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="inverter_fault_clear_button" name="inverter_fault_clear_button"  class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Clear Faults</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Command Apparent Power (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_apparent_power_input"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_apparent_power_set" name="inverter_apparent_power_set" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Command Apparent Power L1 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_apparent_power_input_L1"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_apparent_power_set_L1" name="inverter_apparent_power_set_L1" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Command Apparent Power L2 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_apparent_power_input_L2"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_apparent_power_set_L2" name="inverter_apparent_power_set_L2" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Command Apparent Power L3 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_apparent_power_input_L3"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_apparent_power_set_L3" name="inverter_apparent_power_set_L3" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Inverter</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u></u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_enable_state" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable State:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_enable_statetext"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_enable" name="inverter_enable" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_frequency_state" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Frequency (Hz):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_frequency_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_frequency" name="inverter_frequency_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_heartbeat" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Heartbeat:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_heartbeat_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_heartbeat_state" name="inverter_heartbeat_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_ac_rms_phase_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Avg. AC Phase Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_ac_rms_phase_voltage_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_ac_rms_phase_voltage_state" name="inverter_ac_rms_phase_voltage_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_state" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Inverter State:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_state_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_state_state" name="inverter_state_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_ac_rms_current" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Avg. AC Phase Current (A):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_ac_rms_current_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_ac_rms_phase_current_state" name="inverter_ac_rms_phase_current_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_dc_bus_voltage" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                DC Bus Voltage (V):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_dc_bus_voltage_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_dc_bus_voltage_state" name="inverter_dc_bus_voltage_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_commanded_apparent_power_L1" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Commanded Apparent Power L1 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_commanded_apparent_power_text_L1"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_commanded_apparent_power_state_L1" name="inverter_commanded_apparent_power_state_L1" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_commanded_apparent_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Commanded Apparent Power (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_commanded_apparent_power_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_commanded_apparent_power_state" name="inverter_commanded_apparent_power_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_apparent_power_L1" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Apparent Power L1 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_apparent_power_text_L1"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_apparent_power_state_L1" name="inverter_apparent_power_state_L1" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_total_apparent_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Total Apparent Power (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_total_apparent_power_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_total_apparent_power_state" name="inverter_total_apparent_power_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_commanded_apparent_power_L2" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Commanded Apparent Power L2 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_commanded_apparent_power_text_L2"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_commanded_apparent_power_state_L2" name="inverter_commanded_apparent_power_state_L2" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_real_apparent_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Total Real Power (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_total_real_power_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_total_real_power_state" name="inverter_total_real_power_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_apparent_power_L2" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Apparent Power L2 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_apparent_power_text_L2"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_apparent_power_state_L2" name="inverter_apparent_power_state_L2" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_total_reactive_power" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Total Reactive Power (kVAr)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_total_reactive_power_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_total_reactive_power_state" name="inverter_total_reactive_power_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_commanded_apparent_power_L3" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Commanded Apparent Power L3 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_commanded_apparent_power_text_L3"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_commanded_apparent_power_state_L3" name="inverter_commanded_apparent_power_state_L3" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+							<div class="row">
+                                <div class="col-md-6" id="" style="display:block">
+                                    <form>
+
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_apparent_power_L3" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Apparent Power L3 (kVA):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_apparent_power_text_L3"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_apparent_power_state_L3" name="inverter_apparent_power_state_L3" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+							</div>
+
+                            <br>
+
+                            <div class="row">
+                                <div class="col-md-6" id="inverter_inlet_air_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Inlet Air Temp (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_inlet_air_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_inlet_air_temperature_state" name="inverter_inlet_air_temperature_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_module_balancer_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Balancer Module Temp (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_module_balancer_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_module_balancer_temperature_state" name="inverter_module_balancer_temperature_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+							<div class="row">
+                                <div class="col-md-6" id="inverter_avg_module_temperature" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Avg. Phase Module Temp (°C):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_avg_module_temperature_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_avg_module_temperature_state" name="inverter_avg_module_temperature_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6" id="inverter_fan_speed" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Fan Speed (rpm):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="inverter_fan_speed_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_fan_speed_state" name="inverter_fan_speed_state" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Warnings:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="inverter_warnings_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_warning" name="inverter_warning" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Alarms:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="inverter_alarms_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_alarm" name="inverter_alarm" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Faults:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span id="inverter_faults_text"></span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="inverter_fault" name="inverter_fault" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Request data for this page
+        function pageLoad()
+        {
+            fetch("/Mod/FlexMod_TrumpfInverter" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_TrumpfInverter" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("inverter_name").innerHTML = res["inverter_name"];
+                document.getElementById("inverter_man").innerHTML = res["inverter_man"];
+                // no firmware version found in Trumpf register
+                // document.getElementById("inverter_fwver").innerHTML = res["inverter_fwver"];
+                document.getElementById("inverter_serno").innerHTML = res["inverter_serno"];
+                document.getElementById("inverter_constate").innerHTML = res["inverter_constate"];
+                document.getElementById("inverter_ipaddr_local").value = res["inverter_ipaddr_local"];
+
+
+
+                // Software hash
+// <!--                document.getElementById("inverter_software_hash").value = res["inverter_software_hash"];-->
+
+                // Override remote or autonomous operation
+                if(res["inverter_override"] == true)
+                {
+                    document.getElementById("inverter_ipaddr_local").disabled = false;
+                    document.getElementById("inverter_override_button").innerHTML = "Disable";
+                    document.getElementById("inverter_enable_button").disabled = false;
+                    document.getElementById("inverter_OptMod").disabled = false;
+                    document.getElementById("inverter_fault_clearing").disabled = false;
+                    if(res["inverter_OptMod"] == 'SYM'){
+					document.getElementById("inverter_apparent_power_set").disabled = false;
+                    document.getElementById("inverter_apparent_power_set_L1").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L2").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L3").disabled = true;
+					}
+					else{
+					document.getElementById("inverter_apparent_power_set").disabled = true;
+					document.getElementById("inverter_apparent_power_set_L1").disabled = false;
+                    document.getElementById("inverter_apparent_power_set_L2").disabled = false;
+                    document.getElementById("inverter_apparent_power_set_L3").disabled = false;
+					}
+
+					if(res["inverter_fault_clearing"] == 'Manual'){
+					document.getElementById('inverter_fault_clear_button').disabled = false;
+					}
+					else{
+					document.getElementById('inverter_fault_clear_button').disabled = true;
+					}
+
+                }
+                else
+                {
+                    document.getElementById("inverter_ipaddr_local").disabled = true;
+                    document.getElementById("inverter_override_button").innerHTML = "Enable";
+                    document.getElementById("inverter_enable_button").disabled = true;
+                    document.getElementById("inverter_OptMod").disabled = true;
+                    document.getElementById("inverter_fault_clearing").disabled = true;
+                    document.getElementById("inverter_apparent_power_set").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L1").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L2").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L3").disabled = true;
+					document.getElementById('inverter_fault_clear_button').disabled = true;
+                }
+
+                document.getElementById("inverter_fault_clearing").value = res["inverter_fault_clearing"];
+
+
+				if(res["inverter_start"] == true)
+                if(res["inverter_start"] == true)
+                    document.getElementById("inverter_enable_button").innerHTML = "Disable";
+                else
+                    document.getElementById("inverter_enable_button").innerHTML = "Enable";
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_TrumpfInverter" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                    console.log((res["inverter_OptMod"]))
+                    enable_state = String(res["inverter_enablestate"]);
+                    document.getElementById("inverter_enable").value = enable_state[0].toUpperCase() + enable_state.substring(1);
+                    document.getElementById("inverter_heartbeat_state").value = parseInt(res["inverter_data"][0]);
+                    document.getElementById("inverter_state_state").value = parseInt(res["inverter_data"][1]);
+
+                    let inv_state = res["inverter_data"][1];
+                    let inv_state_text = "";
+
+                    // Live Actual Main State
+                    if (inv_state == 0)    inv_state_text = "Power UP";
+                    else if (inv_state == 1)    inv_state_text = "Error";
+                    else if (inv_state == 2)    inv_state_text = "Idle";
+                    else if (inv_state == 3)    inv_state_text = "Operation";                 // Start/RUN state
+                    else if (inv_state == 4)    inv_state_text = "Maintenance";
+                    else inv_state_text = "Unknown (" + inv_state + ")";
+
+                    document.getElementById("inverter_state_text").innerHTML = inv_state_text;
+                    document.getElementById("inverter_frequency").value = parseFloat(res["inverter_data"][2]).toFixed(2);
+                    document.getElementById("inverter_ac_rms_phase_voltage_state").value = parseFloat(res["inverter_data"][3]).toFixed(2);
+                    document.getElementById("inverter_ac_rms_phase_current_state").value = parseFloat(res["inverter_data"][5]).toFixed(2);
+                    document.getElementById("inverter_total_real_power_state").value = parseFloat(res["inverter_data"][9]).toFixed(2);
+					document.getElementById("inverter_total_reactive_power_state").value = parseFloat(res["inverter_data"][11]).toFixed(2);
+
+					document.getElementById("inverter_commanded_apparent_power_state").value = parseInt(res["inverter_data"][24]/1000).toFixed(2);
+					document.getElementById("inverter_commanded_apparent_power_state_L1").value = parseInt(res["inverter_data"][25]/1000).toFixed(2);
+                    document.getElementById("inverter_commanded_apparent_power_state_L2").value = parseInt(res["inverter_data"][26]/1000).toFixed(2);
+                    document.getElementById("inverter_commanded_apparent_power_state_L3").value = parseInt(res["inverter_data"][27]/1000).toFixed(2);
+
+                    document.getElementById("inverter_total_apparent_power_state").value = parseFloat(res["inverter_data"][28]).toFixed(2);
+					document.getElementById("inverter_apparent_power_state_L1").value = parseFloat(res["inverter_data"][29]).toFixed(2);
+                    document.getElementById("inverter_apparent_power_state_L2").value = parseFloat(res["inverter_data"][30]).toFixed(2);
+                    document.getElementById("inverter_apparent_power_state_L3").value = parseFloat(res["inverter_data"][31]).toFixed(2);
+
+                    // document.getElementById("inverter_reactive_power_state").value = parseFloat(res["inverter_data"][11]/1000).toFixed(2);
+                    document.getElementById("inverter_dc_bus_voltage_state").value = parseFloat(res["inverter_data"][12]).toFixed(2);
+                    // document.getElementById("inverter_dc_bus_current_state").value = parseFloat(res["inverter_data"][13]).toFixed(2);
+                    document.getElementById("inverter_avg_module_temperature_state").value = parseFloat(res["inverter_data"][17]).toFixed(2);
+                    document.getElementById("inverter_inlet_air_temperature_state").value = parseFloat(res["inverter_data"][18]).toFixed(2);
+                    document.getElementById("inverter_module_balancer_temperature_state").value = parseFloat(res["inverter_data"][32]).toFixed(2);
+                    document.getElementById("inverter_fan_speed_state").value = parseFloat(res["inverter_data"][33]).toFixed(2);
+
+                    // Warnings, Alarms, Faults
+                    document.getElementById("inverter_warning").value = parseInt(res["inverter_data"][20]);
+                    document.getElementById("inverter_alarm").value = parseInt(res["inverter_data"][21]);
+                    document.getElementById("inverter_fault").value = parseInt(res["inverter_data"][22]);
+                    // TODO: Get the warnings, alarms, and faults from the inverter in text form
+                    document.getElementById("inverter_warnings_text").innerHTML = "";
+                    document.getElementById("inverter_alarms_text").innerHTML = "";
+                    document.getElementById("inverter_faults_text").innerHTML = "";
+
+
+                // Override remote or autonomous operation
+                if(res["inverter_override"] == true)
+                {
+                    document.getElementById("inverter_ipaddr_local").disabled = false;
+                    document.getElementById("inverter_override_button").innerHTML = "Disable";
+                    document.getElementById("inverter_enable_button").disabled = false;
+					document.getElementById("inverter_OptMod").disabled = false;
+					document.getElementById("inverter_fault_clearing").disabled = false;
+
+                    if(res["inverter_OptMod"] == 'SYM'){
+					document.getElementById("inverter_apparent_power_set").disabled = false;
+					document.getElementById("inverter_apparent_power_set_L1").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L2").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L3").disabled = true;
+					}
+					else{
+					document.getElementById("inverter_apparent_power_set").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L1").disabled = false;
+                    document.getElementById("inverter_apparent_power_set_L2").disabled = false;
+                    document.getElementById("inverter_apparent_power_set_L3").disabled = false;
+					}
+
+					if(res["inverter_fault_clearing"] == 'Manual'){
+					document.getElementById('inverter_fault_clear_button').disabled = false;
+					}
+					else{
+					document.getElementById('inverter_fault_clear_button').disabled = true;
+					}
+                }
+                else
+                {
+                    document.getElementById("inverter_ipaddr_local").disabled = true;
+                    document.getElementById("inverter_override_button").innerHTML = "Enable";
+                    document.getElementById("inverter_enable_button").disabled = true;
+					document.getElementById("inverter_OptMod").disabled = true;
+					document.getElementById("inverter_fault_clearing").disabled = true;
+                    document.getElementById("inverter_apparent_power_set").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L1").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L2").disabled = true;
+                    document.getElementById("inverter_apparent_power_set_L3").disabled = true;
+					document.getElementById('inverter_fault_clear_button').disabled = true;
+                }
+
+                document.getElementById("inverter_fault_clearing").value = res["inverter_fault_clearing"];
+
+
+
+                // Text toggle on Manual Enable Button
+                if(res["inverter_start"] == true)
+                    document.getElementById("inverter_enable_button").innerHTML = "Disable";
+                else
+                    document.getElementById("inverter_enable_button").innerHTML = "Enable";
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,2632 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - CXP-00780</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="client_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+<!--                                        <b>Control</b>-->
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="client_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        System Enable:-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <span id="client_enable_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="client_enable" name="client_enable" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="client_enable_set" name="client_enable_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="client_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        Remote Pilot:-->
+                                    </div>
+                                    <div class="col-md-1">
+<!--                                        <span id="client_pilot_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="client_pilot" name="client_pilot" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="client_pilot_set" name="client_pilot_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="client_fwver"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="client_serno"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="client_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        IP Address (Local):
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="client_ipaddr_local" name="client_ipaddr_local" value="0.0.0.0" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="client_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+
+                        <div class="container-fluid" id="battery" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="battery_title">
+                                                Battery
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Battery Max. Charge SoC (%):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" id="client_battery_charge_limit" name="client_battery_charge_limit" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Battery Min. Discharge SoC (%):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" id="client_battery_discharge_limit" name="client_battery_discharge_limit" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="inverter" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="inverter_title">
+                                                Inverter
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Grid Mode:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_inverter_grid_mode" id="client_inverter_grid_mode" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="Forming">Forming</option>
+                                                    <option value="Following">Following</option>
+                                                    <option value="Forming (Exclude from Startup)">Forming (Exclude from Startup)</option>
+                                                    <option value="Following (Exclude from Startup)">Following (Exclude from Startup)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Import Limit (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" id="client_inverter_import_limit" name="client_inverter_import_limit" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Export Limit (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" id="client_inverter_export_limit" name="client_inverter_export_limit" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Ramp Rate (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" id="client_inverter_ramp_rate" name="client_inverter_ramp_rate" value="1" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Settling Time (S):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" id="client_inverter_setting_time" name="client_inverter_settling_time" value="10" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="ac_meter" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="ac_meter_title">
+                                                AC Meter
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 Location:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_ac_meter_location" id="client_ac_meter_location" style="width:100%">
+                                                    <option value="None">None</option>
+                                                    <option value="Grid">Grid</option>
+                                                    <option value="Load">Load</option>
+                                                    <option value="Grid_and_Load">Grid and Load</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="dc_meter" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="dc_meter_title">
+                                                DC Meter
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="dig_io" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="dig_io_title">
+                                                Digital IO
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Digital Outputs</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Bank Reset:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_bank_reset_op" id="client_bank_reset_op" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="client_bank_reset_state" name="client_bank_reset_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Rack 1/6 Reset:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_rack_1_6_reset_op" id="client_rack_1_6_reset_op" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="client_rack_1_6_reset_state" name="client_rack_1_6_reset_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Rack 2/7 Reset:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_rack_2_7_reset_op" id="client_rack_2_7_reset_op" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="client_rack_2_7_reset_state" name="client_rack_2_7_reset_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Rack 3/8 Reset:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_rack_3_8_reset_op" id="client_rack_3_8_reset_op" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="client_rack_3_8_reset_state" name="client_rack_3_8_reset_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Rack 4/9 Reset:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_rack_4_9_reset_op" id="client_rack_4_9_reset_op" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="client_rack_4_9_reset_state" name="client_rack_4_9_reset_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Rack 5/10 Reset:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_rack_5_10_reset_op" id="client_rack_5_10_reset_op" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="client_rack_5_10_reset_state" name="client_rack_5_10_reset_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="ana_io" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="ana_io_title">
+                                                Analogue IO
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="mixed_io" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="mixed_io_title">
+                                                Mixed IO
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="switch" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="switch_title">
+                                                Switch
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="li-ion" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="li-ion_title">
+                                                Li-Ion Tamer
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="dcdc" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="dcdc_title">
+                                                DC-DC
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="aircon" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="aircon_title">
+                                                Air Conditioning
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="sensor" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="sensor_title">
+                                                Sensor
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="fuel_cell" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="fuel_cell_title">
+                                                Fuel Cell
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="ac_gen" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="ac_gen_title">
+                                                AC Generator
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                  Enable SoC Min/Max:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="ac_gen_soc_min" id="ac_gen_soc_min">
+                                                    <option>20</option>
+                                                </select>
+                                                /
+                                                <select name="ac_gen_soc_max" id="ac_gen_soc_max">
+                                                    <option>90</option>-->
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <br>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                  <u>Outputs</u>
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                  Generator Start:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <select name="ac_gen_enable_op" id="ac_gen_enable_op" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="ac_gen_enable_op_state" name="ac_gen_enable_op_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input id="ac_gen_enable_test" name="ac_gen_enable_test" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="ac_gen_enable_button" name="ac_gen_enable_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Test</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="ac_wind" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="ac_wind_title">
+                                                AC Wind
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="ac_solar" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="ac_solar_title">
+                                                AC Solar
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                  Enable SoC Min/Max:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="ac_solar_soc_min" id="ac_solar_soc_min">
+                                                    <option>20</option>
+                                                </select>
+                                                /
+                                                <select name="ac_solar_soc_min" id="ac_solar_soc_max">
+                                                    <option>90</option>-->
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                  <u>Outputs</u>
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                  Enable Inverter:
+                                            </div>
+                                            <div class="col-md-4">
+                                               <select name="ac_solar_enable_op" id="ac_solar_enable_op" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="ac_solar_enable_op_state" name="ac_solar_enable_op_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input id="ac_solar_enable_test" name="ac_solar_enable_test" value="" style="display: none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                 <button type="submit" id="ac_solar_enable_button" name="ac_solar_enable_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Test</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="dc_solar" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="dc_solar_title">
+                                                DC Solar
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="ac_efm" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="ac_efm_title">
+                                                AC EFM
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="dc_efm" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="dc_efm_title">
+                                                DC EFM
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 <u>Inputs</u>
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 EFM DC Alarm:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_efm_dc_alarm_ip" id="client_efm_dc_alarm_ip" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="client_efm_dc_alarm_state" name="client_efm_dc_alarm_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 EFM DC Trip:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_efm_dc_trip_ip" id="client_efm_dc_trip_ip" style="width:100%">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="client_efm_dc_trip_state" name="client_efm_dc_trip_state" readonly="readonly" value=0 style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="ev_charge" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="ev_charge_title">
+                                                EV Charge
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="scada" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="scada_title">
+                                                SCADA
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="container-fluid" id="logging" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="logging_title">
+                                                Logging
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                 No Configuration
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form>
+                                    <div class="row">
+                                        <div class="col-md-4">
+
+                                        </div>
+                                        <div class="col-md-4">
+
+                                        </div>
+                                        <div class="col-sm-2">
+
+                                        </div>
+                                        <div class="col-sm-2">
+
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="container-fluid" id="client" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 font-weight-bold" id="client_title">
+                                                Client
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Control Status:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" id="client_control_status" name="client_control_status" value="Idle" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Grid Charging:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_grid_charge_tou" id="client_grid_charge_tou" style="width:100%">
+                                                    <option value="Disabled">Disabled</option>
+                                                    <option value="Enabled">Enabled</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Peak Time Start (HH:MM):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_grid_charge_tou_start_hr" id="client_grid_charge_tou_start_hr">
+
+                                                </select>
+                                                :
+                                                <select name="client_grid_charge_tou_start_min" id="client_grid_charge_tou_start_min">
+
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Peak Time End (HH:MM):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_grid_charge_tou_end_hr" id="client_grid_charge_tou_end_hr">
+
+                                                </select>
+                                                :
+                                                <select name="client_grid_charge_tou_end_min" id="client_grid_charge_tou_end_min">
+
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Grid Peak Shaving:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_grid_peak_shaving" id="client_grid_peak_shaving" style="width:100%">
+                                                    <option value="Enabled">Enabled</option>
+                                                    <option value="Disabled">Disabled</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Peak Time Start (HH:MM):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_peak_shaving_tou_start_hr" id="client_peak_shaving_tou_start_hr">
+
+                                                </select>
+                                                :
+                                                <select name="client_peak_shaving_tou_start_min" id="client_peak_shaving_tou_start_min">
+
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Peak Time End (HH:MM):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_peak_shaving_tou_end_hr" id="client_peak_shaving_tou_end_hr">
+
+                                                </select>
+                                                :
+                                                <select name="client_peak_shaving_tou_end_min" id="client_peak_shaving_tou_end_min">
+
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Peak Shaving Limit (kW):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" id="client_grid_peak_shaving_limit" name="client_grid_peak_shaving_limit" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Solar Charging:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_solar_charge_tou" id="client_solar_charge_tou" style="width:100%">
+                                                    <option value="Disabled">Disabled</option>
+                                                    <option value="Enabled">Enabled</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Peak Time Start (HH:MM):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_solar_charge_tou_start_hr" id="client_solar_charge_tou_start_hr">
+
+                                                </select>
+                                                :
+                                                <select name="client_solar_charge_tou_start_min" id="client_solar_charge_tou_start_min">
+
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Peak Time End (HH:MM):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_solar_charge_tou_end_hr" id="client_solar_charge_tou_end_hr">
+
+                                                </select>
+                                                :
+                                                <select name="client_solar_charge_tou_end_min" id="client_solar_charge_tou_end_min">
+
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Client Tasks:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select name="client_tasks" id="client_tasks" style="width:100%">
+                                                    <option value="Enabled">Enabled</option>
+                                                    <option value="Disabled">Disabled</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Request data for this page
+        function pageLoad()
+        {
+            // Update TOU options before they're appended with an ID
+            let client_grid_charge_tou_start_hr = document.getElementById("client_grid_charge_tou_start_hr");
+            let client_grid_charge_tou_end_hr = document.getElementById("client_grid_charge_tou_end_hr");
+            let client_peak_shaving_tou_start_hr = document.getElementById("client_peak_shaving_tou_start_hr");
+            let client_peak_shaving_tou_end_hr = document.getElementById("client_peak_shaving_tou_end_hr");
+            let client_solar_charge_tou_start_hr = document.getElementById("client_solar_charge_tou_start_hr");
+            let client_solar_charge_tou_end_hr = document.getElementById("client_solar_charge_tou_end_hr");
+
+            for(let hour=0;hour<24;hour++)
+            {
+                let start_hour_option = document.createElement("option");
+                let end_hour_option = document.createElement("option");
+                let peak_shaving_start_hour_option = document.createElement("option");
+                let peak_shaving_end_hour_option = document.createElement("option");
+                let solar_start_hour_option = document.createElement("option");
+                let solar_end_hour_option = document.createElement("option");
+
+                start_hour_option.text = String(hour).padStart(2, '0');
+                end_hour_option.text = String(hour).padStart(2, '0');
+                peak_shaving_start_hour_option.text = String(hour).padStart(2, '0');
+                peak_shaving_end_hour_option.text = String(hour).padStart(2, '0');
+                solar_start_hour_option.text = String(hour).padStart(2, '0');
+                solar_end_hour_option.text = String(hour).padStart(2, '0');
+
+                client_grid_charge_tou_start_hr.add(start_hour_option);
+                client_grid_charge_tou_end_hr.add(end_hour_option);
+                client_peak_shaving_tou_start_hr.add(peak_shaving_start_hour_option);
+                client_peak_shaving_tou_end_hr.add(peak_shaving_end_hour_option);
+                client_solar_charge_tou_start_hr.add(solar_start_hour_option);
+                client_solar_charge_tou_end_hr.add(solar_end_hour_option);
+            }
+
+            let client_grid_charge_tou_start_min = document.getElementById("client_grid_charge_tou_start_min");
+            let client_grid_charge_tou_end_min = document.getElementById("client_grid_charge_tou_end_min");
+            let client_peak_shaving_tou_start_min = document.getElementById("client_peak_shaving_tou_start_min");
+            let client_peak_shaving_tou_end_min = document.getElementById("client_peak_shaving_tou_end_min");
+            let client_solar_charge_tou_start_min = document.getElementById("client_solar_charge_tou_start_min");
+            let client_solar_charge_tou_end_min = document.getElementById("client_solar_charge_tou_end_min");
+
+            for(let min=0;min<60;min++)
+            {
+                let start_min_option = document.createElement("option");
+                let end_min_option = document.createElement("option");
+                let peak_shaving_start_min_option = document.createElement("option");
+                let peak_shaving_end_min_option = document.createElement("option");
+                let solar_start_min_option = document.createElement("option");
+                let solar_end_min_option = document.createElement("option");
+
+                start_min_option.text = String(min).padStart(2, '0');
+                end_min_option.text = String(min).padStart(2, '0');
+                peak_shaving_start_min_option.text = String(min).padStart(2, '0');
+                peak_shaving_end_min_option.text = String(min).padStart(2, '0');
+                solar_start_min_option.text = String(min).padStart(2, '0');
+                solar_end_min_option.text = String(min).padStart(2, '0');
+
+                client_grid_charge_tou_start_min.add(start_min_option);
+                client_grid_charge_tou_end_min.add(end_min_option);
+                client_peak_shaving_tou_start_min.add(peak_shaving_start_min_option);
+                client_peak_shaving_tou_end_min.add(peak_shaving_end_min_option);
+                client_solar_charge_tou_start_min.add(solar_start_min_option);
+                client_solar_charge_tou_end_min.add(solar_end_min_option);
+            }
+
+            fetch("/Mod/FlexMod_CXP-00780_Master" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Load configured modules
+                for(let mod=0; mod<25; mod++)                                                       // TODO: There are currently only 25 module types.
+                {
+                    // If a module has been configured,
+                    if(Array.isArray(res["client_system"][mod]))
+                    {
+                        let devId = 1;
+
+                        for(let dev=0; dev<res["client_system"][mod].length;dev++)
+                        {
+                            // Determine module type, defined in flexmod.py. Ugh.
+                            moduleType = null;
+                            if(mod == 24)
+                                devUID = res["client_system"][mod][0][24][0];
+                            else
+                                devUID = res["client_system"][mod][dev][0];
+
+                            if(mod == 2)     moduleType = "battery";
+                            if(mod == 3)     moduleType = "inverter";
+                            if(mod == 4)     moduleType = "ac_meter";
+                            if(mod == 5)     moduleType = "dc_meter";
+                            if(mod == 6)
+                            {
+                                moduleType = "dig_io";
+
+                                // Note: The Input and Output list length for an IO Module must equal the larger of the two, which may require padding.
+
+                                // Collect all the available outputs from connected IO modules
+                                let client_bank_reset_op = document.getElementById("client_bank_reset_op");
+                                let client_rack_1_6_reset_op = document.getElementById("client_rack_1_6_reset_op");
+                                let client_rack_2_7_reset_op = document.getElementById("client_rack_2_7_reset_op");
+                                let client_rack_3_8_reset_op = document.getElementById("client_rack_3_8_reset_op");
+                                let client_rack_4_9_reset_op = document.getElementById("client_rack_4_9_reset_op");
+                                let client_rack_5_10_reset_op = document.getElementById("client_rack_5_10_reset_op");
+
+                                let output_count = res["client_system"][mod][dev][2][3];
+                                for(let output = 0; output < output_count; output++)
+                                {
+                                    let op_string = String("UID " + devUID + " : Output " + output);
+
+                                    let client_bank_reset_op_option = document.createElement("option");
+                                    let client_rack_1_6_reset_op_option = document.createElement("option");
+                                    let client_rack_2_7_reset_op_option = document.createElement("option");
+                                    let client_rack_3_8_reset_op_option = document.createElement("option");
+                                    let client_rack_4_9_reset_op_option = document.createElement("option");
+                                    let client_rack_5_10_reset_op_option = document.createElement("option");
+
+                                    client_bank_reset_op_option.text = op_string;
+                                    client_rack_1_6_reset_op_option.text = op_string;
+                                    client_rack_2_7_reset_op_option.text = op_string;
+                                    client_rack_3_8_reset_op_option.text = op_string;
+                                    client_rack_4_9_reset_op_option.text = op_string;
+                                    client_rack_5_10_reset_op_option.text = op_string;
+
+                                    client_bank_reset_op.add(client_bank_reset_op_option);
+                                    client_rack_1_6_reset_op.add(client_rack_1_6_reset_op_option);
+                                    client_rack_2_7_reset_op.add(client_rack_2_7_reset_op_option);
+                                    client_rack_3_8_reset_op.add(client_rack_3_8_reset_op_option);
+                                    client_rack_4_9_reset_op.add(client_rack_4_9_reset_op_option);
+                                    client_rack_5_10_reset_op.add(client_rack_5_10_reset_op_option);
+                                }
+                            }
+                            if(mod == 7)    moduleType = "ana_io";
+                            if(mod == 8)     moduleType = "mixed_io";
+                            if(mod == 9)     moduleType = "switch";
+                            if(mod == 10)    moduleType = "li-ion";
+                            if(mod == 11)    moduleType = "dcdc";
+                            if(mod == 12)    moduleType = "aircon";
+                            if(mod == 13)    moduleType = "sensor";
+                            if(mod == 14)    moduleType = "fuel_cell";
+                            if(mod == 15)    moduleType = "ac_gen";
+                            if(mod == 16)    moduleType = "ac_wind";
+                            if(mod == 17)    moduleType = "ac_solar";
+                            if(mod == 18)    moduleType = "dc_solar";
+                            if(mod == 19)    moduleType = "ac_efm";
+                            if(mod == 20)    moduleType = "dc_efm";
+                            if(mod == 21)    moduleType = "ev_charge";
+                            if(mod == 22)    moduleType = "scada";
+                            if(mod == 23)    moduleType = "logging";
+                            if(mod == 24)    moduleType = "client";
+
+                            moduleDiv = document.getElementById(moduleType);
+
+                            if(moduleType != null)
+                            {
+                                let clone = moduleDiv.cloneNode(true);                              // Clone the module template (after being configured)
+                                clone.id = moduleType + "_" + devUID;                               // Append its serial number to the parent div
+                                clone.style.display = "block";                                      // Make it visible
+                                moduleDiv.after(clone);                                             // Place it below the template
+
+                                const parent = document.getElementById(clone.id);                   // Find the children recursively
+
+                                function findChildren(parent)
+                                {
+                                    let children = Array.from(parent.children);
+
+                                    let ids = children.map(element => {
+                                        if(element.id == moduleType + "_title")
+                                        {
+                                            element.innerHTML = element.innerHTML + " - " + devUID;
+                                        }
+                                        else if(element.id != "")
+                                        {
+                                            element.id = element.id + "_" + devUID;                 // Append the module serial number to its controls
+                                            element.name = element.name + "_" + devUID;
+                                        }
+                                        findChildren(element);                                      // Call it from itself to continue searching
+                                    });
+                                }
+                                findChildren(parent);
+                            }
+                        }
+                    }
+                }
+
+                // Set up handlers to catch all button and selector events
+                let form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_CXP-00780_Master" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(let x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("client_name").innerHTML = res["client_name"];
+                document.getElementById("client_man").innerHTML = res["client_man"];
+                document.getElementById("client_fwver").innerHTML = res["client_fwver"];
+                document.getElementById("client_serno").innerHTML = res["client_serno"];
+                document.getElementById("client_constate").innerHTML = res["client_constate"];
+                document.getElementById("client_ipaddr_local").innerHTML = res["client_ipaddr_local"];
+
+                // Update parameter data from database
+                for(control in res)
+                {
+                    client = document.getElementById(control);
+                    if(client)
+                    {
+                        // What type is it?
+                        client.value = res[control];
+                    }
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_CXP-00780_Master" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                client_control_status = "client_control_status_" + moduleUID;
+                document.getElementById(client_control_status).value = res["client_status"];
+
+                // Load configured modules
+                for(let mod=0; mod<25; mod++)                                                       // TODO: There are currently only 25 module types.
+                {
+                    // If a module has been configured,
+
+                    if(Array.isArray(res["client_system"][mod]))
+                    {
+                        let devId = 1;
+
+                        for(let dev=0; dev<res["client_system"][mod].length;dev++)
+                        {
+                            // Determine module type, defined in flexmod.py. Ugh.
+                            moduleType = null;
+                            let moduleUID = res["client_system"][mod][dev][0];
+
+                            if(mod == 1)     moduleType = "control";
+                            if(mod == 2)     moduleType = "battery";
+                            if(mod == 3)     moduleType = "inverter";
+                            if(mod == 4)     moduleType = "ac_meter";
+                            if(mod == 5)     moduleType = "dc_meter";
+                            if(mod == 6)
+                            {
+                                moduleType = "dig_io";
+
+                                // Controller OUTPUTS
+                                function getOutputState(dig_io)
+                                {
+                                    if(dig_io != "None")
+                                    {
+                                        let uid = dig_io.split("UID ").pop().split(" :")[0];        // We're getting the IO device UID from "UID X : Input Y"
+                                        let output = dig_io.split("Output ")[1];                    // And also the user-selected Input
+
+                                        if(moduleUID == uid)
+                                        {
+                                            let state = 0;
+                                            if (output < 8)
+                                                state = (res["client_system"][mod][dev][2][5] >> (output*2)) & 0x03;
+                                            else if (output < 16)
+                                                state = (res["client_system"][mod][dev][2][7] >> (output*2)) & 0x03;
+                                            else if (output < 24)
+                                                state = (res["client_system"][mod][dev][2][9] >> (output*2)) & 0x03;
+                                            else if (output < 32)
+                                                state = (res["client_system"][mod][dev][2][11] >> (output*2)) & 0x03;
+
+                                            //let state = String(res["client_system"][mod][dev][2][(output*2)+1]);   // x2 skips over the input bytes
+                                            return state;
+                                        }
+                                        return null;
+                                    }
+                                }
+
+                                let client_bank_reset_op = document.querySelectorAll(`[id^="client_bank_reset_op"]`);
+                                for(x=0;x<client_bank_reset_op.length;x++)
+                                {
+                                    let dig_io = document.getElementById(client_bank_reset_op[x].id).value;
+                                    dig_io_state = getOutputState(dig_io);
+                                    if(dig_io_state != null)
+                                    {
+                                        let state_id = (client_bank_reset_op[x].id).replace("_op", "_state");
+                                        document.getElementById(state_id).value = dig_io_state;
+                                    }
+                                }
+
+                                let client_rack_1_6_reset_op = document.querySelectorAll(`[id^="client_rack_1_6_reset_op"]`);
+                                for(x=0;x<client_rack_1_6_reset_op.length;x++)
+                                {
+                                    let dig_io = document.getElementById(client_rack_1_6_reset_op[x].id).value;
+                                    dig_io_state = getOutputState(dig_io);
+                                    if(dig_io_state != null)
+                                    {
+                                        let state_id = (client_rack_1_6_reset_op[x].id).replace("_op", "_state");
+                                        document.getElementById(state_id).value = dig_io_state;
+                                    }
+                                }
+
+                                let client_rack_2_7_reset_op = document.querySelectorAll(`[id^="client_rack_2_7_reset_op"]`);
+                                for(x=0;x<client_rack_2_7_reset_op.length;x++)
+                                {
+                                    let dig_io = document.getElementById(client_rack_2_7_reset_op[x].id).value;
+                                    dig_io_state = getOutputState(dig_io);
+                                    if(dig_io_state != null)
+                                    {
+                                        let state_id = (client_rack_2_7_reset_op[x].id).replace("_op", "_state");
+                                        document.getElementById(state_id).value = dig_io_state;
+                                    }
+                                }
+
+                                let client_rack_3_8_reset_op = document.querySelectorAll(`[id^="client_rack_3_8_reset_op"]`);
+                                for(x=0;x<client_rack_3_8_reset_op.length;x++)
+                                {
+                                    let dig_io = document.getElementById(client_rack_3_8_reset_op[x].id).value;
+                                    dig_io_state = getOutputState(dig_io);
+                                    if(dig_io_state != null)
+                                    {
+                                        let state_id = (client_rack_3_8_reset_op[x].id).replace("_op", "_state");
+                                        document.getElementById(state_id).value = dig_io_state;
+                                    }
+                                }
+
+                                let client_rack_4_9_reset_op = document.querySelectorAll(`[id^="client_rack_4_9_reset_op"]`);
+                                for(x=0;x<client_rack_4_9_reset_op.length;x++)
+                                {
+                                    let dig_io = document.getElementById(client_rack_4_9_reset_op[x].id).value;
+                                    dig_io_state = getOutputState(dig_io);
+                                    if(dig_io_state != null)
+                                    {
+                                        let state_id = (client_rack_4_9_reset_op[x].id).replace("_op", "_state");
+                                        document.getElementById(state_id).value = dig_io_state;
+                                    }
+                                }
+
+                                let client_rack_5_10_reset_op = document.querySelectorAll(`[id^="client_rack_5_10_reset_op"]`);
+                                for(x=0;x<client_rack_5_10_reset_op.length;x++)
+                                {
+                                    let dig_io = document.getElementById(client_rack_5_10_reset_op[x].id).value;
+                                    dig_io_state = getOutputState(dig_io);
+                                    if(dig_io_state != null)
+                                    {
+                                        let state_id = (client_rack_5_10_reset_op[x].id).replace("_op", "_state");
+                                        document.getElementById(state_id).value = dig_io_state;
+                                    }
+                                }
+                            }
+                            if(mod == 7)     moduleType = "ana_io";
+                            if(mod == 8)     moduleType = "mixed_io";
+                            if(mod == 9)     moduleType = "switch";
+                            if(mod == 10)    moduleType = "li-ion";
+                            if(mod == 11)    moduleType = "dcdc";
+                            if(mod == 12)    moduleType = "aircon";
+                            if(mod == 13)    moduleType = "sensor";
+                            if(mod == 14)    moduleType = "fuel_cell";
+                            if(mod == 15)    moduleType = "ac_gen";
+                            if(mod == 16)    moduleType = "ac_wind";
+                            if(mod == 17)    moduleType = "ac_solar";
+                            if(mod == 18)    moduleType = "dc_solar";
+                            if(mod == 19)    moduleType = "ac_efm";
+                            if(mod == 20)    moduleType = "dc_efm";
+                            if(mod == 21)    moduleType = "ev_charge";
+                            if(mod == 22)    moduleType = "scada";
+                            if(mod == 23)    moduleType = "logging";
+                            if(mod == 24)    moduleType = "client";
+
+                        }
+                    }
+                }
+
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>

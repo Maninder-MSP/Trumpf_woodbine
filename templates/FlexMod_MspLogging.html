@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/FlexSystem.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark navbar-custom top-bar">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="">Flex-ESS HMI - Logging</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <a id="clock" class="navbar-brand mx-auto"></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="home_button" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Card 1 -->
+        <section class="system-cards" style="padding-top: 2rem">
+            <div id="logging_info" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Information</h5>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>System</b>
+                                    </div>
+                                    <div class="col-md-6">
+<!--                                        <b>Control</b>-->
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Name:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="logging_name"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        System Enable:-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <span id="logging_enable_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="logging_enable" name="logging_enable" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="logging_enable_set" name="logging_enable_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Enable</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Manufacturer:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="logging_man"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+<!--                                        Remote Pilot:-->
+                                    </div>
+                                    <div class="col-md-1">
+<!--                                        <span id="logging_pilot_echo"></span>-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <input id="logging_pilot" name="logging_pilot" value="" style="display: none">-->
+                                    </div>
+                                    <div class="col-sm-1">
+<!--                                        <button type="submit" id="logging_pilot_set" name="logging_pilot_set" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Set</button>-->
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Firmware Version:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="logging_fwver"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Serial Number:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="logging_serno"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        Local Data Storage:
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="logging_data_store" name="logging_data_store" value="<path>" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Connection State:
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span id="logging_constate"></span>
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        Remote Data Server:
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" id="logging_data_server" name="logging_data_server" value="<server ip>" style="width:100%; padding:0px; text-align:center;">
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                    <div class="col-sm-1">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-cards">
+            <div id="logging_config" style="display: block">
+                <div class="card">
+                    <h5 class="card-header">Configuration</h5>
+                    <div class="card-body">
+                        <div class="container-fluid" id="control" style="display:block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Override Controls:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <!-- This is simply something that ends up in the form data when the button is pressed. -->
+                                                <input id="logging_override" name="logging_override" style="display:none">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="submit" id="logging_override_button" class="btn btn-primary btn-sm" style="width:100%; padding:0px; border:0px;">Override</button>
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6" id="logging_enable_state" style="display:block">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Enable State:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_enable_statetext"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_enable" name="logging_enable" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Heartbeat:
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_heartbeat" name="logging_heartbeat" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Local Data</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Logging State:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_state_local_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_state_local" name="logging_state_local" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log Buffer:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_buffer_local_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_buffer_local" name="logging_buffer_local" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log File Limit:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_max_files_local_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_max_files_local" name="logging_max_files_local" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log File Count:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_file_count_local_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_file_count_local" name="logging_file_count_local" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log Interval (S):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_interval_local_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_interval_local" name="logging_interval_local" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log Duration (S):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_duration_local_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_duration_local" name="logging_duration_local" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log Trigger:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_trigger_local_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_trigger_local" name="logging_trigger_local" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <u>Remote Data</u>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Logging State:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_state_remote_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_state_remote" name="logging_state_remote" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log Buffer:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_buffer_remote_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_buffer_remote" name="logging_buffer_remote" readonly="readonly" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log Interval (S):
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_interval_remote_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_interval_remote" name="logging_interval_remote" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log Length:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_length_remote_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_length_remote" name="logging_length_remote" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                Log Trigger:
+                                            </div>
+                                            <div class="col-md-4">
+                                                <td><span id="logging_trigger_remote_text"></span></td>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <input type="text" id="logging_trigger_remote" name="logging_trigger_remote" value="0" style="width:100%; padding:0px; text-align:center;">
+                                            </div>
+                                            <div class="col-sm-2">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+        // Get the UID for this page to request data from
+        path = window.location.pathname;
+        var moduleUID = path.split('\(').pop().split('\)')[0];                                         // Grabs the module UID from this page "(<UID>)"
+
+        // Request data for this page
+        function pageLoad()
+        {
+            fetch("/Mod/FlexMod_MspLogging" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                pageUpdate();
+
+                // Set up handlers to catch all button and selector events
+                var form = document.querySelectorAll("form");
+
+                function doggoFetch(formData)
+                {
+                    fetch("/Mod/FlexMod_MspLogging" + "_(" + moduleUID + ")",
+                    {
+                       body: formData,
+                       method: "post"
+                    })
+                    .catch(error => console.error('Error', error))
+                }
+
+                for(var x=0; x<form.length; x++)                                                            // We're preparing all form data for submission...
+                {
+                    form[x].onsubmit = function(event){
+                        doggoFetch(new FormData(event.target));
+                        return false;                                                                       // ...and preventing the page from refreshing!
+                    }
+
+                    form[x].addEventListener('change', function() {
+                        doggoFetch(new FormData(event.target.form));
+                        return false;
+                    });
+                }
+
+                // Update Module Information
+                document.getElementById("logging_name").innerHTML = res["logging_name"];
+                document.getElementById("logging_man").innerHTML = res["logging_man"];
+                document.getElementById("logging_fwver").innerHTML = res["logging_fwver"];
+                document.getElementById("logging_serno").innerHTML = res["logging_serno"];
+                document.getElementById("logging_constate").innerHTML = res["logging_constate"];
+                //document.getElementById("logging_ipaddr_local").value = res["logging_ipaddr_local"];
+                document.getElementById("logging_data_store").value = res["logging_data_store"];
+                document.getElementById("logging_data_server").value = res["logging_data_server"];
+
+                document.getElementById("logging_interval_local").value = parseInt(res["logging_data"][3]);
+                document.getElementById("logging_duration_local").value = parseInt(res["logging_data"][4]);
+                document.getElementById("logging_max_files_local").value = parseInt(res["logging_data"][10]);
+
+                document.getElementById("logging_interval_remote").value = parseInt(res["logging_data"][13]);
+                document.getElementById("logging_length_remote").value = parseInt(res["logging_data"][14]);
+
+                // Disable manual override buttons
+                if(res["logging_override"] == true)
+                {
+                    document.getElementById("logging_data_store").disabled = false;
+                    document.getElementById("logging_data_server").disabled = false;
+                    document.getElementById("logging_max_files_local").disabled = false;
+                    document.getElementById("logging_interval_local").disabled = false;
+                    document.getElementById("logging_duration_local").disabled = false;
+                    document.getElementById("logging_interval_remote").disabled = false;
+                    document.getElementById("logging_length_remote").disabled = false;
+                }
+                else
+                {
+                    document.getElementById("logging_data_store").disabled = true;
+                    document.getElementById("logging_data_server").disabled = true;
+                    document.getElementById("logging_max_files_local").disabled = true;
+                    document.getElementById("logging_interval_local").disabled = true;
+                    document.getElementById("logging_duration_local").disabled = true;
+                    document.getElementById("logging_interval_remote").disabled = true;
+                    document.getElementById("logging_length_remote").disabled = true;
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Wait for page to load
+        document.addEventListener('DOMContentLoaded', function () {
+            pageLoad();                                                                             // Update data on page load
+        });
+
+        // Request data for this page
+        function pageUpdate()
+        {
+            // Set the clock
+            var date = new Date();
+            clock = document.getElementById("clock").innerHTML = date.toLocaleString('en-GB', { hour12: false });
+
+            fetch("/Mod/FlexMod_MspLogging" + "_(" + moduleUID + ")" + "/data").then(res => res.json()).then(res => {
+
+                enable_state = String(res["logging_enablestate"]);
+                document.getElementById("logging_enable").value = enable_state[0].toUpperCase() + enable_state.substring(1);
+                document.getElementById("logging_heartbeat").value = parseFloat(res["logging_data"][0]);
+                document.getElementById("logging_state_local").value = parseInt(res["logging_data"][1]);
+                document.getElementById("logging_trigger_local").value = parseInt(res["logging_data"][5]);
+                document.getElementById("logging_buffer_local").value = parseInt(res["logging_data"][8]);
+                document.getElementById("logging_file_count_local").value = parseInt(res["logging_data"][9]);
+
+                document.getElementById("logging_trigger_remote").value = parseInt(res["logging_data"][15]);
+                document.getElementById("logging_buffer_remote").value = parseInt(res["logging_data"][18]);
+
+                // Disable manual override buttons
+                if(res["logging_override"] == true)
+                {
+                    document.getElementById("logging_data_store").disabled = false;
+                    document.getElementById("logging_data_server").disabled = false;
+                    document.getElementById("logging_max_files_local").disabled = false;
+                    document.getElementById("logging_interval_local").disabled = false;
+                    document.getElementById("logging_duration_local").disabled = false;
+                    document.getElementById("logging_interval_remote").disabled = false;
+                    document.getElementById("logging_length_remote").disabled = false;
+                    document.getElementById("logging_override_button").innerHTML = "Disable";
+                }
+                else
+                {
+                    document.getElementById("logging_data_store").disabled = true;
+                    document.getElementById("logging_data_server").disabled = true;
+                    document.getElementById("logging_max_files_local").disabled = true;
+                    document.getElementById("logging_interval_local").disabled = true;
+                    document.getElementById("logging_duration_local").disabled = true;
+                    document.getElementById("logging_interval_remote").disabled = true;
+                    document.getElementById("logging_length_remote").disabled = true;
+                    document.getElementById("logging_override_button").innerHTML = "Enable";
+                }
+            })
+            .catch(error => console.error('Error', error))
+        };
+
+        // Request data for this page
+        var pageInterval = setInterval(function()
+        {
+            pageUpdate();
+        }, 1000);
+
+        </script>
+    </body>
+</html>
