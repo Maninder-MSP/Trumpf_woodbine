@@ -1,11 +1,5 @@
-# FlexMod_AmptDCSolar.py
-
-# Description
 # AMPT - DC Solar Module
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-
+import sys
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
 from FlexDB import FlexTinyDB
@@ -13,8 +7,6 @@ from enum import Enum
 import copy
 from datetime import datetime
 import time
-import sys
-import requests # for AMPT API
 
 
 ###############################################################
@@ -93,7 +85,7 @@ loop_time = 0
 
 
 # Queued commands
-SYNC = 0                                                                                            # Allows the Flex code to syncronise module polling loops using a single thread (TBD)
+SYNC = 0                                                                                            # Allows the Flex code to synchronise module polling loops using a single thread
 SYNC_ACK = 1
 GET_INFO = 2
 GET_INFO_ACK = 3
@@ -120,7 +112,6 @@ class Module():
         self.icon = "/static/images/DCsolar.png"
         self.name = "DC Solar"
         self.module_type = ModTypes.DC_SOLAR.value
-        self.module_version = "3.5.24.10.16"                                                        # Last update on "Flex version | Year | Month | Day"
         self.manufacturer = "Ampt"
         self.model = ""
         self.options = ""
@@ -195,20 +186,7 @@ class Module():
         self.total_daily_energy = 0
         self.db_time_counter = 0
 
-        # Start interval timer
-        #self.stop = Event()
-        #self.interval = 1  # Interval timeout in Seconds
-        #self.thread = Interval(self.stop, self.__process, self.interval)
-        #self.thread.start()
-
-        # AMPT API thread
-        self.get_pv_thread = None
-        # AMPT Bus
-        self.abvo = 0
-        self.tco = 0
-        self.apo = 0
-
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
     
     def update_weather_icon(self):
         current_weather_icon = get_weather_icon()
@@ -270,7 +248,7 @@ class Module():
                             self.update_faults(Faults.LOSS_OF_COMMS.value, True)  # Raise Fault
                             self.set_state_text(State.CONNECTING)
                             self.tcp_client = None
-                        
+
                     except Exception as e:
                         print("DC Solar: " + str(e))
                         #log_to_file("Exception occurred while establishing TCP client. - 403")
@@ -297,6 +275,7 @@ class Module():
                         #log_to_file(f"Error reading registers from DC Solar device. Operation aborted - 500")
                         return               
                     else:
+                        self.tcp_timeout = 0
                         # Workaround to fetch the full "Communication Unit" name from the DC Solar device.
                         raw_bytes = BinaryPayloadDecoder.fromRegisters(rr.registers[20:38], byteorder=Endian.Big).decode_string(18)
                         decoded_name = raw_bytes.decode("utf-8")
@@ -306,7 +285,6 @@ class Module():
                         self.version = ((BinaryPayloadDecoder.fromRegisters(rr.registers[44:52], byteorder=Endian.Big)).decode_string(16)).decode("utf-8")
                         self.serial = ((BinaryPayloadDecoder.fromRegisters(rr.registers[52:68], byteorder=Endian.Big)).decode_string(16)).decode("utf-8")
                         self.number_devices = BinaryPayloadDecoder.fromRegisters([rr.registers[77]], byteorder=Endian.Big).decode_16bit_uint()
-                        self.tcp_timeout = 0
                 except ConnectionError as ce:
                     print("DC Solar: " + str(ce))
                     self.tcp_timeout += 1
@@ -326,7 +304,6 @@ class Module():
                 # Convert self.number_devices to an integer if it is a digit
                 if str(self.number_devices).isdigit():
                     self.number_devices = int(self.number_devices)
-                    self.tcp_timeout = 0
                 # Check if self.number_devices is not a number between 1 and 32
                 if not (1 <= self.number_devices <= 32):
                     #log_to_file(f"Error: Invalid number of devices = {self.number_devices}. Operation aborted - 600")
@@ -369,12 +346,11 @@ class Module():
                                     self.device_values[measurement].append(value)
                                 else:
                                     self.device_values[measurement].append(value / 1000.0)
-                            self.tcp_timeout = 0
+
                         except Exception as e:
                             print("DC Solar: " + str(e))
                             # Log the exception with the register number and measurement.
                             #log_to_file(f"Error decoding register - 802: {base_register} for measurement {measurement}: {e}")
-                            self.tcp_timeout += 1
                             pass
 
                 # print all self.device_values with what type of measurement it is and the appended value
@@ -389,7 +365,7 @@ class Module():
 
             try:
             # calculate the averages across the devices
-                self.tcp_timeout = 0
+                self.db_time_counter += 1
                 averages = {key: sum(values) / len(values) if values else 0 for key, values in self.device_values.items()}
                 average_OutDCA = averages["OutDCA"]
                 average_OutDCV = averages["OutDCV"]
@@ -415,31 +391,12 @@ class Module():
                     self.save_to_db()
                     self.total_daily_energy = 0
                     self.db_time_counter = 0
-                
-                self.tcp_timeout = 0
-                
+
             except Exception as e:
                 print("DC Solar: " + str(e))
                 #log_to_file(f"Error calculating values - 901: {e}")
                 self.tcp_timeout += 1
                 return
-
-            # All the above Modbus data is nice and we'll keep it going to retain the Header information, calculated cumulative energy and connection state to the device, however...
-            # AMPT only updates live data over modbus once a minute which is inadequate for use when you're doing power curtailment logic externally. They recommend using the HTTP API as shown here, which is about every 3 seconds.
-            # This overwrites three of the calculated values above. Not all AMPT CUs have the API enabled though so we'll default to Modbus if so
-            try:
-                if self.get_pv_thread is None or not self.get_pv_thread.is_alive():
-                    self.get_pv_thread = Thread(target=self.get_pv_data)
-                    self.get_pv_thread.start()
-                    
-                average_bus_voltage_out = self.abvo
-                total_current_out = self.tco
-                total_power_out = self.tpo 
-                
-                self.tcp_timeout = 0
-            except:
-                print("Could not start AMPT data thread")
-                self.tcp_timeout += 1
 
             # There is little to do, so just echo when we're operational
             if self.enabled:
@@ -457,7 +414,7 @@ class Module():
             self.outputs[2][4] = 0
             self.outputs[2][5] = average_bus_voltage_out
             self.outputs[2][6] = total_current_out
-            self.outputs[2][7] = total_power_out # in kW
+            self.outputs[2][7] = total_power_out / 1000 # in kW
             self.outputs[2][8] = 0
             self.outputs[2][9] = 0
             self.outputs[2][10] = 0
@@ -502,26 +459,6 @@ class Module():
 
         loop_time = time.time() - s
 
-    def get_pv_data(self):
-        try:
-            api_addr = "http://" + self.dbData["dc_solar_ipaddr_local"] + ":8080/api"
-            response = requests.get(api_addr, auth=('admin', 'password'))
-            
-            if response.status_code == 200:                                                     # If it isn't 200, we have either set the wrong IP address or the API isn't configured on the CU
-                total_current = 0
-                total_voltage = 0
-                total_optimizers = int(len(response.json())) 
-                
-                for optimizer in response.json():
-                    total_current += float(optimizer["iout"])
-                    total_voltage += float(optimizer["vout"])
-                
-                self.abvo = round(total_voltage/total_optimizers, 2)
-                self.tco = round(total_current, 2)
-                self.tpo = round((total_current * self.abvo)/1000, 2)
-        except:
-            print("Unable to get PV data from the AMPT CU")
-            
     def read_device_registers(self, device_index, base_registers, num_registers):
         # Ensure num_registers is an integer
         if not isinstance(num_registers, int):
@@ -666,7 +603,7 @@ class Module():
             self.faults |= (1 << fault)
         else:
             self.faults &= ~(1 << fault)
-        
+              
     def get_info(self):
         return [GET_INFO_ACK, self.uid, self.module_type, self.icon, self.name, self.manufacturer, self.model, self.options, self.version, self.website]
     
@@ -674,7 +611,7 @@ class Module():
         return [GET_STATUS_ACK, self.uid, self.heartbeat, self.priV, self.priA, self.secV, self.secA, self.terV, self.terA, self.state, self.warnings, self.alarms, self.faults, self.actions, self.icon]
     
     def save_to_db(self):
-        # This shouldn't be triggered by buttons!
+        
         try:
             db.save_to_db(__name__ + "_(" + str(self.uid) + ")", self.dbData)
         except Exception as e:
@@ -703,8 +640,8 @@ def driver(queue, uid):
             rx_msg = queue[1].get()
             
             if isinstance(rx_msg, list):
-                if rx_msg[0] == SYNC: 
-
+                if rx_msg[0] == SYNC:    
+                    
                     if not thread.is_alive():
                         thread = Thread(target=flex_module.process)
                         thread.start()
@@ -724,7 +661,7 @@ def driver(queue, uid):
                 
                 elif rx_msg[0] == GET_OUTPUTS:
                     tx_msg = flex_module.get_outputs()
-                
+                   
                 elif rx_msg[0] == SET_INPUTS:
                     tx_msg = flex_module.set_inputs(rx_msg[1])
                 
@@ -733,7 +670,7 @@ def driver(queue, uid):
                     
         except Exception as e:
             print("DC Solar: " + str(e))
-        
+          
         try:
             if tx_msg is not None:
                 queue[0].put(tx_msg, block=True)
@@ -741,7 +678,7 @@ def driver(queue, uid):
         except Exception as e:
             print("DC Solar: " + str(e))
             
-
+ 
 # Enums
 class ModTypes(Enum):
     BASE = 0
@@ -767,7 +704,7 @@ class ModTypes(Enum):
     DC_EFM = 20
     EV_CHARGE = 21
 
-    SCADA = 22      # Add option to select Protocol within module?
+    SCADA = 22      
     LOGGING = 23
     CLIENT = 24
     UNDEFINED = 25

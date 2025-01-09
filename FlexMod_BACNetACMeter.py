@@ -1,16 +1,12 @@
 # BACnet Interface - AC Meter Module
 
-# Description
 # This was developed for EcoPark which accesses specific data points from a BACnet interface, not directly from a meter (which reduced the amount of knowledge needed for the end device).
-# The BACnet Python Library (BAC0) won't allow multiple processes to access BACnet over the same interface (Configured NIC), so to allow us to access AC Meter and AC SOlar data from different
-# Flex3 modules, we're going to use an intermediary BACnet to Modbus bridge. So this Module will look like it is reading from a Modbus device (our localhost server), but it is fed from BACnet.
+# The BACnet Python Library (BAC0) won't allow multiple processes to access BACnet over the same interface (COnfigured NIC), so to allow us to access AC Meter and AC SOlar data from different
+# Flex3 modules, we're going to use an intermediary BACnet to Modbus bridge. So this MOdule will look like it is reading from a Modbus device (our localhost server), but it is fed from BACnet.
 # Make sure BACnetServer.py is running in a separate thread and pointing at the data points you require, else your modules won't connect and or/ your data will be confusing.
 # Got it? Good.
 
 # At present only a few parameters are made available to us, and only one for the Site Load Power
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling. 
 
 from threading import Thread, Event
 from FlexDB import FlexTinyDB
@@ -64,7 +60,6 @@ class Module():
         self.icon = "/static/images/ACmeter.png"
         self.name = "BACnet Bridged AC Meter"
         self.module_type = ModTypes.AC_METER.value
-        self.module_version = "3.5.24.10.16"                                                        # Last update on "Flex version | Year | Month | Day"
         self.manufacturer = "Multi Source Power"
         self.model = ""
         self.options = ""
@@ -122,7 +117,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
     def process(self):
 

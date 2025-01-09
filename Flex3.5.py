@@ -100,7 +100,7 @@ def unload_templates():
         # Remove the templates from memory
         FlexTemplates.clear()
         #print(FlexTemplates)
-        print("Flex3.5 is now running...")
+        print("Flex3 is now running...")
 
 
 # Load Modules from a given layout
@@ -576,7 +576,7 @@ class Module():
                                 
                 except Exception as e:
                     print("Error when reading SET_INPUTS from Flex Module: " + str(e))
-            print(len(FlexModules))
+                
             for key in FlexModules:
                 # Set Client Inputs (Modules doing the thinking)
                 try:
@@ -641,7 +641,7 @@ def frontEnd():
     
 if __name__ == '__main__':
     
-    print("Flex3.5 Started at 127.0.0.1:8080")
+    print("Flex3 Started at 127.0.0.1:8080")
     
     # Create and init our Module class
     flex_module = Module()

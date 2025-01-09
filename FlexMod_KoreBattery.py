@@ -1,6 +1,4 @@
 # Kore - Battery Module
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
 # TODO: Cycles...ugh
 # TODO: Finish single stack alerts...later
 # TODO: Include echo code in the override mechanism...maybe
@@ -137,7 +135,7 @@ class Module():
             self.version = 0
             self.serial = ""  # This can be replaced with the device serial number later
             self.website = "/Mod/FlexMod_KoreBattery"  # This is the template name itself
-            self.module_version = "3.5.24.10.16"
+
             # Run state
             self.con_state = False
             self.state = "Idle"
@@ -322,7 +320,7 @@ class Module():
             # self.thread = Interval(self.stop, self.__process, self.interval)
             # self.thread.start()
 
-            print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+            print("Starting " + self.name + " with UID " + str(self.uid))
 
             # Track Interval usage (GIL interference)
             self.start_time = time.time()
@@ -334,6 +332,7 @@ class Module():
             log_message(kore_logger, f"Error initialising kore module: {e}", log_level='error')
 
     def process(self):
+
         try:
             global loop_time
             #print("(2)  Battery Heartbeat: " + str(self.heartbeat) + ", loop time: " + str(loop_time) + " Seconds")
@@ -378,7 +377,6 @@ class Module():
             #     # Check for TCP connection
             if self.tcp_timeout >= 5:
                 self.tcp_client = None
-                log_message(kore_logger, "TCP Timeout reached 5 in Kore Battery", log_level='warning')
                 self.tcp_timeout = 0     # Without this we'll never escape the Nonoe state after the first error encountered.
 
             if self.tcp_client is None:
@@ -393,7 +391,6 @@ class Module():
                                     self.update_faults(Faults.LOSS_OF_COMMS.value, False)  # Clear Fault
                                     self.set_state_text(State.CONNECTED)
                                     self.con_state = True
-                                    log_message(kore_logger, "TCP Client established in Kore Battery", log_level='info')
                                 else:
                                     self.update_faults(Faults.LOSS_OF_COMMS.value, True)  # Raise Fault
                                     self.set_state_text(State.CONNECTING)
@@ -414,7 +411,8 @@ class Module():
                     self.update_faults(Faults.LOSS_OF_COMMS.value, True)  # Raise Fault
                     self.set_state_text(State.CONNECTING)
             else:
-
+                self.con_state = True
+                
                 # General Monitoring. Requires the E-Stop interlocks / Rack Power enabled for live data before closing contactors.
 
             # Common data
@@ -710,8 +708,7 @@ class Module():
 
                             # Always append data to lists, whether online or offline
                             contactor_value_list.append(contactor_value)
-                            if USE_KORE_SOC:
-                                soc_list.append(self.decode_u16(data, 8) * (10 ** SoC_SF))
+                            soc_list.append(self.decode_u16(data, 8) * (10 ** SoC_SF))
                             soh_list.append(self.decode_u16(data, 12) * (10 ** SoH_SF))
                             bus_voltage_list.append(self.decode_u16(data, 14) * (10 ** Vol_SF))
                             bus_current_list.append(self.decode_s16(data, 13) * (10 ** Amp_SF))
@@ -1752,11 +1749,14 @@ class Module():
 
 def driver(queue, uid):
     
+    #print("MODULE STARTED with ID " + str(uid))
+    
     # Create and init our Module class
     flex_module = Module(uid, queue)
     
-    # Create a dummy thread
-    thread = Thread(target=flex_module.process)
+    # Start the interval timer for periodic device polling
+    #thread = Interval(Event(), flex_module.process, 2)  # This needs looking at. Kore is dropping its connection occasionally and we must be buffer overloading with many requests.
+    #thread.start()
     
     # Process piped requests
     while True:
@@ -1768,10 +1768,8 @@ def driver(queue, uid):
             
             if isinstance(rx_msg, list):
                 if rx_msg[0] == SYNC: 
-                    
-                    if not thread.is_alive():
-                        thread = Thread(target=flex_module.process)
-                        thread.start()
+                    if sys.getrefcount(flex_module) <= 2:
+                        Thread(target=flex_module.process).start()
                     tx_msg = None
                     
                 elif rx_msg[0] == GET_INFO: 
@@ -1796,14 +1794,14 @@ def driver(queue, uid):
                     print("Command Unknown: " + str(rx_msg[0]))
                     
         except Exception as e:
-            print("Kore Battery: " + str(e))
+            print("EPC Inverter: " + str(e))
             log_message(kore_logger, f"Error in Kore Battery driver: {e}", log_level='error')
         try:
             if tx_msg is not None:
                 queue[0].put(tx_msg, block=True)
                 
         except Exception as e:
-            print("Kore Battery: " + str(e))
+            print("EPC Inverter: " + str(e))
             log_message(kore_logger, f"Error in Kore Battery driver 2: {e}", log_level='error')
             
 

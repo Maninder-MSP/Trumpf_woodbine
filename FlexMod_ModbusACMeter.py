@@ -1,13 +1,9 @@
-# FlexMod_ModbusACMeter.py
-
-# Description
 # Modbus Interface - AC Meter Module
+
 # A customer wishes to send their AC meter data to the client module of our SCADA interface.
 # So this is a generic AC Meter which reads our own client module data instead of a physical peripheral and presents it to the system as if it were real.
 # in a very similar way to our BACnet modules.
 
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
 
 from threading import Thread, Event
 from FlexMod import BaseModule, ModTypes
@@ -62,7 +58,6 @@ class Module():
         self.icon = "/static/images/ACmeter.png"
         self.name = "Modbus Bridged AC Meter"
         self.module_type = ModTypes.AC_METER.value
-        self.module_version = "3.5.24.10.16"                                                        # Last update on "Flex version | Year | Month | Day"
         self.manufacturer = "Multi Source Power"
         self.model = ""
         self.options = ""
@@ -121,7 +116,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
     def process(self):
 

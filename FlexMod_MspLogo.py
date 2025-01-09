@@ -1,11 +1,4 @@
-# FlexMod_MspLogo.py
-
-# Description
-# Simple Logo module, redirects to the MSP Home Page
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-
+# Example Module.py, Launches child and initialises the base class
 import sys
 from datetime import datetime
 from enum import Enum
@@ -42,7 +35,6 @@ class Module():
         self.icon = "/static/images/mspLogo.png"
         self.name = "MSP Logo"
         self.module_type = ModTypes.UNDEFINED.value
-        self.module_version = "3.5.24.10.16"
         self.manufacturer = "MSP"
         self.model = ""
         self.options = ""
@@ -74,7 +66,7 @@ class Module():
         self.terV = 0                                                                                 # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
     def process(self):
         global loop_time

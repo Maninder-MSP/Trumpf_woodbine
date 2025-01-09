@@ -1,11 +1,5 @@
-# FlexMod_MspLogging.py
-
-# Description
-# Local (to file) and Remote (to server) logging facility
+# FlexMod_MspLogging.py, Local (to file) and Remote (to server) logging facility
 # Now delegated to an external application that we can update / replace on the fly
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
 
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
@@ -55,7 +49,6 @@ class Module():
         self.icon = "/static/images/Logging.png"
         self.name = "MSP Logging"
         self.module_type = ModTypes.LOGGING.value
-        self.module_version = "3.5.24.10.16"
         self.manufacturer = "MSP"
         self.model = ""
         self.options = ""
@@ -128,7 +121,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
         self.countdown = 10
         
         # Track Interval usage (GIL interference)
@@ -193,7 +186,7 @@ class Module():
             
             # We check if the logging application exists.
             try:
-                if os.path.isfile(r"C:\Users\Sophie\Documents\GitHub\Flex-Control-Phase-3.5\FlexLogger.py"):
+                if os.path.isfile(r"C:\Users\End User\Documents\Flex3\FlexLogger.py"):
                     # Check if the logging module has been loaded, and load if necessary
                     if "FlexLogger" not in sys.modules:
                         
@@ -284,21 +277,18 @@ class Module():
                                     self.logging_local_buffer_count = rx_msg[1][0]
                                     self.logging_local_file_count = rx_msg[1][1]
                                     self.logging_remote_buffer_count = rx_msg[1][2]
-                                    self.warnings = rx_msg[1][3]
-                                    self.alarms = rx_msg[1][4]
-                                    self.faults = rx_msg[1][5]
                                     
                         except Exception as e:
                             print("Error when sending GET OUTPUTS to Flex Logger: " + str(e))
                         
                 else:
-                    print("FlexLogger Process is not running")
+                    # print("FlexLogger Process is not running")
                     if "FlexLogger" in sys.modules:
                         self.logging_process.terminate()
                         del sys.modules["FlexLogger"]
                         
             except Exception as e:
-                print("Logging 1: " + str(e))
+                print("Logging: " + str(e))
 
 
             if len(self.actions) == 0:

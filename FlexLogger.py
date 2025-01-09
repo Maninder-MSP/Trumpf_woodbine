@@ -1,7 +1,3 @@
-# Please refer to the following table for system limits when creating or amending alerts.
-# https://msptechnologiesltd.sharepoint.com/:x:/s/productdesign/EVneLzRReWBHofqww3THmvYBDA21T-9CC3RzgRiKD1y1mg?e=tT8hlR
-
-import FlexAlerts
 from datetime import datetime
 from pymodbus.client.sync import ModbusTcpClient as mbTCPClient
 from multiprocessing import Process
@@ -9,7 +5,6 @@ import socketio
 import sys
 import time
 from threading import Thread, Event
-from enum import Enum
 
 import smtplib
 from email.mime.text import MIMEText
@@ -19,11 +14,11 @@ from email.mime.multipart import MIMEMultipart
 mbTCP_client = mbTCPClient("127.0.0.1", port=502)
 try:
     if mbTCP_client.connect():# 
-        print("FlexLogger connected to Flex3 Modbus Server")
+        print("Flex Logger connected to Flex3 Modbus Server")
     else:
-        print("FlexLogger could not connect to Flex3 Modbus Server")
+        print("Flex Logger could not connect to Flex3 Modbus Server")
 except:
-    print("FlexLogger could not connect to Flex3 Modbus Server")
+    print("Flex Logger could not connect to Flex3 Modbus Server")
     
 
 # Queued commands
@@ -42,6 +37,7 @@ GET_OUTPUTS_ACK = 11
 SET_INPUTS = 12
 SET_INPUTS_ACK = 13
 ERROR = 100
+
 
 # Separate class to define socketio connections and associated callbacks.
 class SocketConnection:
@@ -73,12 +69,6 @@ class SocketConnection:
 # Class containing common data and process thread
 class Module():
     def __init__(self, uid, queue):
-        
-        # General Module Data
-        self.author = "Sophie Coates"
-        self.module_version = "3.5.24.10.10"                                                        # Last update on "Flex version | Year | Month | Day"
-        self.manufacturer = "MSP"
-        
         # Inputs
         self.logging_data_store = ""
         self.logging_data_server = "wss://bess-be.com"
@@ -98,9 +88,9 @@ class Module():
         self.logging_local_buffer_count = 0
         self.logging_local_file_count = 0
         self.logging_remote_buffer_count = 0
-        self.warnings = 0
-        self.alarms = 0
-        self.faults = 0
+        
+        # Local logic
+        
         
         # Remote logic
         self.logging_remote_interval_state = 0
@@ -110,13 +100,10 @@ class Module():
         self.logging_remote_buffer_count = 0
         self.logging_remote_log_packet = dict()
         
-        # Local logic
-        self.logging_local_buffer = dict()
-        self.logging_local_interval_counter = 0
-        
         # Heartbeat timeout history
         self.heartbeat_check = [0] * 25
         self.heartbeat_check_count = [0] * 25
+        self.mod_timeout_alert = False
         
         # Accumulated module strings
         self.controller_status_string = ""
@@ -144,12 +131,6 @@ class Module():
         self.logging_status_string = ""
         self.client_status_string = ""
         self.undefined_status_string = ""
-        
-        # Alert Persistance timeouts
-        self.battery_cell_voltage_high_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-        self.battery_cell_voltage_low_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-        self.battery_cell_temp_high_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-        self.battery_cell_temp_low_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
         
         # Email states
         self.send_alert_email = False
@@ -215,12 +196,12 @@ class Module():
                             
                             try:
                                 rr = mbTCP_client.read_holding_registers(251 + offset, 25, unit=1)
-                                
+                
                                 if not rr.isError():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         head_ip = str((rr.registers[13] >> 8) & 0xFF) + "." + str((rr.registers[13] >> 0) & 0xFF) + "."
@@ -260,28 +241,19 @@ class Module():
                                         log_data["controller_" + uid + "_longitude"] = float(self.longitude[0])
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.CONTROL] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.CONTROL_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:                                        
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.CONTROL_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                        
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.controller_status_string += \
@@ -342,7 +314,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["battery_" + uid + "_uid"] = rr.registers[0]
@@ -373,129 +345,20 @@ class Module():
                                         log_data["battery_" + uid + "_actions"] = 0 #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.BATTERY] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.BATTERY_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:                                        
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.BATTERY_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                        
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
-                                        # Cell Voltage High Alarm
-                                        if log_data["battery_" + uid + "_cell_voltage_max"] >= FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_ALARM_SETPOINT and \
-                                           log_data["battery_" + uid + "_cell_voltage_max"] < FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_FAULT_SETPOINT:
-                                            if self.battery_cell_voltage_high_timeout > 0:
-                                                self.battery_cell_voltage_high_timeout -= 1                                                
-                                            else:
-                                                self.battery_cell_voltage_high_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-                                                if self.alarms == 0:
-                                                    self.alarms = FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_ALARM
-                                                self.send_alert_email = True                                                    
-                                        elif self.alarms == FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_ALARM:
-                                            self.alarms = 0
-                                            
-                                        # Cell Voltage High Fault
-                                        if log_data["battery_" + uid + "_cell_voltage_max"] >= FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_FAULT_SETPOINT:
-                                            if self.battery_cell_voltage_high_timeout > 0:
-                                                self.battery_cell_voltage_high_timeout -= 1                                                
-                                            else:
-                                                self.battery_cell_voltage_high_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_FAULT
-                                                self.send_alert_email = True
-                                        elif self.faults == FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_FAULT:
-                                            self.faults = 0
-                                        
-                                        # Cell Voltage Low Alarm
-                                        if log_data["battery_" + uid + "_cell_voltage_min"] <= FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_ALARM_SETPOINT and \
-                                           log_data["battery_" + uid + "_cell_voltage_min"] > FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_FAULT_SETPOINT:
-                                            if self.battery_cell_voltage_low_timeout > 0:
-                                                self.battery_cell_voltage_low_timeout -= 1                                                
-                                            else:
-                                                self.battery_cell_voltage_low_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-                                                if self.alarms == 0:
-                                                    self.alarms = FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_ALARM
-                                                self.send_alert_email = True
-                                        elif self.alarms == FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_ALARM:
-                                            self.alarms = 0
-                                                
-                                        # Cell Voltage Low Fault
-                                        if log_data["battery_" + uid + "_cell_voltage_min"] <= FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_FAULT_SETPOINT:
-                                            if self.battery_cell_voltage_low_timeout > 0:
-                                                self.battery_cell_voltage_low_timeout -= 1
-                                            else:
-                                                self.battery_cell_voltage_low_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_FAULT
-                                                self.send_alert_email = True
-                                        elif self.faults == FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_FAULT:
-                                            self.faults = 0
-                                            
-                                        # Cell Temp High Alarm
-                                        if log_data["battery_" + uid + "_cell_temp_max"] >= FlexAlerts.BATTERY_CELL_TEMP_HIGH_ALARM_SETPOINT and \
-                                           log_data["battery_" + uid + "_cell_temp_max"] < FlexAlerts.BATTERY_CELL_TEMP_HIGH_FAULT_SETPOINT:
-                                            if self.battery_cell_temp_high_timeout > 0:
-                                                self.battery_cell_temp_high_timeout -= 1                                                
-                                            else:
-                                                self.battery_cell_temp_high_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-                                                if self.alarms == 0:
-                                                    self.alarms = FlexAlerts.BATTERY_CELL_TEMP_HIGH_ALARM
-                                                self.send_alert_email = True                                                    
-                                        elif self.alarms == FlexAlerts.BATTERY_CELL_TEMP_HIGH_ALARM:
-                                            self.alarms = 0
-                                            
-                                        # Cell Temp High Fault
-                                        if log_data["battery_" + uid + "_cell_temp_max"] >= FlexAlerts.BATTERY_CELL_TEMP_HIGH_FAULT_SETPOINT:
-                                            if self.battery_cell_temp_high_timeout > 0:
-                                                self.battery_cell_temp_high_timeout -= 1                                                
-                                            else:
-                                                self.battery_cell_temp_high_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.BATTERY_CELL_TEMP_HIGH_FAULT
-                                                self.send_alert_email = True
-                                        elif self.faults == FlexAlerts.BATTERY_CELL_TEMP_HIGH_FAULT:
-                                            self.faults = 0
-                                            
-                                        # Cell Temp Low Alarm
-                                        if log_data["battery_" + uid + "_cell_temp_min"] <= FlexAlerts.BATTERY_CELL_TEMP_LOW_ALARM_SETPOINT and \
-                                           log_data["battery_" + uid + "_cell_temp_min"] > FlexAlerts.BATTERY_CELL_TEMP_LOW_FAULT_SETPOINT:
-                                            if self.battery_cell_temp_low_timeout > 0:
-                                                self.battery_cell_temp_low_timeout -= 1                                                
-                                            else:
-                                                self.battery_cell_temp_low_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-                                                if self.alarms == 0:
-                                                    self.alarms = FlexAlerts.BATTERY_CELL_TEMP_LOW_ALARM
-                                                self.send_alert_email = True
-                                        elif self.alarms == FlexAlerts.BATTERY_CELL_TEMP_LOW_ALARM:
-                                            self.alarms = 0
-                                                
-                                        # Cell Temp Low Fault
-                                        if log_data["battery_" + uid + "_cell_temp_min"] <= FlexAlerts.BATTERY_CELL_TEMP_LOW_FAULT_SETPOINT:
-                                            if self.battery_cell_temp_low_timeout > 0:
-                                                self.battery_cell_temp_low_timeout -= 1
-                                            else:
-                                                self.battery_cell_temp_low_timeout = FlexAlerts.BATTERY_CELL_TIMEOUT
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.BATTERY_CELL_TEMP_LOW_FAULT
-                                                self.send_alert_email = True
-                                        elif self.faults == FlexAlerts.BATTERY_CELL_TEMP_LOW_FAULT:
-                                            self.faults = 0
-                                                
                                         # Module email string
                                         self.battery_status_string += \
                                             "<tr><td>Battery UID: </td><td>"                + str(log_data["battery_" + uid + "_uid"]) + "</td></tr>" + \
@@ -558,7 +421,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["inverter_" + uid + "_uid"] = rr.registers[0]
@@ -588,28 +451,19 @@ class Module():
                                         log_data["inverter_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.INVERTER] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.INVERTER_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.INVERTER_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                        
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.inverter_status_string += \
@@ -673,7 +527,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                        
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["ac_meter_" + uid + "_uid"] = rr.registers[0]
@@ -698,28 +552,19 @@ class Module():
                                         log_data["ac_meter_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.AC_METER] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.AC_METER_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.AC_METER_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                        
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.ac_meter_status_string += \
@@ -778,7 +623,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                     
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["dc_meter_" + uid + "_uid"] = rr.registers[0]
@@ -798,28 +643,19 @@ class Module():
                                         log_data["dc_meter_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                     
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.DC_METER] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.DC_METER_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.DC_METER_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                        
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.dc_meter_status_string += \
@@ -873,7 +709,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["digio_" + uid + "_uid"] = rr.registers[0]
@@ -896,28 +732,19 @@ class Module():
                                         log_data["digio_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.DIG_IO] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.DIO_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.DIO_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.digital_io_status_string += \
@@ -974,7 +801,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["anaio_" + uid + "_uid"] = rr.registers[0]
@@ -1005,28 +832,19 @@ class Module():
                                         log_data["anaio_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.ANA_IO] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.AIO_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.AIO_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.analogue_io_status_string += \
@@ -1091,7 +909,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["mixedio_" + uid + "_uid"] = rr.registers[0]
@@ -1103,28 +921,19 @@ class Module():
                                         log_data["mixedio_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.MIXED_IO] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.MIO_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.MIO_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.mixed_io_status_string += \
@@ -1170,7 +979,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["switch_" + uid + "_uid"] = rr.registers[0]
@@ -1182,28 +991,19 @@ class Module():
                                         log_data["switch_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.SWITCH] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.SWITCH_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.SWITCH_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.switch_status_string += \
@@ -1249,7 +1049,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["li_ion_" + uid + "_uid"] = rr.registers[0]
@@ -1278,28 +1078,19 @@ class Module():
                                         log_data["li_ion_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.LI_ION] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.LI_ION_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.LI_ION_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.li_ion_status_string += \
@@ -1362,7 +1153,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["dcdc_" + uid + "_uid"] = rr.registers[0]
@@ -1383,28 +1174,19 @@ class Module():
                                         log_data["dcdc_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.DCDC] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.DCDC_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.DCDC_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.dcdc_status_string += \
@@ -1459,7 +1241,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["aircon_" + uid + "_uid"] = rr.registers[0]
@@ -1488,28 +1270,19 @@ class Module():
                                         log_data["aircon_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.AIRCON] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.AIRCON_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.AIRCON_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.aircon_status_string += \
@@ -1572,7 +1345,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["sensor_" + uid + "_uid"] = rr.registers[0]
@@ -1584,33 +1357,24 @@ class Module():
                                         log_data["sensor_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.SENSOR] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.SENSOR_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.SENSOR_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.sensor_status_string += \
-                                            "<tr><td>Sensor UID: </td><td>"                 + str(log_data["sensor_" + uid + "_uid"]) + "</td></tr>" + \
-                                            "<tr><td>Sensor Enable State: </td><td>"        + str(log_data["sensor_" + uid + "_enable_state"]) + "</td></tr>" + \
+                                            "<tr><td>Switch UID: </td><td>"                 + str(log_data["sensor_" + uid + "_uid"]) + "</td></tr>" + \
+                                            "<tr><td>Switch Enable State: </td><td>"        + str(log_data["sensor_" + uid + "_enable_state"]) + "</td></tr>" + \
                                             "<tr><td>Heartbeat: </td><td>"                  + str(log_data["sensor_" + uid + "_heartbeat"]) + "</td></tr>" + \
                                             "<tr><td>Warnings: </td><td>"                   + str(log_data["sensor_" + uid + "_warnings"]) + "</td></tr>" + \
                                             "<tr><td>Alarms: </td><td>"                     + str(log_data["sensor_" + uid + "_alarms"]) + "</td></tr>" + \
@@ -1651,7 +1415,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["fuel_cell_" + uid + "_uid"] = rr.registers[0]
@@ -1677,28 +1441,19 @@ class Module():
                                         log_data["fuel_cell_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.FUEL_CELL] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.FUEL_CELL_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.FUEL_CELL_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.fuel_cell_status_string += \
@@ -1758,7 +1513,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["ac_gen_" + uid + "_uid"] = rr.registers[0]
@@ -1785,28 +1540,19 @@ class Module():
                                         log_data["ac_gen_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.AC_GEN] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.AC_GEN_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.AC_GEN_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.ac_gen_status_string += \
@@ -1867,7 +1613,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["ac_wind_" + uid + "_uid"] = rr.registers[0]
@@ -1879,28 +1625,19 @@ class Module():
                                         log_data["ac_wind_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.AC_WIND] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.AC_WIND_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.AC_WIND_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.ac_wind_status_string += \
@@ -1940,7 +1677,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["ac_solar_" + uid + "_uid"] = rr.registers[0]
@@ -1964,28 +1701,19 @@ class Module():
                                         log_data["ac_solar_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.AC_SOLAR] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.AC_SOLAR_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.AC_SOLAR_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.ac_solar_status_string += \
@@ -2037,7 +1765,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["dc_solar_" + uid + "_uid"] = rr.registers[0]
@@ -2061,28 +1789,19 @@ class Module():
                                         log_data["dc_solar_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.DC_SOLAR] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.DC_SOLAR_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.DC_SOLAR_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.dc_solar_status_string += \
@@ -2134,7 +1853,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["ac_efm_" + uid + "_uid"] = rr.registers[0]
@@ -2152,28 +1871,19 @@ class Module():
                                         log_data["ac_efm_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.AC_EFM] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.AC_EFM_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0 
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:                                                           
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.AC_EFM_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.ac_efm_status_string += \
@@ -2219,7 +1929,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["dc_efm_" + uid + "_uid"] = rr.registers[0]
@@ -2237,28 +1947,19 @@ class Module():
                                         log_data["dc_efm_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.DC_EFM] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.DC_EFM_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0  
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:                                                           
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.DC_EFM_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.dc_efm_status_string += \
@@ -2315,7 +2016,7 @@ class Module():
                                             #     vehicle_vid += ':'
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["ev_charge_" + uid + "_uid"] = rr.registers[0]
@@ -2339,29 +2040,20 @@ class Module():
                                         log_data["ev_charge_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.EV_CHARGE] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.EV_CHARGER_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0    
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:                                                           
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.EV_CHARGER_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
-                                            
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
+                                        
                                         # Module email string
                                         self.ev_charge_status_string += \
                                             "<tr><td>EV Charge UID: </td><td>"              + str(log_data["ev_charge_" + uid + "_uid"]) + "</td></tr>" + \
@@ -2412,7 +2104,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["scada_" + uid + "_uid"] = rr.registers[0]
@@ -2426,28 +2118,19 @@ class Module():
                                         log_data["scada_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.SCADA] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.SCADA_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:                                                           
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.SCADA_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.scada_status_string += \
@@ -2513,28 +2196,19 @@ class Module():
                                         log_data["logging_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.LOGGING] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.LOGGING_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.LOGGING_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.logging_status_string += \
@@ -2592,7 +2266,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["client_" + uid + "_uid"] = rr.registers[0]
@@ -2604,28 +2278,19 @@ class Module():
                                         log_data["client_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.CLIENT] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.CLIENT_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.CLIENT_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.client_status_string += \
@@ -2671,7 +2336,7 @@ class Module():
                                     if len(rr.registers) >= 25:
                                         
                                         ######################
-                                        # Remote Log Data    #
+                                        # Log Data           #
                                         ######################
                                         
                                         log_data["undefined_" + uid + "_uid"] = rr.registers[0]
@@ -2683,28 +2348,19 @@ class Module():
                                         log_data["undefined_" + uid + "_actions"] = 0    #rr.registers[25]  # Currently unavailable over SCADA
                                         
                                         ######################
-                                        # Local Log Data     #
-                                        ######################
-                                        
-                                        self.logging_local_buffer[ModTypes.UNDEFINED] = rr.registers
-                                        
-                                        ######################
                                         # Alerts             #
                                         ######################
                                         
                                         # Module Heartbeat Timeout
                                         if (rr.registers[2] - self.heartbeat_check[rr.registers[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
-                                            self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
-                                            self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
-                                            if self.faults == FlexAlerts.UNDEFINED_HEARTBEAT_TIMEOUT_FAULT:
-                                                self.faults = 0
+                                           self.heartbeat_check[rr.registers[0]] = rr.registers[2]                  # Reset the Heartbeat reference
+                                           self.heartbeat_check_count[rr.registers[0]] = 0                          # Reset the timeout count
                                         else:
-                                            self.heartbeat_check_count[rr.registers[0]] += 1
+                                           self.heartbeat_check_count[rr.registers[0]] += 1
                                             
-                                            if self.heartbeat_check_count[rr.registers[0]] >= FlexAlerts.MODULE_TIMEOUT:  
-                                                if self.faults == 0:
-                                                    self.faults = FlexAlerts.UNDEFINED_HEARTBEAT_TIMEOUT_FAULT
-                                                self.send_alert_email = True
+                                        if self.heartbeat_check_count[rr.registers[0]] >= 60:                                                           
+                                            self.mod_timeout_alert = True
+                                            self.send_alert_email = True
                                         
                                         # Module email string
                                         self.undefined_status_string += \
@@ -2749,19 +2405,9 @@ class Module():
 
 
             # Local logs ---------
-            self.logging_local_interval_counter += 1
-            if self.logging_local_interval_counter >= int(self.logging_local_interval):
-                self.logging_local_interval_counter = 0
-                pass
             
-                #list_of_files = []
-                #try:
-                #    list_of_files = os.listdir(self.dbData["logging_data_store"])
-                #except:
-                #    print("WARNING: Unable to access files")
-                # 
-                #self.logging_local_file_count = len(list_of_files)
-                   
+            
+            
             # Alert and Alarm Email processing ----------
             if self.email_cooldown > 0:                                                             # We can disable the email feature by zeroing the timeout period
 
@@ -2772,102 +2418,11 @@ class Module():
                 else:
                     if self.send_alert_email:
                         alert = ""
-                        
-                        # This might not be desirable if there are multiple active faults, but only one is sent at a time.
-                        # Control
-                        if self.faults == FlexAlerts.CONTROL_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Control Module Timeout Fault"                        
-                        # Battery
-                        elif self.faults == FlexAlerts.BATTERY_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Battery Module Timeout Fault"                        
-                        elif self.faults == FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_FAULT:                                  # Always prioritise faults before alarms
-                            alert = "Battery Cell Voltage High Fault"
-                        elif self.alarms == FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_ALARM:
-                            alert = "Battery Cell Voltage High Alarm"                            
-                        elif self.faults == FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_FAULT:                                   # Always prioritise faults before alarms
-                            alert = "Battery Cell Voltage Low Fault"
-                        elif self.alarms == FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_ALARM:
-                            alert = "Battery Cell Voltage Low Alarm"                            
-                        elif self.faults == FlexAlerts.BATTERY_CELL_TEMP_HIGH_FAULT:                                   # Always prioritise faults before alarms
-                            alert = "Battery Cell Temperature High Fault"
-                        elif self.alarms == FlexAlerts.BATTERY_CELL_TEMP_HIGH_ALARM:
-                            alert = "Battery Cell Temperature High Alarm"
-                        elif self.faults == FlexAlerts.BATTERY_CELL_TEMP_LOW_FAULT:                                   # Always prioritise faults before alarms
-                            alert = "Battery Cell Temperature Low Fault"
-                        elif self.alarms == FlexAlerts.BATTERY_CELL_TEMP_LOW_ALARM:
-                            alert = "Battery Cell Temperature Low Alarm"     
-                        # Inverter
-                        elif self.faults == FlexAlerts.INVERTER_HEARTBEAT_TIMEOUT_FAULT: 
-                            alert = "Inverter Module Timeout Fault"                        
-                        # AC Meter
-                        elif self.faults == FlexAlerts.AC_METER_HEARTBEAT_TIMEOUT_FAULT: 
-                            alert = "AC Meter Module Timeout Fault"                             
-                        # DC Meter
-                        elif self.faults == FlexAlerts.DC_METER_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "DC Meter Module Timeout Fault"                        
-                        # Digital IO
-                        elif self.faults == FlexAlerts.DIO_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Digital IO Module Timeout Fault"                        
-                        # Analogue IO
-                        elif self.faults == FlexAlerts.AIO_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Analogue IO Module Timeout Fault"                        
-                        # Mixed IO
-                        elif self.faults == FlexAlerts.MIO_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Mixed IO Module Timeout Fault"                            
-                        # Switch
-                        elif self.faults == FlexAlerts.SWITCH_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Switch Module Timeout Fault"                        
-                        # Li-Ion Tamer
-                        elif self.faults == FlexAlerts.LI_ION_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Li-Ion Tamer Module Timeout Fault"                        
-                        # DC-DC
-                        elif self.faults == FlexAlerts.DCDC_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "DC-DC Module Timeout Fault"                        
-                        # Aircon
-                        elif self.faults == FlexAlerts.AIRCON_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Aircon Module Timeout Fault"                         
-                        # Sensor
-                        elif self.faults == FlexAlerts.SENSOR_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Sensor Module Timeout Fault"                             
-                        # Fuel Cell
-                        elif self.faults == FlexAlerts.FUEL_CELL_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Fuel Cell Module Timeout Fault"                            
-                        # AC Generator
-                        elif self.faults == FlexAlerts.AC_GEN_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "AC Generator Module Timeout Fault"                        
-                        # AC Wind
-                        elif self.faults == FlexAlerts.AC_WIND_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "AC Wind Module Timeout Fault"                        
-                        # AC Solar
-                        elif self.faults == FlexAlerts.AC_SOLAR_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "AC Solar Module Timeout Fault"                            
-                        # DC Solar
-                        elif self.faults == FlexAlerts.DC_SOLAR_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "DC Solar Module Timeout Fault"                         
-                        # AC EFM
-                        elif self.faults == FlexAlerts.AC_EFM_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "AC EFM Module Timeout Fault"                        
-                        # DC EFM
-                        elif self.faults == FlexAlerts.DC_EFM_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "DC EFM Module Timeout Fault"                         
-                        # EV Charger
-                        elif self.faults == FlexAlerts.EV_CHARGER_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "EV Charger Module Timeout Fault"                             
-                        # SCADA
-                        elif self.faults == FlexAlerts.SCADA_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "SCADA Module Timeout Fault"                         
-                        # Logging
-                        elif self.faults == FlexAlerts.LOGGING_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Logging Module Timeout Fault"                            
-                        # Client
-                        elif self.faults == FlexAlerts.CLIENT_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Client Module Timeout Fault"                         
-                        # Undefined
-                        elif self.faults == FlexAlerts.UNDEFINED_HEARTBEAT_TIMEOUT_FAULT:
-                            alert = "Undefined Module Timeout Fault"
-                        else:
-                            alert = "Unknown Fault: " + str(self.faults)
-                            
+
+                        if self.mod_timeout_alert:
+                            alert = "Module Timeout Alert."
+                            self.mod_timeout_alert = False
+
                         enable_state = " "
 
                         project_name = " "
@@ -2933,10 +2488,7 @@ class Module():
         self.outputs[0] = self.logging_local_buffer_count
         self.outputs[1] = self.logging_local_file_count
         self.outputs[2] = self.logging_remote_buffer_count
-        self.outputs[3] = self.warnings
-        self.outputs[4] = self.alarms
-        self.outputs[5] = self.faults
-
+        
         return [GET_OUTPUTS_ACK, self.outputs]
         
     def set_inputs(self, inputs):
@@ -3061,33 +2613,3 @@ def driver(queue, uid):
                 
         except Exception as e:
             print("Logger: " + str(e))
-
-
-# Enums
-class ModTypes(Enum):
-    BASE = 0
-    CONTROL = 1
-    BATTERY = 2
-    INVERTER = 3
-    AC_METER = 4
-    DC_METER = 5
-    DIG_IO = 6
-    ANA_IO = 7
-    MIXED_IO = 8
-    SWITCH = 9
-    LI_ION = 10
-    DCDC = 11
-    AIRCON = 12
-    SENSOR = 13
-    FUEL_CELL = 14
-    AC_GEN = 15
-    AC_WIND = 16
-    AC_SOLAR = 17
-    DC_SOLAR = 18
-    AC_EFM = 19
-    DC_EFM = 20
-    EV_CHARGE = 21
-    SCADA = 22      
-    LOGGING = 23
-    CLIENT = 24
-    UNDEFINED = 25

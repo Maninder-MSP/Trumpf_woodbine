@@ -1,10 +1,4 @@
 # Intesis INMBSMID008I000 - Midea Aircon Module (using the Intesis control interface - up to 8 Indoor ACs)
-
-# Description
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 import sys
 from threading import Thread, Event
@@ -50,7 +44,6 @@ class Module():
         self.icon = "/static/images/Aircon.png"
         self.name = "Midea Air Conditioning"
         self.module_type = ModTypes.AIRCON.value
-        self.module_version = "3.5.24.10.16"
         self.manufacturer = "Midea (Intesis)"
         self.model = ""
         self.options = ""
@@ -118,7 +111,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
         self.enabled = False
 
         self.aircon_states = [0]*8

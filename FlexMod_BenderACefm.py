@@ -1,11 +1,4 @@
-# FlexMod_BenderACefm.py 
-
-# Description
-# AC EFM Module
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-
+# Bender - AC EFM Module
 import sys
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
@@ -56,7 +49,6 @@ class Module():
         self.icon = "/static/images/ACefm.png"
         self.name = "AC Earth Fault Monitor"
         self.module_type = ModTypes.AC_EFM.value
-        self.module_version = "3.5.24.10.16"
         self.manufacturer = "Bender"
         self.model = ""
         self.options = ""
@@ -118,7 +110,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
         
         # Track Interval usage (GIL interference)
         self.start_time = time.time()

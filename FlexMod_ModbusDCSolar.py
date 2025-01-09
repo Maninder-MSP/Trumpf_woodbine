@@ -1,13 +1,8 @@
-# FlexMod_ModbusDCSolar.py
-
-# Description
 # Modbus Interface - DC Meter Module
+
 # A customer wishes to send their DC solar data to the client module of our SCADA interface.
 # So this is a generic DC Solar which reads our own client module data instead of a physical peripheral and presents it to the system as if it were real.
 # in a very similar way to our BACnet modules.
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
 
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
@@ -131,7 +126,6 @@ class Module():
         self.icon = "/static/images/DCsolar.png"
         self.name = "Modbus Bridged DC Solar"
         self.module_type = ModTypes.DC_SOLAR.value
-        self.module_version = "3.5.24.10.16"                                                        # Last update on "Flex version | Year | Month | Day"
         self.manufacturer = "Multi Source Power"
         self.model = ""
         self.options = ""
@@ -201,7 +195,7 @@ class Module():
         self.total_daily_energy = 0
         self.db_time_counter = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
     def update_weather_icon(self):
         current_weather_icon = get_weather_icon()

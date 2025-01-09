@@ -1,10 +1,4 @@
-# FlexMod_AdamAnaIO.py
-
-# Description
-# ADAM 6015 Analogue IO Module
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling. 
+# ADAM 6015 - Analogue IO Module
 
 import sys
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
@@ -48,7 +42,6 @@ class Module():
         self.icon = "/static/images/AnaIO.png"
         self.name = "ADAM-6015"
         self.module_type = ModTypes.ANA_IO.value
-        self.module_version = "3.5.24.10.16"                                                        # Last update on "Flex version | Year | Month | Day"
         self.manufacturer = "ADAM"
         self.model = ""
         self.options = ""
@@ -96,7 +89,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
     def process(self):
         global loop_time

@@ -1,13 +1,7 @@
 # FlexMod_MspControl.py, Safety controls and SCADA passthrough
-
-# Description
+#
 #  Note: "ERROR:engineio.client:websocket-client package not installed"
 #         Needed this: pip3 install "python-socketio[client]"  , where "client" is literally "client"
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling. 
-
-import FlexAlerts
 import sys
 from threading import Thread, Event
 from FlexDB import FlexTinyDB
@@ -55,7 +49,6 @@ class Module():
         self.icon = "/static/images/Control.png"
         self.name = "MSP Controller"
         self.module_type = ModTypes.CONTROL.value
-        self.module_version = "3.5.24.10.16"                                                        # Last update on "Flex version | Year | Month | Day"
         self.model = ""
         self.options = ""
         self.manufacturer = "MSP"
@@ -136,9 +129,6 @@ class Module():
         self.thermal_alarm_switch_active = False
         self.off_gas_detected = False
 
-        self.inverter_g100_breach_count = 0
-        self.g100_breach_fault = False
-        
         self.mod_timeout_alert = False
 
         self.low_volt_fault = False
@@ -150,7 +140,7 @@ class Module():
         self.rack_offline_alert = False
         self.bank_offline_fault = False
         self.e_stop_fault = False
-        self.system_healthy = False
+        self.system_healthy = True  # Forced true due to lack of IO
         self.li_ion_tamer_alert = False
         self.racks_online = 0
         self.send_alert_email = False
@@ -181,12 +171,6 @@ class Module():
         self.faults = 0
         self.actions = [0]
         
-        self.logging_warnings = 0
-        self.logging_alarms = 0
-        self.logging_faults = 0
-        
-        
-        '''
         self.heartbeat_check = [0] * 25
         self.heartbeat_check_count = [0] * 25
         self.controller_status_string = ""
@@ -214,7 +198,7 @@ class Module():
         self.logging_status_string = ""
         self.client_status_string = ""
         self.undefined_status_string = ""
-        '''
+
         # HMI data, from which power is derived.
         self.priV = 0  # Primary units of AC Voltage and Current
         self.priA = 0
@@ -223,7 +207,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
         # Get the localhost IP
         hostname = socket.gethostname()
@@ -247,7 +231,7 @@ class Module():
         self.interval_count = 0
         self.max_delay = 0
         self.last_time = 0
-    '''
+
     def send_email(self, subject, body):
 
         # Email specifics
@@ -281,7 +265,7 @@ class Module():
             
             self.email_server.quit()
             return False
-    '''
+
     def twos_comp_to_int(self, twoC):
         # calculate int from two's compliment input
         return twoC if not twoC & 0x8000 else -(0xFFFF - twoC + 1)
@@ -342,23 +326,6 @@ class Module():
 
         self.enabled_echo = True  # The module is always enabled, awaiting a start bit.
 
-        # Monitor the faults detected by the logging system and shut down the system if necessary
-        disable_system = False
-        if self.logging_faults == FlexAlerts.BATTERY_CELL_VOLTAGE_HIGH_FAULT or \
-           self.logging_faults == FlexAlerts.BATTERY_CELL_VOLTAGE_LOW_FAULT or \
-           self.logging_faults == FlexAlerts.BATTERY_CELL_TEMP_HIGH_FAULT or \
-           self.logging_faults == FlexAlerts.BATTERY_CELL_TEMP_LOW_FAULT:
-            disable_system = True
-
-        if self.operating_state_scada & (1 << 9):        # Only disable if we're already running.
-            if disable_system:
-                self.operating_state_hmi &= ~(1 << 0)    # Clear HMI Enable flag (as the user hasn't manually disabled the system)
-                self.operating_state_scada &= ~(1 << 0)  # Disable the system
-                self.operating_state_scada &= ~(1 << 8)  # Clear Setup state
-                self.operating_state_scada &= ~(1 << 9)  # Clear Running state
-                self.operating_state_scada |= (1 << 10)  # Set shutdown state
-
-        '''
         # Alert and Alarm Email processing
         if self.client_active:  # We must be running before sending scary emails out
             if self.email_cooldown > 0:                                                             # We can disable the email feature by zeroing the timeout period
@@ -538,7 +505,7 @@ class Module():
         else:
             self.send_alert_email = False
             self.send_fault_email = False  # Prevent triggering emails for pre-enabled conditions
-        '''
+
         # Prevent system start if there's a hardware e-stop active
         if not self.system_healthy:
             #self.operating_state_scada &= ~(1 << 1)  # Clear enable bit, client should shut the system down. (Looks incorrect)
@@ -606,105 +573,102 @@ class Module():
             else:
                 self.uptime = 0
 
-        # Module Timeouts
-        
-
         # Door Switch
-        #if self.door_open:
-        #    self.update_warnings(Warnings.DOOR_OPEN.value, True)
-        #else:
-        #    self.update_warnings(Warnings.DOOR_OPEN.value, False)
+        if self.door_open:
+            self.update_warnings(Warnings.DOOR_OPEN.value, True)
+        else:
+            self.update_warnings(Warnings.DOOR_OPEN.value, False)
 
         # System Thermal Monitoring and reporting - Warnings
-        #if self.min_system_temp < int(self.warning_temp_min):
-        #    self.update_warnings(Warnings.LOW_TEMP.value, True)
-        #else:
-        #    self.update_warnings(Warnings.LOW_TEMP.value, False)
+        if self.min_system_temp < int(self.warning_temp_min):
+            self.update_warnings(Warnings.LOW_TEMP.value, True)
+        else:
+            self.update_warnings(Warnings.LOW_TEMP.value, False)
 
-        #if self.max_system_temp > int(self.warning_temp_max):
-        #    self.update_warnings(Warnings.HIGH_TEMP.value, True)
-        #else:
-        #    self.update_warnings(Warnings.HIGH_TEMP.value, False)
+        if self.max_system_temp > int(self.warning_temp_max):
+            self.update_warnings(Warnings.HIGH_TEMP.value, True)
+        else:
+            self.update_warnings(Warnings.HIGH_TEMP.value, False)
 
         # System Thermal Monitoring and reporting - Alarms
-        #if self.min_system_temp < int(self.alarm_temp_min):
-        #    self.update_alarms(Alarms.LOW_TEMP.value, True)
-        #else:
-        #    self.update_alarms(Alarms.LOW_TEMP.value, False)
+        if self.min_system_temp < int(self.alarm_temp_min):
+            self.update_alarms(Alarms.LOW_TEMP.value, True)
+        else:
+            self.update_alarms(Alarms.LOW_TEMP.value, False)
 
-        #if self.max_system_temp > int(self.alarm_temp_max):
-        #    self.update_alarms(Alarms.HIGH_TEMP.value, True)
-        #else:
-        #    self.update_alarms(Alarms.HIGH_TEMP.value, False)
+        if self.max_system_temp > int(self.alarm_temp_max):
+            self.update_alarms(Alarms.HIGH_TEMP.value, True)
+        else:
+            self.update_alarms(Alarms.HIGH_TEMP.value, False)
 
         # System Thermal Monitoring and reporting - Faults
-        #if self.min_system_temp < int(self.fault_temp_min):
-        #    self.update_faults(Faults.LOW_TEMP.value, True)
-        #else:
-        #    self.update_faults(Faults.LOW_TEMP.value, False)
+        if self.min_system_temp < int(self.fault_temp_min):
+            self.update_faults(Faults.LOW_TEMP.value, True)
+        else:
+            self.update_faults(Faults.LOW_TEMP.value, False)
 
-        #if self.max_system_temp > int(self.fault_temp_max):
-        #    self.update_faults(Faults.HIGH_TEMP.value, True)
+        if self.max_system_temp > int(self.fault_temp_max):
+            self.update_faults(Faults.HIGH_TEMP.value, True)
 
             # Releasing the gas suppression system currently requires an overtemp condition and Li-Ion Tamer detection
-        #    if self.off_gas_detected:
-        #        self.gas_release = True
-        #else:
-        #    self.update_faults(Faults.HIGH_TEMP.value, False)
+            if self.off_gas_detected:
+                self.gas_release = True
+        else:
+            self.update_faults(Faults.HIGH_TEMP.value, False)
 
         # Inverter Thermal Monitoring and reporting - Warnings
-        #if self.min_inverter_temp < int(self.inverter_warning_temp_min):
-        #    self.update_warnings(Warnings.LOW_TEMP.value, True)
-        #else:
-        #    self.update_warnings(Warnings.LOW_TEMP.value, False)
+        if self.min_inverter_temp < int(self.inverter_warning_temp_min):
+            self.update_warnings(Warnings.LOW_TEMP.value, True)
+        else:
+            self.update_warnings(Warnings.LOW_TEMP.value, False)
 
-        #if self.max_inverter_temp > int(self.inverter_warning_temp_max):
-        #    self.update_warnings(Warnings.HIGH_TEMP.value, True)
-        #else:
-        #    self.update_warnings(Warnings.HIGH_TEMP.value, False)
+        if self.max_inverter_temp > int(self.inverter_warning_temp_max):
+            self.update_warnings(Warnings.HIGH_TEMP.value, True)
+        else:
+            self.update_warnings(Warnings.HIGH_TEMP.value, False)
 
         # Inverter Thermal Monitoring and reporting - Alarms
-        #if self.min_inverter_temp < int(self.inverter_alarm_temp_min):
-        #    self.update_alarms(Alarms.LOW_TEMP.value, True)
-        #else:
-        #    self.update_alarms(Alarms.LOW_TEMP.value, False)
+        if self.min_inverter_temp < int(self.inverter_alarm_temp_min):
+            self.update_alarms(Alarms.LOW_TEMP.value, True)
+        else:
+            self.update_alarms(Alarms.LOW_TEMP.value, False)
 
-        #if self.max_inverter_temp > int(self.inverter_alarm_temp_max):
-        #    self.update_alarms(Alarms.HIGH_TEMP.value, True)
-        #else:
-        #    self.update_alarms(Alarms.HIGH_TEMP.value, False)
+        if self.max_inverter_temp > int(self.inverter_alarm_temp_max):
+            self.update_alarms(Alarms.HIGH_TEMP.value, True)
+        else:
+            self.update_alarms(Alarms.HIGH_TEMP.value, False)
 
         # Inverter Thermal Monitoring and reporting - Faults
-        #if self.min_inverter_temp < int(self.inverter_fault_temp_min):
-        #    self.update_faults(Faults.LOW_TEMP.value, True)
-        #else:
-        #    self.update_faults(Faults.LOW_TEMP.value, False)
+        if self.min_inverter_temp < int(self.inverter_fault_temp_min):
+            self.update_faults(Faults.LOW_TEMP.value, True)
+        else:
+            self.update_faults(Faults.LOW_TEMP.value, False)
 
-        #if self.max_inverter_temp > int(self.inverter_fault_temp_max):
-        #    self.update_faults(Faults.HIGH_TEMP.value, True)
-        #else:
-        #    self.update_faults(Faults.HIGH_TEMP.value, False)
+        if self.max_inverter_temp > int(self.inverter_fault_temp_max):
+            self.update_faults(Faults.HIGH_TEMP.value, True)
+        else:
+            self.update_faults(Faults.HIGH_TEMP.value, False)
 
         # Thermal Switches
-        #if self.thermal_warning_switch_active:
-        #    self.update_warnings(Warnings.HIGH_TEMP_SWITCH.value, True)
-        #else:
-        #    self.update_warnings(Warnings.HIGH_TEMP_SWITCH.value, False)
+        if self.thermal_warning_switch_active:
+            self.update_warnings(Warnings.HIGH_TEMP_SWITCH.value, True)
+        else:
+            self.update_warnings(Warnings.HIGH_TEMP_SWITCH.value, False)
 
-        #if self.thermal_alarm_switch_active:
-        #    self.update_alarms(Alarms.HIGH_TEMP_SWITCH.value, True)
-        #else:
-        #    self.update_alarms(Alarms.HIGH_TEMP_SWITCH.value, False)
+        if self.thermal_alarm_switch_active:
+            self.update_alarms(Alarms.HIGH_TEMP_SWITCH.value, True)
+        else:
+            self.update_alarms(Alarms.HIGH_TEMP_SWITCH.value, False)
 
         # TODO: I think we should be reporting off-gas even if the system temps haven't reached their limit(s)
 
         # Smoke Alarm
-        #if self.smoke_alarm_active:
-        #    self.update_faults(Faults.SMOKE_ALARM_ACTIVE.value, True)
-        #    self.gas_release = True
-        #elif not self.off_gas_detected:
-        #    self.update_faults(Faults.SMOKE_ALARM_ACTIVE.value, False)
-        #    self.gas_release = False
+        if self.smoke_alarm_active:
+            self.update_faults(Faults.SMOKE_ALARM_ACTIVE.value, True)
+            self.gas_release = True
+        elif not self.off_gas_detected:
+            self.update_faults(Faults.SMOKE_ALARM_ACTIVE.value, False)
+            self.gas_release = False
 
         # Data update
         self.outputs[2][0] = self.heartbeat
@@ -932,7 +896,7 @@ class Module():
                         inv_temp_max = "ctrl_inverter_fault_temp_max_" + str(dev[0])
                         if inv_temp_max in self.dbData:
                             self.inverter_fault_temp_max = self.dbData[inv_temp_max]
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:            # Heartbeat has changed since last rotation
@@ -943,7 +907,7 @@ class Module():
                                 if self.heartbeat_check_count[dev[0]] >= 60:
                                     self.mod_timeout_alert = True
                                     self.send_alert_email = True
-                    
+
                     system_control = ""
                     if self.operating_state_scada & (1 << 1):                                       # Remote mode
 
@@ -964,7 +928,7 @@ class Module():
                                 system_control += "System is enabled under Local control"
                             else:
                                 system_control += "System is disabled under Local control"
-                    
+
                     system_state = "Idle"
                     if self.operating_state_scada & (1 << 7):
                         system_state = "E-Stop"
@@ -976,7 +940,6 @@ class Module():
                         system_state = "Shutdown"
 
                     # Email Content
-                    
                     self.controller_status_string += \
                         "<tr><td>Controller UID: </td><td>" + str(dev[0]) + "</td></tr>" + \
                         "<tr><td>Controller State: </td><td>" + str(dev[2][1]) + "</td></tr>" + \
@@ -986,7 +949,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # Battery (module type 2)
             if not self.inputs[ModTypes.BATTERY.value] is not None:
                 self.battery_status_string = "<tr align=\"left\"><th>BATTERY</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1000,7 +963,7 @@ class Module():
                             min_mod_temp = dev[2][13]
                         if dev[2][14] > int(max_mod_temp):
                             max_mod_temp = dev[2][14]
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:                                                      # Raise alerts only when the system is running
                             # System Alert Cell Voltage High
@@ -1091,7 +1054,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # Inverter (module type 3)
             if not self.inputs[ModTypes.INVERTER.value] is not None:
                 self.inverter_status_string = "<tr align=\"left\"><th>INVERTER</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1109,7 +1072,7 @@ class Module():
                             max_inv_mod_temp = dev[2][17]
                         if 100 > dev[2][18] > max_inv_mod_temp:
                             max_inv_mod_temp = dev[2][18]
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1136,46 +1099,16 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # AC Meter (module type 4)
-            if self.inputs[ModTypes.AC_METER.value] is not None:
+
+            # AC Meters (module type 4)
+            if not self.inputs[ModTypes.AC_METER.value] is not None:
+                self.ac_meter_status_string = "<tr align=\"left\"><th>AC METER</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
+            else:
+                self.ac_meter_status_string = "<tr align=\"left\"><th>AC METER</th></tr>"
                 for dev in self.inputs[ModTypes.AC_METER.value]:
                     if dev[1]:
-                        
-                        if dev[0] == 14:    # Absolute Fudge for qpark, we know the grid meter location and need its data to estop on g100
-                            ac_meter_grid_power = dev[2][7]
-                            
-                            if ac_meter_grid_power < 0:
-                                self.inverter_g100_breach_count += 1
+                        pass
 
-                                if self.inverter_g100_breach_count == 10:  # Shut the system off (15 seconds might be too late, add control)
-                                    self.inverter_g100_breach_count = 0
-                                    
-                                    self.g100_breach_fault = True           # Force the e-stop open
-                                    print("G100 Event Detected!")
-                            else:
-                                self.inverter_export_breach_count = 0
-                                self.g100_breach_fault = False
-                            
-                        # Here is where we distinguish between grid / load and grid+load metering
-                        # Although in this project we only have one grid+load meter so should I bother?
-                        #meter_location = "client_ac_meter_location_" + str(dev[0])
-                        #if meter_location in self.dbData:
-                            #if self.dbData[meter_location] == "Grid" or self.dbData[meter_location] == "Grid_and_Load":
-                                #self.ac_meter_grid_power = dev[2][7]
-                                #self.ac_meter_grid_power_kva = dev[2][13]
-                            #elif self.dbData[meter_location] == "Load":
-                            #    self.ac_meter_load_power = dev[2][7]
-            
-            # AC Meters (module type 4)
-            #if not self.inputs[ModTypes.AC_METER.value] is not None:
-            #    self.ac_meter_status_string = "<tr align=\"left\"><th>AC METER</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
-            #else:
-            #    self.ac_meter_status_string = "<tr align=\"left\"><th>AC METER</th></tr>"
-            #    for dev in self.inputs[ModTypes.AC_METER.value]:
-            #        if dev[1]:
-            #            pass
-                    '''
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1202,7 +1135,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # DC Meters (module type 5)
             if not self.inputs[ModTypes.DC_METER.value] is not None:
                 self.dc_meter_status_string = "<tr align=\"left\"><th>DC METER</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1211,7 +1144,7 @@ class Module():
                 for dev in self.inputs[ModTypes.DC_METER.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1234,7 +1167,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # Digital IO (module type 6)
             if not self.inputs[ModTypes.DIG_IO.value] is not None:
                 self.digital_io_status_string = "<tr align=\"left\"><th>DIGITAL IO</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1308,7 +1241,7 @@ class Module():
                                     self.thermal_alarm_switch_active = self.get_input_state(dev[2], io)
                             else:
                                 self.thermal_alarm_switch_active = False
-                        '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1319,7 +1252,7 @@ class Module():
                                 if self.heartbeat_check_count[dev[0]] >= 60:
                                     self.mod_timeout_alert = True
                                     self.send_alert_email = True
-                        '''     
+                        
                         # Output response
                         
                         # System Enable Output
@@ -1331,19 +1264,16 @@ class Module():
                                 
                                 if dev[0] == uid:
                                     
-                                    if self.g100_breach_fault is False:
-                                        if self.operating_state_scada & (1 << 0) or self.operating_state_hmi & (1 << 0) or self.system_enable_test:
-                                            if io < 8:
-                                                dev[2][5] &= ~(0x03 << (io * 2))
-                                                dev[2][5] |= (0x01 << (io * 2))
-                                                
-                                            self.system_enable_test = False     # Reset the button state
+                                    if self.operating_state_scada & (1 << 0) or self.operating_state_hmi & (1 << 0) or self.system_enable_test:
+                                        if io < 8:
+                                            dev[2][5] &= ~(0x03 << (io * 2))
+                                            dev[2][5] |= (0x01 << (io * 2))
+                                            
+                                        self.system_enable_test = False     # Reset the button state
 
-                                        else:
-                                            if not self.client_active:  # The system has been disabled but we should wait for the client to wind down
-                                                dev[2][5] &= ~(0x03 << (io * 2))  # all systems before cutting off the E-stop loop
                                     else:
-                                        dev[2][5] &= ~(0x03 << (io * 2))
+                                        if not self.client_active:  # The system has been disabled but we should wait for the client to wind down
+                                            dev[2][5] &= ~(0x03 << (io * 2))  # all systems before cutting off the E-stop loop
 
                         # Smoke Reset Output
                         output = "ctrl_smoke_reset_op_" + str(dev[0])
@@ -1396,7 +1326,7 @@ class Module():
                                             dev[2][5] |= (0x01 << (io * 2))
                                     else:
                                         dev[2][5] &= ~(0x03 << (io * 2))
-                    '''
+
                     # Email Content
                     self.digital_io_status_string += \
                         "<tr><td>Digital IO UID: </td><td>" + str(dev[0]) + "</td></tr>" + \
@@ -1414,7 +1344,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # Analogue IO (module type 7)
             if not self.inputs[ModTypes.ANA_IO.value] is not None:
                 self.analogue_io_status_string = "<tr align=\"left\"><th>ANALOGUE IO</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1487,7 +1417,7 @@ class Module():
                                         min_mod_temp = dev[2][io + 4]
                                     elif dev[2][io + 4] > max_mod_temp:
                                         max_mod_temp = dev[2][io + 4]
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1516,7 +1446,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # Mixed IO (module type 8)
             if not self.inputs[ModTypes.MIXED_IO.value] is not None:
                 self.mixed_io_status_string = "<tr align=\"left\"><th>MIXED IO</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1525,7 +1455,7 @@ class Module():
                 for dev in self.inputs[ModTypes.MIXED_IO.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1543,7 +1473,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # Switch (module type 9)
             if not self.inputs[ModTypes.SWITCH.value] is not None:
                 self.switch_status_string = "<tr align=\"left\"><th>SWITCH</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1552,7 +1482,7 @@ class Module():
                 for dev in self.inputs[ModTypes.SWITCH.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1570,7 +1500,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # Li-Ion Tamer (module type 10)
             if not self.inputs[ModTypes.LI_ION.value] is not None:
                 self.li_ion_status_string = "<tr align=\"left\"><th>LI-ION TAMER</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1578,9 +1508,8 @@ class Module():
                 self.li_ion_status_string = "<tr align=\"left\"><th>LI-ION TAMER</th></tr>"
                 for dev in self.inputs[ModTypes.LI_ION.value]:
                     if dev[1]:
-                        pass                                                         # TODO: Gen 2 doesn't support temp but Gen 3 will.
-                    '''
-                        # Temperatures 
+                        # Temperatures                                                          # TODO: Gen 2 doesn't support temp but Gen 3 will.
+
                         # Alarm state - GEN 2!!
                         if dev[2][15] or dev[2][17]:  # Sensor Alarm Any - A sensor or System detects off-gas
                             self.off_gas_detected = True
@@ -1589,7 +1518,7 @@ class Module():
                             self.send_alert_email = True
                         else:
                             self.off_gas_detected = False
-                    
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1624,8 +1553,8 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # DC-DC (module type 11)
+
+                        # DC-DC (module type 11)
             if not self.inputs[ModTypes.DCDC.value] is not None:
                 self.dcdc_status_string = "<tr align=\"left\"><th>DC-DC</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:
@@ -1637,7 +1566,7 @@ class Module():
                             min_mod_temp = dev[2][15]
                         elif dev[2][15] > max_mod_temp:
                             max_mod_temp = dev[2][15]
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1664,7 +1593,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # Aircon (module type 12)
             if not self.inputs[ModTypes.AIRCON.value] is not None:
                 self.aircon_status_string = "<tr align=\"left\"><th>AIRCON</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1679,7 +1608,7 @@ class Module():
                                     min_mod_temp = dev[2][7 + (online_ac * 2)]
                                 elif dev[2][7 + (online_ac * 2)] > max_mod_temp:
                                     max_mod_temp = dev[2][7 + (online_ac * 2)]
-                        '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1690,14 +1619,14 @@ class Module():
                                 if self.heartbeat_check_count[dev[0]] >= 60:
                                     self.mod_timeout_alert = True
                                     self.send_alert_email = True
-                        '''
+                        
                         # Temperature Setpoint
                         setpoint = "ctrl_aircon_temp_setpoint_" + str(dev[0])
 
                         if setpoint in self.dbData:
                             if 17 <= int(self.dbData[setpoint]) <= 30:
                                 dev[2][4] = int(self.dbData[setpoint])
-                    '''
+
                     # TODO: Review naming as Hithium isn't HVAC
                     # Email Content
                     self.aircon_status_string += \
@@ -1716,7 +1645,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+                        
             # Sensor (module type 13)
             if not self.inputs[ModTypes.SENSOR.value] is not None:
                 self.sensor_status_string = "<tr align=\"left\"><th>SENSOR</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1725,7 +1654,7 @@ class Module():
                 for dev in self.inputs[ModTypes.SENSOR.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1743,8 +1672,8 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # Fuel Cell (module type 14)
+
+                        # Fuel Cell (module type 14)
             if not self.inputs[ModTypes.FUEL_CELL.value] is not None:
                 self.fuel_cell_status_string = "<tr align=\"left\"><th>FUEL CELL</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:
@@ -1752,7 +1681,7 @@ class Module():
                 for dev in self.inputs[ModTypes.FUEL_CELL.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1778,8 +1707,8 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # AC Generator (module type 15)
+
+                        # AC Generator (module type 15)
             if not self.inputs[ModTypes.AC_GEN.value] is not None:
                 self.ac_gen_status_string = "<tr align=\"left\"><th>AC GENERATOR</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:
@@ -1791,7 +1720,7 @@ class Module():
                             min_mod_temp = dev[2][7]
                         elif dev[2][7] > max_mod_temp:
                             max_mod_temp = dev[2][7]
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1824,8 +1753,8 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # AC Wind (module type 16)
+
+                        # AC Wind (module type 16)
             if not self.inputs[ModTypes.AC_WIND.value] is not None:
                 self.ac_wind_status_string = "<tr align=\"left\"><th>AC WIND</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:
@@ -1833,7 +1762,7 @@ class Module():
                 for dev in self.inputs[ModTypes.AC_WIND.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1851,8 +1780,8 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # AC Solar (module type 17)
+
+                        # AC Solar (module type 17)
             if not self.inputs[ModTypes.AC_SOLAR.value] is not None:
                 self.ac_solar_status_string = "<tr align=\"left\"><th>AC SOLAR</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:
@@ -1860,7 +1789,7 @@ class Module():
                 for dev in self.inputs[ModTypes.AC_SOLAR.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1884,8 +1813,8 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # DC Solar (module type 18)
+
+                        # DC Solar (module type 18)
             if not self.inputs[ModTypes.DC_SOLAR.value] is not None:
                 self.dc_solar_status_string = "<tr align=\"left\"><th>DC SOLAR</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:
@@ -1893,7 +1822,7 @@ class Module():
                 for dev in self.inputs[ModTypes.DC_SOLAR.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1917,7 +1846,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # AC EFM (module type 19)
             if not self.inputs[ModTypes.AC_EFM.value] is not None:
                 self.ac_efm_status_string = "<tr align=\"left\"><th>AC EFM</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1926,7 +1855,7 @@ class Module():
                 for dev in self.inputs[ModTypes.AC_EFM.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1950,7 +1879,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # DC EFM (module type 20)
             if not self.inputs[ModTypes.DC_EFM.value] is not None:
                 self.dc_efm_status_string = "<tr align=\"left\"><th>DC EFM</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1959,7 +1888,7 @@ class Module():
                 for dev in self.inputs[ModTypes.DC_EFM.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -1982,7 +1911,7 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
+
             # EV Charger (module type 21)
             if not self.inputs[ModTypes.EV_CHARGE.value] is not None:
                 self.ev_charge_status_string = "<tr align=\"left\"><th>EV CHARGER</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
@@ -1991,7 +1920,7 @@ class Module():
                 for dev in self.inputs[ModTypes.EV_CHARGE.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -2020,8 +1949,8 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # SCADA (module type 22)
+
+                        # SCADA (module type 22)
             if not self.inputs[ModTypes.SCADA.value] is not None:
                 self.scada_status_string = "<tr align=\"left\"><th>SCADA</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:
@@ -2029,7 +1958,7 @@ class Module():
                 for dev in self.inputs[ModTypes.SCADA.value]:
                     if dev[1]:
                         pass
-                    '''
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -2048,21 +1977,16 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # Logging (module type 23)
+
+                        # Logging (module type 23)
             if not self.inputs[ModTypes.LOGGING.value] is not None:
                 self.logging_status_string = "<tr align=\"left\"><th>LOGGING</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:
                 self.logging_status_string = "<tr align=\"left\"><th>LOGGING</th></tr>"
                 for dev in self.inputs[ModTypes.LOGGING.value]:
                     if dev[1]:
-                        
-                        # Let's deal with faults (which are reported by Flexlogger.py)
-                        self.logging_warnings = dev[2][20]
-                        self.logging_alarms = dev[2][21]
-                        self.logging_faults = dev[2][22]
-                        
-                    '''
+                        pass
+
                         # Alerts and Faults #
                         if self.client_active:
                             if (dev[2][0] - self.heartbeat_check[dev[0]] & 0xFFFF) > 0:  # Heartbeat has changed since last rotation
@@ -2081,8 +2005,8 @@ class Module():
                         "<tr><td>Warnings: </td><td>" + str(dev[2][20]) + "</td></tr>" + \
                         "<tr><td>Alarms: </td><td>" + str(dev[2][21]) + "</td></tr>" + \
                         "<tr><td>Faults: </td><td>" + str(dev[2][22]) + "</td></tr>"
-                    '''
-            # Client (module type 24)
+
+                        # Client (module type 24)
             if not self.inputs[ModTypes.CLIENT.value] is not None:
                 self.client_status_string = "<tr align=\"left\"><th>CLIENT</th></tr>" + "<tr><td>No device installed" + "</td></tr>"
             else:

@@ -1,12 +1,12 @@
+# ##################################################################################################
 # SCADA Module
-
-# Description
+# Multi Source Power, 2023
+# S. Coates
+#
 # The SCADA module takes all the other module outputs (as does the controller and logger), and puts
 # them out over a modbus/sunspec/mqtt? register map supporting scalability for all installed devices
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-
+#
+# ##################################################################################################
 import sys
 from threading import Thread, Event
 from FlexDB import FlexTinyDB
@@ -82,7 +82,6 @@ class Module():
         self.icon = "/static/images/SCADA.png"
         self.name = "MSP SCADA Interface"
         self.module_type = ModTypes.SCADA.value
-        self.module_version = "3.5.24.10.16"
         self.manufacturer = "MSP"
         self.model = ""
         self.options = ""
@@ -173,7 +172,7 @@ class Module():
 
         self.fuel_cell_kw_setpoint = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
         
         # Track Interval usage (GIL interference)
         self.start_time = time.time()
@@ -260,7 +259,7 @@ class Module():
                                     return
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA11: " + str(e))
                                 self.update_faults(Faults.LOSS_OF_COMMS.value, True)
                                 self.set_state_text(State.CONNECTING)
                         else:
@@ -340,7 +339,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA1: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -348,7 +347,7 @@ class Module():
                         self.tcp_timeout = 0
                         
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA2: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -374,7 +373,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA3: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -382,7 +381,7 @@ class Module():
                         self.tcp_timeout = 0
 
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA4: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -408,7 +407,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA5: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -416,7 +415,7 @@ class Module():
                         self.tcp_timeout = 0
                         
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA6: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -442,7 +441,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA7: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -450,7 +449,7 @@ class Module():
                         self.tcp_timeout = 0
                         
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA8: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -476,7 +475,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA9: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -484,7 +483,7 @@ class Module():
                         self.tcp_timeout = 0
                         
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA10: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -510,7 +509,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA12: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -518,7 +517,7 @@ class Module():
                         self.tcp_timeout = 0
                         
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA13: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -554,7 +553,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA14: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -562,7 +561,7 @@ class Module():
                         self.tcp_timeout = 0
                         
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA15: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -588,7 +587,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA16: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -596,7 +595,7 @@ class Module():
                         self.tcp_timeout = 0
                         
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA17: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -622,7 +621,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA18: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -1083,7 +1082,7 @@ class Module():
                                 self.tcp_timeout = 0
 
                             except Exception as e:
-                                print("SCADA: " + str(e))
+                                print("SCADA98: " + str(e))
                                 self.tcp_timeout += 1
                                 return
 
@@ -1091,7 +1090,7 @@ class Module():
                         self.tcp_timeout = 0
                         
                     except Exception as e:
-                        print("SCADA: " + str(e))
+                        print("SCADA97: " + str(e))
                         self.tcp_timeout += 1
                         return
 
@@ -1300,7 +1299,7 @@ class Module():
                             SF2 = pow(10, -self.twos_comp_to_int(type_1_data[20]))
                             type_1_data[18] = int(type_1_data[18] * SF2)                                    # Modbus map version
                             
-                            # Late addition but True is converted to '1' which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to '1' which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_1_data[1] = int(type_1_data[1])
                             
                         try:
@@ -1322,7 +1321,6 @@ class Module():
 
                             # Format data which requires scaling
                             SF1 = pow(10, -self.twos_comp_to_int(type_1_data[19]))
-                            SF3 = pow(10, -self.twos_comp_to_int(type_1_data[21]))
                             type_2_data[(module * 25) + 5] = int(type_2_data[(module * 25) + 5] * SF1)                                      # SoC
                             type_2_data[(module * 25) + 6] = int(type_2_data[(module * 25) + 6] * SF1)                                      # SoH
                             type_2_data[(module * 25) + 7] = self.int_to_twos_comp(int(type_2_data[(module * 25) + 7] * SF1))               # DC Bus Voltage
@@ -1331,17 +1329,17 @@ class Module():
                             type_2_data[(module * 25) + 10] = (type_2_data[(module * 25) + 10] & 0xFFFF)
                             type_2_data[(module * 25) + 11] = (int(type_2_data[(module * 25) + 11]/1000) * SF1)                             # Max Charge Power
                             type_2_data[(module * 25) + 12] = (int(type_2_data[(module * 25) + 12]/1000) * SF1)                             # Max Discharge Power
-                            type_2_data[(module * 25) + 13] = int(type_2_data[(module * 25) + 13] * SF3)                                    # Cell Voltage Min
-                            type_2_data[(module * 25) + 14] = int(type_2_data[(module * 25) + 14] * SF3)                                    # Cell Voltage Max
-                            type_2_data[(module * 25) + 15] = int(type_2_data[(module * 25) + 15] * SF3)                                    # Cell Voltage Avg
-                            type_2_data[(module * 25) + 16] = self.int_to_twos_comp(int(type_2_data[(module * 25) + 16] * SF3))             # Cell Temp Min
-                            type_2_data[(module * 25) + 17] = self.int_to_twos_comp(int(type_2_data[(module * 25) + 17] * SF3))             # Cell Temp Max
-                            type_2_data[(module * 25) + 18] = self.int_to_twos_comp(int(type_2_data[(module * 25) + 18] * SF3))             # Cell Temp Avg
+                            type_2_data[(module * 25) + 13] = int(type_2_data[(module * 25) + 13] * SF1)                                    # Cell Voltage Min
+                            type_2_data[(module * 25) + 14] = int(type_2_data[(module * 25) + 14] * SF1)                                    # Cell Voltage Max
+                            type_2_data[(module * 25) + 15] = int(type_2_data[(module * 25) + 15] * SF1)                                    # Cell Voltage Avg
+                            type_2_data[(module * 25) + 16] = self.int_to_twos_comp(int(type_2_data[(module * 25) + 16] * SF1))             # Cell Temp Min
+                            type_2_data[(module * 25) + 17] = self.int_to_twos_comp(int(type_2_data[(module * 25) + 17] * SF1))             # Cell Temp Max
+                            type_2_data[(module * 25) + 18] = self.int_to_twos_comp(int(type_2_data[(module * 25) + 18] * SF1))             # Cell Temp Avg
                             type_2_data[(module * 25) + 19] = int(type_2_data[(module * 25) + 19])  # Cycle count (string)
                             type_2_data[(module * 25) + 20] = int(type_2_data[(module * 25) + 20] * SF1)                                    # Max Capacity
                             type_2_data[(module * 25) + 21] = int(type_2_data[(module * 25) + 21] * SF1)                                    # Online Capacity
 
-                            # Late addition but True is converted to char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_2_data[1] = int(type_2_data[1])
                         try:
                             # print("type 2")
@@ -1418,7 +1416,7 @@ class Module():
                             type_4_data[(module * 25) + 16] = self.int_to_twos_comp(int(type_4_data[(module * 25) + 16] * SF1))             # Total Apparent Power
                             type_4_data[(module * 25) + 18] = self.int_to_twos_comp(int(type_4_data[(module * 25) + 18] * SF1))             # Total Current
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_4_data[1] = int(type_4_data[1])
 
                         try:
@@ -1449,7 +1447,7 @@ class Module():
                             for x in range(23):
                                 type_6_data[(module * 25) + (x + 3)] = self.inputs[6][module][2][x]  # The remaining Digital IO data starting from Heartbeat
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_6_data[1] = int(type_6_data[1])
 
                         try:
@@ -1480,7 +1478,7 @@ class Module():
                             type_7_data[(module * 25) + 12] = self.int_to_twos_comp(int(type_7_data[(module * 25) + 12] * SF2))             # Analogue input 6
                             type_7_data[(module * 25) + 13] = self.int_to_twos_comp(int(type_7_data[(module * 25) + 13] * SF2))             # Analogue input 7
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_7_data[1] = int(type_7_data[1])
     
                         try:
@@ -1524,7 +1522,7 @@ class Module():
                             for x in range(23):
                                 type_10_data[(module * 25) + (x + 3)] = self.inputs[10][module][2][x]  # The remaining Li-Ion data starting from Heartbeat
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_10_data[1] = int(type_10_data[1])
 
                         try:
@@ -1566,7 +1564,7 @@ class Module():
                             type_12_data[(module * 25) + 18] = self.int_to_twos_comp(int(type_12_data[(module * 25) + 18] * SF2))           # A/C 5 Ambient Temperature
                             type_12_data[(module * 25) + 20] = self.int_to_twos_comp(int(type_12_data[(module * 25) + 20] * SF2))           # A/C 6 Ambient Temperature
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_12_data[1] = int(type_12_data[1])
 
                         try:
@@ -1610,7 +1608,7 @@ class Module():
                             # Re-insert client written data to stop it from toggling
                             type_14_data[(module * 25) + 14] = self.int_to_twos_comp(int(self.fuel_cell_kw_setpoint))
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_14_data[1] = int(type_14_data[1])
 
                         try:
@@ -1648,7 +1646,7 @@ class Module():
                             type_15_data[(module * 25) + 19] = self.int_to_twos_comp(int(type_15_data[(module * 25) + 19] * SF1))           # AC Earth Current
                             type_15_data[(module * 25) + 20] = self.int_to_twos_comp(int(type_15_data[(module * 25) + 10] * SF1))           # AC Power
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_15_data[1] = int(type_15_data[1])
 
                         try:
@@ -1690,10 +1688,8 @@ class Module():
                             type_17_data[(module * 25) + 13] = self.int_to_twos_comp(int(type_17_data[(module * 25) + 13] * SF1))           # AC Total Current
                             type_17_data[(module * 25) + 14] = self.int_to_twos_comp(int(type_17_data[(module * 25) + 14] * SF1))           # AC Line Voltage
                             type_17_data[(module * 25) + 15] = self.int_to_twos_comp(int(type_17_data[(module * 25) + 15] * SF1))           # AC Power
-                            type_17_data[(module * 25) + 16] = self.int_to_twos_comp(int(type_17_data[(module * 25) + 16] * SF1))           # SF Needs to be checked
-                            type_17_data[(module * 25) + 18] = self.int_to_twos_comp(int(type_17_data[(module * 25) + 18] / 100))           # SF Needs to be checked
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_17_data[1] = int(type_17_data[1])
 
                         try:
@@ -1701,60 +1697,40 @@ class Module():
                         except Exception as e:
                             print("SCADA: " + str(e))
 
-                    # Type 18 - DC Solar
-                    if self.inputs[18] is not None:
-                        type_18_data = [0] * 251
-                        type_18_data[0] = len(self.inputs[18])  # Get the Quantity of loaded DC Solar modules
-                        for module in range(type_18_data[0]):  # Parse each module of this type and offset by 25 bytes
-                            type_18_data[(module * 25) + 1] = self.inputs[18][module][0]  # DC Solar UID(s)
-                            type_18_data[(module * 25) + 2] = 1 if self.inputs[18][module][1] else 0  # Enable State
-                           
-                            # Copy all module variables
-                            for x in range(23):
-                                type_18_data[(module * 25) + (x + 3)] = self.inputs[18][module][2][x]
-
-                            # Format data which requires scaling
-                            SF1 = pow(10, -self.twos_comp_to_int(type_1_data[19]))
-                            SF2 = pow(10, -self.twos_comp_to_int(type_1_data[20]))
-                            type_18_data[(module * 25) + 8] = self.int_to_twos_comp(int(type_18_data[(module * 25) + 8] * SF1))             # DC Bus Voltage
-                            type_18_data[(module * 25) + 9] = self.int_to_twos_comp(int(type_18_data[(module * 25) + 9] * SF1))             # DC Bus Current
-                            type_18_data[(module * 25) + 10] = self.int_to_twos_comp(int(type_18_data[(module * 25) + 10] * SF1))           # DC Bus Power
-                            type_18_data[(module * 25) + 11] = self.int_to_twos_comp(int(type_18_data[(module * 25) + 11] * SF2))           # Temperature
-                            type_18_data[(module * 25) + 12] = self.int_to_twos_comp(int(type_18_data[(module * 25) + 12] * SF2))           # AC Frequency
-                            type_18_data[(module * 25) + 13] = self.int_to_twos_comp(int(type_18_data[(module * 25) + 13] * SF1))           # AC Total Current
-                            type_18_data[(module * 25) + 14] = self.int_to_twos_comp(int(type_18_data[(module * 25) + 14] * SF1))           # AC Line Voltage
-                            type_18_data[(module * 25) + 15] = self.int_to_twos_comp(int(type_18_data[(module * 25) + 15] * SF1))           # AC Power
-
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
-                            type_18_data[1] = int(type_18_data[1])
-                        
-                        try:
-                            self.mbtcp_server_registers[0x00].setValues(3, 4500, type_18_data)
-                        except Exception as e:
-                            print("SCADA: " + str(e))
+                    # Type 18 - DC Solar TODO: Not yet developed
+                    # if self.inputs[18] is not None:
+                        # type_18_data = [0] * 251
+                        # type_18_data[0] = len(self.inputs[18])  # Get the Quantity of loaded DC Solar modules
+                        # for module in range(type_18_data[0]):  # Parse each module of this type and offset by 25 bytes
+                        #    type_18_data[(module * 25) + 1] = self.inputs[18][module][0]  # DC Solar UID(s)
+                        #    type_18_data[(module * 25) + 2] = 1 if self.inputs[18][module][1] else 0  # Enable State
+                        #    for x in range(23):
+                        #        type_18_data[(module * 25) + (x + 3)] = self.inputs[18][module][2][x]  # The remaining DC Solar data starting from Heartbeat
+                        # self.mbtcp_server_registers[0x00].setValues(3, 4500, type_18_data)
 
                     # Type 19 - AC EFM
                     if self.inputs[19] is not None:
                         type_19_data = [0] * 251
-                        type_19_data[0] = len(self.inputs[19])  # Get the Quantity of loaded AC EFM modules
-                        for module in range(type_19_data[0]):  # Parse each module of this type and offset by 25 bytes
-                            type_19_data[(module * 25) + 1] = self.inputs[19][module][0]  # AC EFM UID(s)
-                            type_19_data[(module * 25) + 2] = 1 if self.inputs[19][module][1] else 0  # Enable State
-                        
-                            # Copy all module variables
-                            for x in range(23):
-                                type_19_data[(module * 25) + (x + 3)] = self.inputs[19][module][2][x]
-                        
-                            # Format data which requires scaling
-                            SF1 = pow(10, -self.twos_comp_to_int(type_1_data[19]))
-                            type_19_data[(module * 25) + 6] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 6] * SF1))     # Insulation Alarm 1
-                            type_19_data[(module * 25) + 7] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 7] * SF1))     # Insulation Alarm 2
-                            type_19_data[(module * 25) + 8] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 8] * SF1))
-                            type_19_data[(module * 25) + 9] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 9])/1000)           # Insulation Resistance (forced scaling)
-                            type_19_data[(module * 25) + 10] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 10])/1000)         # Min. Insulation Resistance (forced scaling)
-                            type_19_data[(module * 25) + 12] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 12] * SF1))   # Capacitance
+                        pass
+                        # type_19_data[0] = len(self.inputs[19])  # Get the Quantity of loaded AC EFM modules
+                        # for module in range(type_19_data[0]):  # Parse each module of this type and offset by 25 bytes
+                        #     type_19_data[(module * 25) + 1] = self.inputs[19][module][0]  # AC EFM UID(s)
+                        #     type_19_data[(module * 25) + 2] = 1 if self.inputs[19][module][1] else 0  # Enable State
+                        #
+                        #     # Copy all module variables
+                        #     for x in range(23):
+                        #         type_19_data[(module * 25) + (x + 3)] = self.inputs[19][module][2][x]
+                        #
+                        #     # Format data which requires scaling
+                        #     # SF1 = pow(10, -self.twos_comp_to_int(type_1_data[19]))
+                        #     # print("SF1 = " + str(SF1))
+                        #     type_19_data[(module * 25) + 6] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 6])) & 0xFFFF    # Insulation Alarm 1
+                        #     type_19_data[(module * 25) + 7] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 7])) & 0xFFFF    # Insulation Alarm 2
+                        #     type_19_data[(module * 25) + 9] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 9])) & 0xFFFF    # Insulation Resistance
+                        #     type_19_data[(module * 25) + 10] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 10])) & 0xFFFF  # Min. Insulation Resistance
+                        #     type_19_data[(module * 25) + 12] = self.int_to_twos_comp(int(type_19_data[(module * 25) + 12])) & 0xFFFF  # Capacitance
 
-                        # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                        # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                         type_19_data[1] = int(type_19_data[1])
 
                         try:
@@ -1765,26 +1741,26 @@ class Module():
                     # Type 20 - DC EFM
                     if self.inputs[20] is not None:
                         type_20_data = [0] * 251
-                        type_20_data[0] = len(self.inputs[20])  # Get the Quantity of loaded DC EFM modules
-                        for module in range(type_20_data[0]):  # Parse each module of this type and offset by 25 bytes
-                            type_20_data[(module * 25) + 1] = self.inputs[20][module][0]  # DC EFM UID(s)
-                            type_20_data[(module * 25) + 2] = 1 if self.inputs[20][module][1] else 0  # Enable State
-                        
-                            # Copy all module variables
-                            for x in range(23):
-                                type_20_data[(module * 25) + (x + 3)] = self.inputs[20][module][2][x]
-                        
-                            # Format data which requires scaling
-                            SF1 = pow(10, -self.twos_comp_to_int(type_1_data[19]))
-                            type_20_data[(module * 25) + 6] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 6] * SF1))     # Insulation Alarm 1
-                            type_20_data[(module * 25) + 7] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 7] * SF1))     # Insulation Alarm 2
-                            type_20_data[(module * 25) + 8] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 8] * SF1))
-                            type_20_data[(module * 25) + 9] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 9])/1000)           # Insulation Resistance (forced scaling)
-                            type_20_data[(module * 25) + 10] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 10])/1000)         # Minimum Insulation Resistance (forced scaling)
+                        pass
+                        # type_20_data[0] = len(self.inputs[20])  # Get the Quantity of loaded DC EFM modules
+                        # for module in range(type_20_data[0]):  # Parse each module of this type and offset by 25 bytes
+                        #     type_20_data[(module * 25) + 1] = self.inputs[20][module][0]  # DC EFM UID(s)
+                        #     type_20_data[(module * 25) + 2] = 1 if self.inputs[20][module][1] else 0  # Enable State
+                        #
+                        #     # Copy all module variables
+                        #     for x in range(23):
+                        #         type_20_data[(module * 25) + (x + 3)] = self.inputs[20][module][2][x]
+                        #
+                        #     # Format data which requires scaling
+                        #     SF1 = pow(10, -self.twos_comp_to_int(type_1_data[19]))
+                        #     type_20_data[(module * 25) + 6] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 6] * SF1))             # Insulation Alarm 1
+                        #     type_20_data[(module * 25) + 7] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 7] * SF1))             # Insulation Alarm 2
+                        #     type_20_data[(module * 25) + 9] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 9] * SF1))             # Insulation Resistancee
+                        #     type_20_data[(module * 25) + 10] = self.int_to_twos_comp(int(type_20_data[(module * 25) + 10] * SF1))           # Minimum Insulation Resistance
 
-                        # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                        # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                         type_20_data[1] = int(type_20_data[1])
-                        
+
                         try:
                             self.mbtcp_server_registers[0x00].setValues(3, 5000, type_20_data)
                         except Exception as e:
@@ -1810,7 +1786,7 @@ class Module():
                             type_21_data[(module * 25) + 19] = self.int_to_twos_comp(int(type_21_data[(module * 25) + 19] * SF1))           # Vehicle DC Current
                             type_21_data[(module * 25) + 20] = self.int_to_twos_comp(int(type_21_data[(module * 25) + 20] * SF1))           # Vehicle DC Power
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_21_data[1] = int(type_21_data[1])
 
                         try:
@@ -1830,13 +1806,13 @@ class Module():
                             for x in range(23):
                                 type_22_data[(module * 25) + (x + 3)] = self.inputs[22][module][2][x]
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_22_data[1] = int(type_22_data[1])
 
                         try:
                             self.mbtcp_server_registers[0x00].setValues(3, 5500, type_22_data)
                         except Exception as e:
-                            print("SCADA: " + str(e))
+                            print("SCADA5467: " + str(e))
 
                     # Type 23 - Logging
                     if self.inputs[23] is not None:
@@ -1850,13 +1826,13 @@ class Module():
                             for x in range(23):
                                 type_23_data[(module * 25) + (x + 3)] = self.inputs[23][module][2][x]       # The remaining Logging data starting from Heartbeat
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_23_data[1] = int(type_23_data[1])
 
                         try:
                             self.mbtcp_server_registers[0x00].setValues(3, 5750, type_23_data)
                         except Exception as e:
-                            print("SCADA: " + str(e))
+                            print("SCADA84: " + str(e))
 
                     # Type 24 - Client
                     if self.inputs[24][0][24] is not None:                                                  # We really have to dig into the data to find the client module
@@ -1889,13 +1865,13 @@ class Module():
                             type_24_data[(module * 25) + 21] = self.client_reg21
                             type_24_data[(module * 25) + 22] = self.client_reg22
 
-                            # Late addition but True is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
+                            # Late addition but Trus is converted to a char which is currently breaking the interface, i.e. QModMaster connects but can't read the data. 
                             type_24_data[1] = int(type_24_data[1])
 
                         try:
                             self.mbtcp_server_registers[0x00].setValues(3, 6000, type_24_data)
                         except Exception as e:
-                            print("SCADA: " + str(e))
+                            print("SCADA6789: " + str(e))
 
                     # Type 25 - Undefined
                     
@@ -1990,12 +1966,7 @@ class Module():
                         if self.server_mode:                                                        # Forward on commands in server mode only
                             # Client Control
                             dev[24][2][4] = self.client_reg7
-                            dev[24][2][5] = self.client_reg8
-                            dev[24][2][6] = self.client_reg9
-                            dev[24][2][7] = self.client_reg10
-                            dev[24][2][8] = self.client_reg11
-                        #else
-                        #    self.remote_operating_state = dev[2][3]    # This is similar to the control code above, reading the controller operating state. I'm not convinced it should be here at all! What were you thinking??
+
         return [SET_INPUTS_ACK, self.inputs] 
 
     def get_outputs(self):

@@ -1,6 +1,5 @@
 # BACnet Interface - AC Solar Module
 
-# Description
 # This was developed for EcoPark which accesses specific data points from a BACnet interface, not directly from a meter (which reduced the amount of knowledge needed for the end device).
 # The BACnet Python Library (BAC0) won't allow multiple processes to access BACnet over the same interface (COnfigured NIC), so to allow us to access AC Meter and AC SOlar data from different
 # Flex3 modules, we're going to use an intermediary BACnet to Modbus bridge. So this MOdule will look like it is reading from a Modbus device (our localhost server), but it is fed from BACnet.
@@ -8,9 +7,6 @@
 # Got it? Good.
 
 # At present only a few parameters are made available to us, PV Meter Power (unreliable) and 6x PV Inverter Powers
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling. 
 
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
@@ -133,7 +129,6 @@ class Module():
         self.icon = "/static/images/ACsolar.png"
         self.name = "BACnet Bridged AC Solar"
         self.module_type = ModTypes.AC_SOLAR.value
-        self.module_version = "3.5.24.10.16"                                                        # Last update on "Flex version | Year | Month | Day"
         self.manufacturer = "Multi Source Power"
         self.model = ""
         self.options = ""
@@ -198,7 +193,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
     def update_weather_icon(self):
         current_weather_icon = get_weather_icon()

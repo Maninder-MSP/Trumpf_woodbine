@@ -1,10 +1,5 @@
 # Accuvim II - AC Meter Module
 
-# Description
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling. 
-
 import sys
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
@@ -55,7 +50,6 @@ class Module():
         self.icon = "/static/images/ACmeter.png"
         self.name = "Acuvim II"
         self.module_type = ModTypes.AC_METER.value
-        self.module_version = "3.5.24.10.16"                                                        # Last update on "Flex version | Year | Month | Day"
         self.manufacturer = "Accuenergy"
         self.model = ""
         self.options = ""
@@ -113,7 +107,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
         
         # Track Interval usage (GIL interference)
         self.starttime = time.time()

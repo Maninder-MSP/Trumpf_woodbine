@@ -1,11 +1,4 @@
-# FlexMod_EPCInverter.py
-
-# Description
-# Controls and monitors an EPC Inverter
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-# 3.5.24.10.17 - SC - Added Inverter control Mode 3 as per Dom Houseman's document "Hithium units control methodology" 
+# FlexMod_EPCInverter.py, Controls and monitors an EPC Inverter
 
 import sys
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
@@ -54,7 +47,6 @@ class Module():
         self.icon = "/static/images/Inverter.png"
         self.name = "Inverter"
         self.module_type = ModTypes.INVERTER.value
-        self.module_version = "3.5.24.10.17"
         self.manufacturer = "EPC"
         self.model = ""
         self.options = ""
@@ -147,7 +139,7 @@ class Module():
         self.terV = 0  # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
         
         # Track Interval usage (GIL interference)
         self.start_time = time.time()
@@ -641,130 +633,6 @@ class Module():
                                     return
 
                     elif self.dbData["inverter_software_hash"] == "3C625C9" or self.dbData["inverter_software_hash"] == "7E5A428" or self.dbData["inverter_software_hash"] == "77655E6":
-
-                        # Inverter control mode
-                        if self.inverter_control_mode == "None":                                    # Do nothing for now
-                            pass
-                        elif self.inverter_control_mode == "Mode 1":                                # Mode 1 - Microgrid Parallel (Voltage Mode)
-                            
-                            try:
-                                rr = self.tcp_client.read_holding_registers(3208, 1, unit=1)        # Are we in Voltage mode?
-                                
-                                if rr.isError():
-                                    self.tcp_timeout += 1
-                                    return
-                                else:
-                                    if len(rr.registers) >= 1:
-                                        if rr.registers[0] != 1:                                    # We're in Current Mode
-                                            self.tcp_client.write_register(3208, 1, unit=1)         # Set Voltage Mode
-                                            self.tcp_client.write_register(2956, 1, unit=1)         # Allow Autoforming
-
-                                            rr = self.tcp_client.read_holding_registers(3221, 1, unit=1)        # Read PccCfgFlgs before modifying
-
-                                            if rr.isError():
-                                                self.tcp_timeout += 1
-                                                return
-                                            else:
-                                                flags = 0
-                                                if len(rr.registers) >= 1:
-                                                    flags = rr.registers[0]
-                                                    flags |= (3 << 0)                               # Allow Forming and Following
-                                                    flags &= ~(3 << 17)                             # Island detector (0: Simple)
-                                                    flags &= ~(3 << 14)
-                                                    flags |= (2 << 14)                              # Island Response (2: Allow)
-
-                                                    self.tcp_client.write_register(3221, flags, unit=1)
-
-                                self.tcp_timeout = 0
-                            except:
-                                self.tcp_timeout += 1
-                                return
-                            
-                        elif self.inverter_control_mode == "Mode 2":                                # Mode 2 - Microgrid - Lead (forming)/following
-                            
-                            try:
-                                rr = self.tcp_client.read_holding_registers(3208, 1, unit=1)  # Are we in Voltage mode?
-
-                                if rr.isError():
-                                    self.tcp_timeout += 1
-                                    return
-                                else:
-                                    if len(rr.registers) >= 1:
-                                        if rr.registers[0] != 0:  # We're in Voltage Mode
-                                            self.tcp_client.write_register(3208, 0, unit=1)  # Set Current Mode
-                                            self.tcp_client.write_register(2956, 1, unit=1)  # Allow Autoforming
-
-                                            rr = self.tcp_client.read_holding_registers(3221, 1, unit=1)  # Read PccCfgFlgs before modifying
-
-                                            if rr.isError():
-                                                self.tcp_timeout += 1
-                                                return
-                                            else:
-                                                flags = 0
-                                                if len(rr.registers) >= 1:
-                                                    flags = rr.registers[0]
-                                                    flags |= (3 << 0)                               # Allow Forming and Following
-
-                                                    flags &= ~(3 << 17)  # Island detector (0: Simple)
-
-                                                    flags &= ~(3 << 14)
-                                                    flags |= (2 << 14)  # Island Response (2: Allow)
-
-                                                    self.tcp_client.write_register(3221, flags, unit=1)
-
-                                self.tcp_timeout = 0
-                            except:
-                                self.tcp_timeout += 1
-                                return
-                            
-                        elif self.inverter_control_mode == "Mode 3":                                # Mode 3 - On Grid, Non-Protected Bus
-                            
-                            # Lakes Eggs
-                            # 3208 - 0x00
-                            # 2956 - 0x01
-                            # 3221 - 0x12
-                            print("MODE 3 entered")
-                            try:
-                                rr = self.tcp_client.read_holding_registers(3208, 1, unit=1)        # Are we in Current mode?
-
-                                if rr.isError():
-                                    self.tcp_timeout += 1
-                                    return
-                                else:
-                                    print("REGISTER READ")
-                                    if len(rr.registers) >= 1:
-                                        if rr.registers[0] != 0:  # We're in Voltage Mode
-                                            self.tcp_client.write_register(3208, 0, unit=1)  # Set Current Mode
-                                            self.tcp_client.write_register(2956, 0, unit=1)  # Disallow Autoforming
-
-                                            rr = self.tcp_client.read_holding_registers(3221, 1, unit=1)  # Read PccCfgFlgs before modifying
-
-                                            if rr.isError():
-                                                print("ERROR AGAIN")
-                                                self.tcp_timeout += 1
-                                                return
-                                            else:
-                                                flags = 0
-                                                if len(rr.registers) >= 1:
-                                                    flags = rr.registers[0]
-                                                    flags &= ~(3 << 0)                              # Allow Following Only
-                                                    flags |= (1 << 0)
-                                                    flags &= ~(3 << 17)                             # Island detector (0: Simple)
-
-                                                    flags &= ~(3 << 14)                             # Island Response (0: Trip)
-                                                    print("WRITING REGISTER")
-                                                    self.tcp_client.write_register(3221, flags, unit=1)
-                                                    print("REGISTER WRITTEN")
-                                self.tcp_timeout = 0
-                            except:
-                                print("WRITING REGISTER ISSUE")
-                                self.tcp_timeout += 1
-                                return
-                            
-                        elif self.inverter_control_mode == "Mode 4":                                # Mode 4 - On Grid, Protected Bus
-                            pass
-                        else:
-                            pass
 
                         # Force Modbus mode
                         try:
@@ -2211,11 +2079,6 @@ class Module():
                     if "inverter_fault_clearing" == control:
                         self.auto_fault_clear = form[control]
 
-                    # Set Inverter Control mode (Voltage / Current)
-                    if "inverter_control_mode" == control:
-                        self.inverter_control_mode = form[control]
-                        print(self.inverter_control_mode)
-
                     self.dbData[control] = form[control]
 
             if isButton is False:  # Button press states are to be acted upon only, not stored
@@ -2243,7 +2106,6 @@ class Module():
             mod_data["inverter_data"] = self.outputs[2]
             mod_data["inverter_override"] = self.override
             mod_data["inverter_fault_clear"] = self.auto_fault_clear
-            mod_data["inverter_control_mode"] = self.inverter_control_mode
             mod_data["inverter_start"] = self.inv_conn
             mod_data["inverter_enablestate"] = self.enabled
             mod_data["inverter_pid_enable"] = self.pid_enable

@@ -1,10 +1,5 @@
 # Nexceris - Li-Ion Tamer Module
 
-# Description
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-
 import sys
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
@@ -48,7 +43,6 @@ class Module():
         self.icon = "/static/images/LiIon.png"
         self.name = "Li-Ion Tamer"
         self.module_type = ModTypes.LI_ION.value
-        self.module_version = "3.5.24.10.16" 
         self.manufacturer = "Nexceris"
         self.model = ""
         self.options = ""
@@ -101,7 +95,7 @@ class Module():
         self.terV = 0                                                                                 # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
     def process(self):
         global loop_time

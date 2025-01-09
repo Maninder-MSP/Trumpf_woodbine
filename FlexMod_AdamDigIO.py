@@ -1,13 +1,13 @@
+# ##################################################################################################
 # Digital IO Module
-
-# Description
+# Multi Source Power, 2023
+# S. Coates
+#
 # The Digital IO module services a dedicated dvice having digital inputs and outputs.
 # This version of it supports the Advantech ADAM-6060 having 6 Inputs and 6 Outputs, and is
 # controlled over Modbus-TCP.
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-
+#
+# ##################################################################################################
 import sys
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
@@ -40,7 +40,6 @@ SET_INPUTS = 12
 SET_INPUTS_ACK = 13
 ERROR = 100
 
-
 class Module():
     def __init__(self, uid, queue):
         #super(Module, self).__init__()
@@ -51,7 +50,6 @@ class Module():
         self.icon = "/static/images/DigIO.png"
         self.name = "ADAM-6060"
         self.module_type = ModTypes.DIG_IO.value
-        self.module_version = "3.5.24.10.16" 
         self.manufacturer = "Advantech"
         self.model = ""
         self.options = ""
@@ -103,7 +101,7 @@ class Module():
         self.terV = 0                                                                                 # Tertiary, if a device has a third port, like a PD Hydra
         self.terA = 0
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
         # Track Interval usage (GIL interference)
         self.start_time = time.time()
@@ -528,6 +526,7 @@ class ModTypes(Enum):
     AC_EFM = 19
     DC_EFM = 20
     EV_CHARGE = 21
+
     SCADA = 22      
     LOGGING = 23
     CLIENT = 24

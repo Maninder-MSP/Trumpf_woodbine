@@ -1,11 +1,7 @@
 # FlexMod_Client.py,
 
-# Description
-# Useful resources: Peak Shaving vs Load Shifting: https://www.power-sonic.com/blog/the-power-of-peak-shaving-a-complete-guide/#:~:text=In%20other%20words%2C%20peak%20shaving,reduce%20the%20total%20energy%20used.
-
-# Versions
-# 3.5.24.10.16 - SC - Known good starting point, uses thread.is_alive to prevent module stalling.
-
+# Useful resources
+# Peak Shaving vs Load Shifting: https://www.power-sonic.com/blog/the-power-of-peak-shaving-a-complete-guide/#:~:text=In%20other%20words%2C%20peak%20shaving,reduce%20the%20total%20energy%20used.
 import requests
 from pymodbus.client.sync import ModbusTcpClient as mb_tcp_client
 from threading import Thread, Event
@@ -51,7 +47,6 @@ class Module():
         self.icon = "/static/images/Client.png"
         self.name = "Client"
         self.module_type = ModTypes.CLIENT.value
-        self.module_version = "3.5.24.10.16"
         self.manufacturer = "MSP"
         self.model = ""
         self.options = ""
@@ -83,7 +78,7 @@ class Module():
         self.system_status_text = "[0] System Idle"
         self.control_real_power_command = 0
 
-        self.bank_reset_enabled = False
+        self.bank_reset_enabled = True  # Forced because the prototype doesn't have any IO
         self.battery_estop_interlocks_enabled = False
         self.battery_enable = False
         self.battery_enabled = False
@@ -310,7 +305,7 @@ class Module():
                             225:13.23, 226:13.28, 227:13.34, 229:13.46
                            }
 
-        print("Starting " + self.name + " with UID " + str(self.uid) + " on version " + str(self.module_version))
+        print("Starting " + self.name + " with UID " + str(self.uid))
 
     def twos_comp_to_int(self, twoC):
         # calculate int from two's compliment input
@@ -425,12 +420,12 @@ class Module():
 
                 else:
                     self.system_status_text = "[3] Following Inverter Enabled"
-                    #print("catch 4")
+                    print("catch 4")
                     self.control_real_power_command = 0  # Reset the commanded power
                     self.client_state = 4
             else:
                 self.system_status_text = "[3] Disabling Following Inverter"
-                #print("catch 5")
+                print("catch 5")
                 self.control_real_power_command = 0  # TODO: Soft or hard ramp down
                 self.inverter_following_enable = False
                 self.client_state = 2
@@ -1401,7 +1396,7 @@ class Module():
                                     self.client_CXP00957_grid_active = True
                                 else:                            
                                     # Enable it!
-                                    #print("catch 7")
+                                    print("catch 7")
                                     self.control_real_power_command = 0  # TODO: Soft or hard ramp down
                                     self.inverter_following_enable = True
                                 
@@ -1418,7 +1413,7 @@ class Module():
                                 self.client_CXP00957_grid_active = True
                                 
                                 # Disable it!
-                                #print("catch 8")
+                                print("catch 8")
                                 self.control_real_power_command = 0  # TODO: Soft or hard ramp down
                                 self.inverter_following_enable = False  
                             else:
@@ -1579,7 +1574,7 @@ class Module():
         actual_time = datetime.now().time()     # Use the local time, not UTC for logic, UTC for reporting
 
         if start_time < end_time:                                                                   # Time window sits within the same day
-            #print(actual_time, start_time, end_time)
+            print(actual_time, start_time, end_time)
             return actual_time >= start_time and actual_time <= end_time
         else:
             return actual_time >= start_time or actual_time <= end_time
@@ -1608,7 +1603,7 @@ class Module():
 
                     # Commanded real power if we're operating in remote mode - this is going to be problematic if we're doing auto control in remote mode. Looking at you, Swadlincote! Force override flag?
                     if dev[2][3] & (1 << 1):                                                        # Check RemLoc Echo bit
-                        #print("catch 2")
+                        print("catch 2")
                         self.control_real_power_command = dev[2][4]                                 # Partitioned in the main loop if inverter count > 1
                         #print("Real power command = " + str(self.control_real_power_command))
             # Battery (module type 2)
@@ -1663,7 +1658,7 @@ class Module():
                                 self.inverter_following_state = dev[2][1]
 
                                 if self.inverter_following_state != 2:                              # Reset commanded power in fault conditions.
-                                    #print("catch 3")
+                                    print("catch 3")
                                     self.control_real_power_command = 0
 
                                 import_limit = "client_inverter_import_limit_" + str(dev[0])
@@ -1765,10 +1760,10 @@ class Module():
                             else:
                                 control_power_state = 1
 
-                        if control_power_state == 0x01:
-                            self.bank_reset_enabled = False                                         # Inverted in hardware
-                        else:
-                            self.bank_reset_enabled = True
+                        #if control_power_state == 0x01:
+                        #    self.bank_reset_enabled = False                                         # Inverted in hardware
+                        #else:
+                        self.bank_reset_enabled = True
 
                         # Generator Start state
                         acgen_start_state = 0
