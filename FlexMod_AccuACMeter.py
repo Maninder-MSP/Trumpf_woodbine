@@ -21,14 +21,13 @@ USE_SUNSPEC = False
 
 loop_time = 0
 
-
 # Queued commands
-SYNC = 0                                                                                            # Allows the Flex code to synchronise module polling loops using a single thread
+SYNC = 0  # Allows the Flex code to synchronise module polling loops using a single thread
 SYNC_ACK = 1
 GET_INFO = 2
 GET_INFO_ACK = 3
 GET_STATUS = 4
-GET_STATUS_ACK = 5 
+GET_STATUS_ACK = 5
 GET_PAGE = 6
 GET_PAGE_ACK = 7
 SET_PAGE = 8
@@ -42,7 +41,7 @@ ERROR = 100
 
 class Module():
     def __init__(self, uid, queue):
-        #super(Module, self).__init__()
+        # super(Module, self).__init__()
 
         # General Module Data
         self.author = "Sophie Coates"
@@ -75,10 +74,10 @@ class Module():
         self.enabled_echo = False
         self.override = False
         self.inputs = [self.uid, False]
-        self.outputs = [self.uid, self.enabled, [0]*25]
+        self.outputs = [self.uid, self.enabled, [0] * 25]
         self.heartbeat = 0
         self.heartbeat_echo = 0
-        
+
         self.ac_meter_heartbeat = 0
         self.ac_meter_average_voltage = 0
         self.ac_meter_average_line_voltage = 0
@@ -92,6 +91,10 @@ class Module():
         self.ac_meter_phase_c_power = 0
         self.ac_meter_import_active_energy = 0
         self.ac_meter_export_active_energy = 0
+        # for Trumpf inverter:
+        self.ac_meter_total_apparent_power_L1 = 0
+        self.ac_meter_total_apparent_power_L2 = 0
+        self.ac_meter_total_apparent_power_L3 = 0
 
         # Events
         self.warnings = 0
@@ -108,7 +111,7 @@ class Module():
         self.terA = 0
 
         print("Starting " + self.name + " with UID " + str(self.uid))
-        
+
         # Track Interval usage (GIL interference)
         self.starttime = time.time()
         self.interval_count = 0
@@ -117,29 +120,29 @@ class Module():
 
     def process(self):
         global loop_time
-        #print("(4) AC Meter Heartbeat: " + str(self.heartbeat) + ", loop time: " + str(loop_time) + " Seconds")
-        
+        # print("(4) AC Meter Heartbeat: " + str(self.heartbeat) + ", loop time: " + str(loop_time) + " Seconds")
+
         # Calculate successful polls over an hour
-        if time.time() - self.starttime < 3600:    # Record for an hour after starting
-        
+        if time.time() - self.starttime < 3600:  # Record for an hour after starting
+
             # Calculate delay between polls
             time_now = time.time()
             delay = time_now - self.last_time
-            #print(delay)
+            # print(delay)
             if self.last_time > 0:
                 if self.last_time > 0:
                     if delay > self.max_delay:
                         self.max_delay = delay
             self.last_time = time_now
-        
+
             self.interval_count += 1
-            #print("AC Meter " + str(self.uid) + ": " + str(self.interval_count))
+            # print("AC Meter " + str(self.uid) + ": " + str(self.interval_count))
         else:
-            #print("AC Meter " + str(self.uid) + ": " + str(self.interval_count) + " events in 1 hour. Maximum gap between events was " + str(self.max_delay) + " seconds.")
+            # print("AC Meter " + str(self.uid) + ": " + str(self.interval_count) + " events in 1 hour. Maximum gap between events was " + str(self.max_delay) + " seconds.")
             pass
-        
+
         s = time.time()
-        
+
         self.heartbeat += 1
         if self.heartbeat >= 0xFFFF:
             self.heartbeat = 0
@@ -194,7 +197,7 @@ class Module():
             else:
                 self.update_faults(Faults.LOSS_OF_COMMS.value, True)
                 self.set_state_text(State.CONFIG)
-        else:   # Main process loop
+        else:  # Main process loop
 
             # Common data
             try:
@@ -205,10 +208,18 @@ class Module():
                     return
                 else:
                     self.tcp_timeout = 0
-                    self.manufacturer = ((BinaryPayloadDecoder.fromRegisters(rr.registers[4:20], byteorder=Endian.Big)).decode_string(16)).decode("utf-8")
-                    self.name = ((BinaryPayloadDecoder.fromRegisters(rr.registers[20:36], byteorder=Endian.Big)).decode_string(16)).decode("utf-8")
-                    self.version = ((BinaryPayloadDecoder.fromRegisters(rr.registers[44:52], byteorder=Endian.Big)).decode_string(16)).decode("utf-8")
-                    self.serial = ((BinaryPayloadDecoder.fromRegisters(rr.registers[52:68], byteorder=Endian.Big)).decode_string(16)).decode("utf-8")
+                    self.manufacturer = (
+                        (BinaryPayloadDecoder.fromRegisters(rr.registers[4:20], byteorder=Endian.Big)).decode_string(
+                            16)).decode("utf-8")
+                    self.name = (
+                        (BinaryPayloadDecoder.fromRegisters(rr.registers[20:36], byteorder=Endian.Big)).decode_string(
+                            16)).decode("utf-8")
+                    self.version = (
+                        (BinaryPayloadDecoder.fromRegisters(rr.registers[44:52], byteorder=Endian.Big)).decode_string(
+                            16)).decode("utf-8")
+                    self.serial = (
+                        (BinaryPayloadDecoder.fromRegisters(rr.registers[52:68], byteorder=Endian.Big)).decode_string(
+                            16)).decode("utf-8")
 
             except Exception as e:
                 print("AC Meter: " + str(e))
@@ -228,10 +239,10 @@ class Module():
 
                     self.ac_meter_power_factor = self.tcp_client.ac_meter.PF
                     self.ac_meter_total_active_power = self.tcp_client.ac_meter.W
-                    #self.ac_meter_total_apparent_power = self.tcp_client.ac_meter.VA
+                    # self.ac_meter_total_apparent_power = self.tcp_client.ac_meter.VA
 
-                    self.ac_meter_import_active_energy = self.tcp_client.ac_meter.TotWhImp    
-                    self.ac_meter_export_active_energy = self.tcp_client.ac_meter.TotWhExp    
+                    self.ac_meter_import_active_energy = self.tcp_client.ac_meter.TotWhImp
+                    self.ac_meter_export_active_energy = self.tcp_client.ac_meter.TotWhExp
                 except Exception as e:
                     print("AC Meter: " + str(e))
                     self.tcp_timeout += 1
@@ -250,10 +261,14 @@ class Module():
 
                         self.tcp_timeout = 0
 
-                        phase_a_current = (BinaryPayloadDecoder.fromRegisters(rr.registers[0:2], byteorder=Endian.Big)).decode_32bit_float()
-                        phase_b_current = (BinaryPayloadDecoder.fromRegisters(rr.registers[2:4], byteorder=Endian.Big)).decode_32bit_float()
-                        phase_c_current = (BinaryPayloadDecoder.fromRegisters(rr.registers[4:6], byteorder=Endian.Big)).decode_32bit_float()
-                        self.pA = self.ac_meter_total_current = (phase_a_current + phase_b_current + phase_c_current) / 3
+                        phase_a_current = (BinaryPayloadDecoder.fromRegisters(rr.registers[0:2],
+                                                                              byteorder=Endian.Big)).decode_32bit_float()
+                        phase_b_current = (BinaryPayloadDecoder.fromRegisters(rr.registers[2:4],
+                                                                              byteorder=Endian.Big)).decode_32bit_float()
+                        phase_c_current = (BinaryPayloadDecoder.fromRegisters(rr.registers[4:6],
+                                                                              byteorder=Endian.Big)).decode_32bit_float()
+                        self.pA = self.ac_meter_total_current = (
+                                                                            phase_a_current + phase_b_current + phase_c_current) / 3
 
                         # Current is always reported positive but that screws up our animation polarity. Active power is polarised though!
                         if self.ac_meter_total_active_power < 0:
@@ -272,17 +287,33 @@ class Module():
                         return
                     else:
                         self.tcp_timeout = 0
-                        #self.ac_meter_average_voltage = (BinaryPayloadDecoder.fromRegisters(rr.registers[8:10], byteorder=Endian.Big)).decode_32bit_float()
-                        self.ac_meter_average_line_voltage = (BinaryPayloadDecoder.fromRegisters(rr.registers[16:18], byteorder=Endian.Big)).decode_32bit_float()
-                        self.ac_meter_average_current = (BinaryPayloadDecoder.fromRegisters(rr.registers[24:26], byteorder=Endian.Big)).decode_32bit_float()
-                        self.ac_meter_frequency = (BinaryPayloadDecoder.fromRegisters(rr.registers[0:2], byteorder=Endian.Big)).decode_32bit_float()
+                        # self.ac_meter_average_voltage = (BinaryPayloadDecoder.fromRegisters(rr.registers[8:10], byteorder=Endian.Big)).decode_32bit_float()
+                        self.ac_meter_average_line_voltage = (BinaryPayloadDecoder.fromRegisters(rr.registers[16:18],
+                                                                                                 byteorder=Endian.Big)).decode_32bit_float()
+                        self.ac_meter_average_current = (BinaryPayloadDecoder.fromRegisters(rr.registers[24:26],
+                                                                                            byteorder=Endian.Big)).decode_32bit_float()
+                        self.ac_meter_frequency = (BinaryPayloadDecoder.fromRegisters(rr.registers[0:2],
+                                                                                      byteorder=Endian.Big)).decode_32bit_float()
 
-                        self.ac_meter_power_factor = (BinaryPayloadDecoder.fromRegisters(rr.registers[58:60], byteorder=Endian.Big)).decode_32bit_float()
-                        self.ac_meter_phase_a_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[28:30], byteorder=Endian.Big)).decode_32bit_float() / 1000
-                        self.ac_meter_phase_b_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[30:32], byteorder=Endian.Big)).decode_32bit_float() / 1000
-                        self.ac_meter_phase_c_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[32:34], byteorder=Endian.Big)).decode_32bit_float() / 1000
-                        self.ac_meter_total_active_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[34:36], byteorder=Endian.Big)).decode_32bit_float() / 1000
-                        self.ac_meter_total_apparent_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[50:52], byteorder=Endian.Big)).decode_32bit_float() / 1000
+                        self.ac_meter_power_factor = (BinaryPayloadDecoder.fromRegisters(rr.registers[58:60],
+                                                                                         byteorder=Endian.Big)).decode_32bit_float()
+                        self.ac_meter_phase_a_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[28:30],
+                                                                                          byteorder=Endian.Big)).decode_32bit_float() / 1000
+                        self.ac_meter_phase_b_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[30:32],
+                                                                                          byteorder=Endian.Big)).decode_32bit_float() / 1000
+                        self.ac_meter_phase_c_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[32:34],
+                                                                                          byteorder=Endian.Big)).decode_32bit_float() / 1000
+                        self.ac_meter_total_active_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[34:36],
+                                                                                               byteorder=Endian.Big)).decode_32bit_float() / 1000
+                        # for Trumpf inverter:
+                        self.ac_meter_total_apparent_power_L1 = (BinaryPayloadDecoder.fromRegisters(rr.registers[44:46],
+                                                                                                    byteorder=Endian.Big)).decode_32bit_float() / 1000
+                        self.ac_meter_total_apparent_power_L2 = (BinaryPayloadDecoder.fromRegisters(rr.registers[46:48],
+                                                                                                    byteorder=Endian.Big)).decode_32bit_float() / 1000
+                        self.ac_meter_total_apparent_power_L3 = (BinaryPayloadDecoder.fromRegisters(rr.registers[48:50],
+                                                                                                    byteorder=Endian.Big)).decode_32bit_float() / 1000
+                        self.ac_meter_total_apparent_power = (BinaryPayloadDecoder.fromRegisters(rr.registers[50:52],
+                                                                                                 byteorder=Endian.Big)).decode_32bit_float() / 1000
 
                         # Update the HMI Icon info
                         # A point to note here. For every module we build, we are expecting imported power to be negative (flowing in), and exported power to
@@ -293,13 +324,15 @@ class Module():
                         power_rep = "ac_meter_power_rep"
                         if power_rep in self.dbData:
                             if self.dbData[power_rep] == "Median":
-                                self.ac_meter_total_active_power = (statistics.median([self.ac_meter_phase_a_power, self.ac_meter_phase_b_power, self.ac_meter_phase_c_power])) * 3
+                                self.ac_meter_total_active_power = (statistics.median(
+                                    [self.ac_meter_phase_a_power, self.ac_meter_phase_b_power,
+                                     self.ac_meter_phase_c_power])) * 3
 
                         self.ac_meter_total_active_power = self.ac_meter_total_active_power
                         self.ac_meter_total_apparent_power = self.ac_meter_total_apparent_power
 
                         # Average Phase Voltage
-                        self.pV = self.ac_meter_average_voltage = self.ac_meter_average_line_voltage / 1.7320508076                 # LV / root 3 gives us the Phase Voltage
+                        self.pV = self.ac_meter_average_voltage = self.ac_meter_average_line_voltage / 1.7320508076  # LV / root 3 gives us the Phase Voltage
 
                 except Exception as e:
                     print("AC Meter: " + str(e))
@@ -352,9 +385,9 @@ class Module():
                 self.outputs[2][13] = self.ac_meter_total_apparent_power
                 self.outputs[2][14] = 0
                 self.outputs[2][15] = self.ac_meter_total_current
-                self.outputs[2][16] = 0
-                self.outputs[2][17] = 0
-                self.outputs[2][18] = 0
+                self.outputs[2][16] = self.ac_meter_total_apparent_power_L1
+                self.outputs[2][17] = self.ac_meter_total_apparent_power_L2
+                self.outputs[2][18] = self.ac_meter_total_apparent_power_L3
                 self.outputs[2][19] = 0
                 self.outputs[2][20] = self.warnings
                 self.outputs[2][21] = self.alarms
@@ -384,14 +417,14 @@ class Module():
                         self.inputs = module
 
                         self.enabled = self.inputs[1]
-                        
+
         return [SET_INPUTS_ACK]
 
     def get_outputs(self):
         self.outputs[1] = self.enabled_echo
 
-        #outputs = copy.deepcopy(self.outputs)
-        #return outputs
+        # outputs = copy.deepcopy(self.outputs)
+        # return outputs
         return [GET_OUTPUTS_ACK, self.outputs]
 
     def set_page(self, page, form):  # Respond to GET/POST requests
@@ -419,7 +452,7 @@ class Module():
             # Let's just record the last 10 user interations for now
             if len(self.actions) >= 10:
                 self.actions.pop()
-            
+
             return [SET_PAGE_ACK]
 
         elif page == (self.website + "_(" + str(self.uid) + ")/data"):  # It was a json data fetch quest (POST)
@@ -441,21 +474,21 @@ class Module():
             mod_data["ac_meter_phase_b_power"] = self.ac_meter_phase_b_power
             mod_data["ac_meter_phase_c_power"] = self.ac_meter_phase_c_power
 
-            mod_data.update(self.dbData)                                                            # I'm appending the dict here so we don't save unnecessary
-            
-            return [SET_PAGE_ACK, mod_data]                                                         # data to the database.
+            mod_data.update(self.dbData)  # I'm appending the dict here so we don't save unnecessary
+
+            return [SET_PAGE_ACK, mod_data]  # data to the database.
 
         else:
-            return [SET_PAGE_ACK, ('OK', 200)]                                                                        # Return the data to be jsonified
+            return [SET_PAGE_ACK, ('OK', 200)]  # Return the data to be jsonified
 
     def get_page(self):
-        routes = [self.website + "_(" + str(self.uid) + ")/data"]                                   # JSON Data: FlexMod_test_(<uid>)/data/
-        page = [self.website + "_(" + str(self.uid) + ")", routes]                                  # HTML content: FlexMod_test_(<uid>).html
+        routes = [self.website + "_(" + str(self.uid) + ")/data"]  # JSON Data: FlexMod_test_(<uid>)/data/
+        page = [self.website + "_(" + str(self.uid) + ")", routes]  # HTML content: FlexMod_test_(<uid>).html
         return [GET_PAGE_ACK, page]
 
     def set_state_text(self, state):  # Update the State text on the "Home" HMI Icon
         self.state = state.value
-        
+
     def update_warnings(self, warning, active):
         if active:
             self.warnings |= (1 << warning)
@@ -473,13 +506,15 @@ class Module():
             self.faults |= (1 << fault)
         else:
             self.faults &= ~(1 << fault)
-              
+
     def get_info(self):
-        return [GET_INFO_ACK, self.uid, self.module_type, self.icon, self.name, self.manufacturer, self.model, self.options, self.version, self.website]
-    
+        return [GET_INFO_ACK, self.uid, self.module_type, self.icon, self.name, self.manufacturer, self.model,
+                self.options, self.version, self.website]
+
     def get_status(self):
-        return [GET_STATUS_ACK, self.uid, self.heartbeat, self.priV, self.priA, self.secV, self.secA, self.terV, self.terA, self.state, self.warnings, self.alarms, self.faults, self.actions, self.icon]
-    
+        return [GET_STATUS_ACK, self.uid, self.heartbeat, self.priV, self.priA, self.secV, self.secA, self.terV,
+                self.terA, self.state, self.warnings, self.alarms, self.faults, self.actions, self.icon]
+
     def save_to_db(self):
         try:
             db.save_to_db(__name__ + "_(" + str(self.uid) + ")", self.dbData)
@@ -492,61 +527,60 @@ class Module():
 
 
 def driver(queue, uid):
-    
     # Create and init our Module class
     flex_module = Module(uid, queue)
-    
+
     # Create a dummy thread
     thread = Thread(target=flex_module.process)
-    
+
     # Process piped requests
     while True:
         rx_msg = None
         tx_msg = None
-        
+
         try:
             rx_msg = queue[1].get()
-            
+
             if isinstance(rx_msg, list):
-                if rx_msg[0] == SYNC:  
-                    
+                if rx_msg[0] == SYNC:
+
                     if not thread.is_alive():
                         thread = Thread(target=flex_module.process)
                         thread.start()
                     tx_msg = None
-                    
-                elif rx_msg[0] == GET_INFO: 
+
+                elif rx_msg[0] == GET_INFO:
                     tx_msg = flex_module.get_info()
-                    
-                elif rx_msg[0] == GET_STATUS:  
+
+                elif rx_msg[0] == GET_STATUS:
                     tx_msg = flex_module.get_status()
-                    
+
                 elif rx_msg[0] == GET_PAGE:
                     tx_msg = flex_module.get_page()
-                    
+
                 elif rx_msg[0] == SET_PAGE:
-                    tx_msg = flex_module.set_page(rx_msg[1], rx_msg[2])              
-                
+                    tx_msg = flex_module.set_page(rx_msg[1], rx_msg[2])
+
                 elif rx_msg[0] == GET_OUTPUTS:
                     tx_msg = flex_module.get_outputs()
-                   
+
                 elif rx_msg[0] == SET_INPUTS:
                     tx_msg = flex_module.set_inputs(rx_msg[1])
-                
+
                 else:
                     print("Command Unknown: " + str(rx_msg[0]))
-                    
+
         except Exception as e:
             print("AC Meter: " + str(e))
-          
+
         try:
             if tx_msg is not None:
                 queue[0].put(tx_msg, block=True)
-                
+
         except Exception as e:
             print("AC Meter: " + str(e))
-            
- 
+
+
 # Enums
 class ModTypes(Enum):
     BASE = 0
@@ -572,19 +606,19 @@ class ModTypes(Enum):
     DC_EFM = 20
     EV_CHARGE = 21
 
-    SCADA = 22      
+    SCADA = 22
     LOGGING = 23
     CLIENT = 24
     UNDEFINED = 25
-    
+
 
 # Enums # TODO
 class Warnings(Enum):
-    NONE = 0                                                                                        # "Warning: Analogue IO - No Warning present"
+    NONE = 0  # "Warning: Analogue IO - No Warning present"
 
 
 class Alarms(Enum):
-    NONE = 0                                                                                        # "Alarm: Analogue IO - No Alarm present"
+    NONE = 0  # "Alarm: Analogue IO - No Alarm present"
 
 
 class Faults(Enum):
@@ -593,10 +627,11 @@ class Faults(Enum):
     LOSS_OF_COMMS = 2
 
 
-class Actions(Enum):                                                                                # Track the manual interactions with the html page
+class Actions(Enum):  # Track the manual interactions with the html page
     NONE = 0
     IP_ADDRESS_CHANGE = 1
     CTRL_OVERRIDE_CHANGE = 2
+
 
 class State(Enum):
     RESERVED = "Reserved"
