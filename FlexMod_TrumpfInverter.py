@@ -433,8 +433,8 @@ class Module():
                     new_power_L3 = int(self.inverter_command_apparent_power_L3 * 1000 / self.inverter_number_slaves)
 
                     # Pre-defined the limits for 1x25kW TruConveter inv.
-                    power_limit = range(-25000, 25000)
-                    power_limit_L = range(-8333, 8333)
+                    power_limit = range(-25000 * self.inverter_number_slaves, 25000 * self.inverter_number_slaves)
+                    power_limit_L = range(-8333 * self.inverter_number_slaves, 8333 * self.inverter_number_slaves)
 
                     if self.inv_opt == 'SYM':  # overall power
                         # Reset phase power = 0 (F.E.)
@@ -464,21 +464,21 @@ class Module():
                         # Reset total phase power = 0 (F.E.)
                         self.inverter_commanded_apparent_power = 0
 
-                        # L1
+                        # L1 for F.E
                         if new_power_L1 not in power_limit_L:
                             if new_power_L1 < min(power_limit_L):
                                 new_power_L1 = min(power_limit_L)
                             elif new_power_L1 > max(power_limit_L):
                                 new_power_L1 = max(power_limit_L)
                         self.inverter_commanded_apparent_power_L1 = int(self.inverter_number_slaves * (new_power_L1))
-                        # L2
+                        # L2 for F.E
                         if new_power_L2 not in power_limit_L:
                             if new_power_L2 < min(power_limit_L):
                                 new_power_L2 = min(power_limit_L)
                             elif new_power_L2 > max(power_limit_L):
                                 new_power_L2 = max(power_limit_L)
                         self.inverter_commanded_apparent_power_L2 = int(self.inverter_number_slaves * (new_power_L2))
-                        # L3
+                        # L3 for F.E
                         if new_power_L3 not in power_limit_L:
                             if new_power_L3 < min(power_limit_L):
                                 new_power_L3 = min(power_limit_L)
@@ -490,7 +490,7 @@ class Module():
                         command_power_L1 = self.int_to_twos_comp(new_power_L1)
                         command_power_L2 = self.int_to_twos_comp(new_power_L2)
                         command_power_L3 = self.int_to_twos_comp(new_power_L3)
-                        # remember new_power is 1/2 of the  power
+                        # remember new_power is 1/2 of the  power  for B.E.
                         if command_power_L1 != rr.registers[1]:
                             try:
                                 self.tcp_client.write_register(4196, int(command_power_L1))
@@ -781,11 +781,13 @@ class Module():
                         # TODO: Neat as this is, we should be commanding the power *here* to avoid the process loop time (currently 1 second),
                         #  after we've already spent <0.5 seconds in Flex.py going from SCADA -> Client -> inverter
 
-                        if -25 < input_power < 25:
+                        if -25 * self.inverter_number_slaves < input_power < 25 * self.inverter_number_slaves:
+                            # if -25 < input_power < 25:
                             self.inverter_command_apparent_power = input_power
                             # print("inverter_command_apparent_power : " + str(self.inverter_command_apparent_power))
 
-                        if -8.3 < input_power_per_phase < 8.3:
+                        if -8.3 * self.inverter_number_slaves < input_power_per_phase < 8.3 * self.inverter_number_slaves:
+                            # if -8.3 < input_power_per_phase < 8.3:
                             self.inverter_command_apparent_power_L1 = input_power_per_phase
                             self.inverter_command_apparent_power_L2 = input_power_per_phase
                             self.inverter_command_apparent_power_L3 = input_power_per_phase
@@ -841,7 +843,7 @@ class Module():
                         input_power = int(form[control])
 
                         # TODO: This needs to be compared against HMI Import and export limits
-                        if -25000 < input_power < 25000:
+                        if -25 < input_power < 25:
                             self.inverter_command_apparent_power = input_power
 
                 elif "inverter_apparent_power_set_L1" in form:
@@ -850,7 +852,7 @@ class Module():
                         input_power_L1 = int(form[control])
 
                         # TODO: This needs to be compared against HMI Import and export limits
-                        if -8333 < input_power_L1 < 8333:
+                        if -8.3 < input_power_L1 < 8.3:
                             self.inverter_command_apparent_power_L1 = input_power_L1
 
                 elif "inverter_apparent_power_set_L2" in form:
@@ -859,7 +861,7 @@ class Module():
                         input_power_L2 = int(form[control])
 
                         # TODO: This needs to be compared against HMI Import and export limits
-                        if -8333 < input_power_L2 < 8333:
+                        if -8.3 < input_power_L2 < 8.3:
                             self.inverter_command_apparent_power_L2 = input_power_L2
 
                 elif "inverter_apparent_power_set_L3" in form:
@@ -868,7 +870,7 @@ class Module():
                         input_power_L3 = int(form[control])
 
                         # TODO: This needs to be compared against HMI Import and export limits
-                        if -8333 < input_power_L3 < 8333:
+                        if -8.3 < input_power_L3 < 8.3:
                             self.inverter_command_apparent_power_L3 = input_power_L3
                 else:
                     isButton = False
