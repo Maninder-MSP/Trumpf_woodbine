@@ -775,22 +775,24 @@ class Module():
                         self.enabled = self.inputs[1]
 
                         # Grid power Command limit from Client Module (Grid Charging / TOU:)
-                        input_power = self.inputs[2][8]
-                        input_power_per_phase = (self.inputs[2][8]) / 3
+                        input_power = self.inputs[2][24]
+                        # input_power_per_phase = (self.inputs[2][8]) / 3
+                        input_power_L1 = self.inputs[2][25]
+                        input_power_L2 = self.inputs[2][26]
+                        input_power_L3 = self.inputs[2][27]
 
                         # TODO: Neat as this is, we should be commanding the power *here* to avoid the process loop time (currently 1 second),
                         #  after we've already spent <0.5 seconds in Flex.py going from SCADA -> Client -> inverter
 
                         if -25 * self.inverter_number_slaves < input_power < 25 * self.inverter_number_slaves:
-                            # if -25 < input_power < 25:
                             self.inverter_command_apparent_power = input_power
                             # print("inverter_command_apparent_power : " + str(self.inverter_command_apparent_power))
-
-                        if -8.3 * self.inverter_number_slaves < input_power_per_phase < 8.3 * self.inverter_number_slaves:
-                            # if -8.3 < input_power_per_phase < 8.3:
-                            self.inverter_command_apparent_power_L1 = input_power_per_phase
-                            self.inverter_command_apparent_power_L2 = input_power_per_phase
-                            self.inverter_command_apparent_power_L3 = input_power_per_phase
+                        if -8.3 * self.inverter_number_slaves < input_power_L1 < 8.3 * self.inverter_number_slaves:
+                            self.inverter_command_apparent_power_L1 = input_power_L1
+                        if -8.3 * self.inverter_number_slaves < input_power_L2 < 8.3 * self.inverter_number_slaves:
+                            self.inverter_command_apparent_power_L2 = input_power_L2
+                        if -8.3 * self.inverter_number_slaves < input_power_L3 < 8.3 * self.inverter_number_slaves:
+                            self.inverter_command_apparent_power_L3 = input_power_L3
 
         return [SET_INPUTS_ACK]
 

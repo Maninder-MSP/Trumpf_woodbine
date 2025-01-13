@@ -76,7 +76,10 @@ class Module():
 
         self.system_enabled = False
         self.system_status_text = "[0] System Idle"
-        self.control_real_power_command = 0
+        self.control_apparent_power_command = 0
+        self.control_apparent_power_command_L1 = 0
+        self.control_apparent_power_command_L2 = 0
+        self.control_apparent_power_command_L3 = 0
 
         self.bank_reset_enabled = True  # Forced because the prototype doesn't have any IO
         self.battery_estop_interlocks_enabled = False
@@ -123,6 +126,9 @@ class Module():
         self.ac_meter_grid_power = 0
         self.ac_meter_load_power = 0
         self.ac_meter_grid_power_kva = 0
+        self.ac_meter_grid_power_kva_L1 = 0
+        self.ac_meter_grid_power_kva_L2 = 0
+        self.ac_meter_grid_power_kva_L3 = 0
         self.ac_meter_grid_power_echo = 0
         self.ac_meter_drift_timeout = 0
 
@@ -421,12 +427,12 @@ class Module():
                 else:
                     self.system_status_text = "[3] Following Inverter Enabled"
                     print("catch 4")
-                    self.control_real_power_command = 0  # Reset the commanded power
+                    self.control_apparent_power_command = 0  # Reset the commanded power
                     self.client_state = 4
             else:
                 self.system_status_text = "[3] Disabling Following Inverter"
                 print("catch 5")
-                self.control_real_power_command = 0  # TODO: Soft or hard ramp down
+                self.control_apparent_power_command = 0  # TODO: Soft or hard ramp down
                 self.inverter_following_enable = False
                 self.client_state = 2
 
@@ -442,6 +448,10 @@ class Module():
                 pMaxDChg = float(self.battery_max_discharge_power)
                 pDcBus = float(self.battery_dcbus_power)  # DC Bus power
                 pGrid = float(self.ac_meter_grid_power)  # Grid power, positive when importing so we negate it for calcs
+                pGrid_kva = float(self.ac_meter_grid_power_kva)  # Maybe next one
+                pGrid_kva_L1 = float(self.ac_meter_grid_power_kva_L1)  # Grid power, positive when importing so we negate it for calcs
+                pGrid_kva_L2 = float(self.ac_meter_grid_power_kva_L2)  # Grid power, positive when importing so we negate it for calcs
+                pGrid_kva_L3 = float(self.ac_meter_grid_power_kva_L3)  # Grid power, positive when importing so we negate it for calcs
                 pRampRate = int(self.inverter_ramp_rate)
                 pImport = float(self.inverter_import_limit)
                 pExport = float(self.inverter_export_limit)
@@ -547,36 +557,36 @@ class Module():
 
                         print("Max Charge Limit Reached")
 
-                        if self.control_real_power_command <= -pRampRate:
+                        if self.control_apparent_power_command <= -pRampRate:
                             print("Max Charge Limit: Matching pMaxChg at ramp")
-                            self.control_real_power_command = self.control_real_power_command + pRampRate
-                        elif self.control_real_power_command <= -1:
+                            self.control_apparent_power_command = self.control_apparent_power_command + pRampRate
+                        elif self.control_apparent_power_command <= -1:
                             print("Max Charge Limit: Matching pMaxChg")
-                            self.control_real_power_command = self.control_real_power_command + 1
+                            self.control_apparent_power_command = self.control_apparent_power_command + 1
                     else:
                         if -pMaxChg < pDcBus:  # We *can* charge
 
                             print("pGrid is " + str(pGrid) + ", pImport is " + str(tou_setpoint))
                             if pGrid < tou_setpoint:
 
-                                if self.control_real_power_command - pRampRate >= -tou_setpoint:  # self.control_real_power_command will continue to rise and will take forever to command back to zero.
+                                if self.control_apparent_power_command - pRampRate >= -tou_setpoint:  # self.control_apparent_power_command will continue to rise and will take forever to command back to zero.
                                     # if pGrid + pRampRate <= pImport:
                                     print("Charging at ramp")
-                                    self.control_real_power_command = self.control_real_power_command - pRampRate
-                                elif self.control_real_power_command - 1 >= -tou_setpoint:
+                                    self.control_apparent_power_command = self.control_apparent_power_command - pRampRate
+                                elif self.control_apparent_power_command - 1 >= -tou_setpoint:
                                     # elif pGrid + 1 <= pImport:
                                     print("Inverter accumulation")
-                                    self.control_real_power_command = self.control_real_power_command - 1
+                                    self.control_apparent_power_command = self.control_apparent_power_command - 1
                             else:
                                 print("Grid charging: Limiting to pImport")
-                                self.control_real_power_command = self.control_real_power_command + 1
+                                self.control_apparent_power_command = self.control_apparent_power_command + 1
                         else:
-                            if self.control_real_power_command <= -pRampRate:
+                            if self.control_apparent_power_command <= -pRampRate:
                                 print("Matching pMaxChg at ramp")
-                                self.control_real_power_command = self.control_real_power_command + pRampRate
-                            elif self.control_real_power_command <= -1:
+                                self.control_apparent_power_command = self.control_apparent_power_command + pRampRate
+                            elif self.control_apparent_power_command <= -1:
                                 print("Matching pMaxChg")
-                                self.control_real_power_command = self.control_real_power_command + 1
+                                self.control_apparent_power_command = self.control_apparent_power_command + 1
 
                 # ######################################################################################### #
                 # AC Generator Charging - Currently targets the DSE8610 MKII with some IO                   #
@@ -846,78 +856,7 @@ class Module():
                             print("Gen 3: Max Charge Limit: Matching pMaxChg")
                             self.acgen_max_load = self.acgen_max_load - 1
 
-                # ######################################################################################### #
-                # AC Solar Charging                                                                         #
-                # ######################################################################################### #
-                acsolar_active = False
-                acsolar_setpoint = 0
 
-                # AC SOLAR period 1 (It's fair to assume at this point that we won't be defining different times for absorbing solar, so just the one setting for now)
-                if self.acsolar_charge1_enabled:
-                    # Now we need to check if we're Active, i.e. the current time is within the configured time
-                    if self.check_active_time(time(self.acsolar_charge1_start_hour, self.acsolar_charge1_start_min),
-                                              time(self.acsolar_charge1_end_hour, self.acsolar_charge1_end_min)):
-                        self.acsolar_charge1_active = True
-
-                        acsolar_setpoint = self.acsolar_charge1_import_limit
-                    else:
-                        self.acsolar_charge1_active = False
-
-                    self.acsolar_charge1_params[0] = self.acsolar_charge1_enabled
-                    self.acsolar_charge1_params[1] = self.acsolar_charge1_import_limit
-                    self.acsolar_charge1_params[2] = self.acsolar_charge1_start_hour
-                    self.acsolar_charge1_params[3] = self.acsolar_charge1_start_min
-                    self.acsolar_charge1_params[4] = self.acsolar_charge1_end_hour
-                    self.acsolar_charge1_params[5] = self.acsolar_charge1_end_min
-                    self.acsolar_charge1_params[6] = 0
-                    self.acsolar_charge1_params[7] = 0
-                    self.acsolar_charge1_params[8] = 0
-                    self.acsolar_charge1_params[9] = "Active" if self.acsolar_charge1_active else ""
-                else:
-                    self.acsolar_charge1_active = False
-                    self.acsolar_charge1_params = [0] * 10
-                    self.acsolar_charge1_params[9] = ""
-
-                # Now we know what we need to command from the inverter, we can filter it through other tasks
-                if self.acsolar_charge1_active:
-
-                    acsolar_active = True
-
-                    if (self.battery_charge_mode == "soc_charge" and (float(self.battery_max_charge_soc) <= float(self.battery_soc))) or \
-                       (self.battery_charge_mode == "volt_charge" and (int(self.battery_max_charge_voltage) <= int(self.battery_dcbus_voltage))):   # Ramp down the import if we've hit the target
-                        #print("acs Max Charge Limit Reached: " + self.battery_charge_mode, str(int(self.battery_max_charge_voltage)), str(int(self.battery_dcbus_voltage)))
-
-                        if self.control_real_power_command <= -pRampRate:
-                            print("acs Max Charge Limit: Matching pMaxChg at ramp")
-                            self.control_real_power_command = self.control_real_power_command + pRampRate
-                        elif self.control_real_power_command <= -1:
-                            print("acs Max Charge Limit: Matching pMaxChg")
-                            self.control_real_power_command = self.control_real_power_command + 1
-                    else:
-                        if -pMaxChg < pDcBus:  # We *can* charge
-
-                            print("pSolar is " + str(pGrid) + ", pSolarImport is " + str(acsolar_setpoint))
-                            print("Test: " + str(self.control_real_power_command) + " " + str(acsolar_setpoint) + " " + str(pRampRate))
-                            if pGrid <= -1:     # TODO acsolar_setpoint:
-
-                                if self.control_real_power_command - pRampRate >= -acsolar_setpoint:
-                                    # if pGrid + pRampRate <= pImport:
-                                    print("acs Charging at ramp")
-                                    self.control_real_power_command = self.control_real_power_command - pRampRate
-                                elif self.control_real_power_command - 1 >= -acsolar_setpoint:
-                                    # elif pGrid + 1 <= pImport:
-                                    print("acs Inverter accumulation")
-                                    self.control_real_power_command = self.control_real_power_command - 1
-                            #else:
-                            #    print("Solar charging: Limiting to pImport")
-                            #    self.control_real_power_command = self.control_real_power_command + 1
-                        else:
-                            if self.control_real_power_command <= -pRampRate:
-                                print("acs Matching pMaxChg at ramp")
-                                self.control_real_power_command = self.control_real_power_command + pRampRate
-                            elif self.control_real_power_command <= -1:
-                                print("acs Matching pMaxChg")
-                                self.control_real_power_command = self.control_real_power_command + 1
 
                 # ######################################################################################### #
                 # PEAK SHAVING / LOAD SHIFT                                                                 #
@@ -1014,56 +953,133 @@ class Module():
                 # Now we know what we need to command from the inverter, we can filter it through other tasks
                 if self.peak_shave1_active or self.peak_shave2_active or self.peak_shave3_active:
 
-                    peak_active = True
+                    # peak_active = True
+                    #
+                    # if (self.battery_charge_mode == "soc_charge" and (float(self.battery_min_discharge_soc) >= float(self.battery_soc))) or \
+                    #    (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) >= int(self.battery_dcbus_voltage))):
+                    #
+                    #     if pGrid >= 0:  # Hopefully this prevents the peak-shaving code from limiting solar (or other) import when we're exporting (-grid)
+                    #         if (self.battery_charge_mode == "soc_charge" and (int(self.battery_min_discharge_soc) == int(self.battery_soc))) or \
+                    #            (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) - 1 <= int(self.battery_dcbus_voltage) <= int(self.battery_min_discharge_voltage) + 1)):
+                    #             # Target recovered. zero commanded power. When in voltage mode the Kore value wanders a fair amount, hence the wide hysteresis. Ugh.
+                    #             #print("catch 6")
+                    #             self.control_apparent_power_command = 0
+                    #             #print("3. Zeroing")
+                    #
+                    #         elif (self.battery_charge_mode == "soc_charge" and (float(self.battery_min_discharge_soc) > float(self.battery_soc))) or \
+                    #              (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) > int(self.battery_dcbus_voltage))):
+                    #             if pDcBus > -1:  # Battery is exporting so we need to import to compensate
+                    #                 self.control_apparent_power_command = (self.control_apparent_power_command - 1)
+                    #                 #print("2. Trickle-charging at 1kW")
+                    # else:
+                    #     if pGrid >= (peak_setpoint + 1):
+                    #         if pMaxDChg > pDcBus:  # We *can* discharge
+                    #             if self.control_apparent_power_command < pExport:  # If we don't limit import, even if the inverter curtails the actual commanded power, the actual value of
+                    #                 if (pGrid - pRampRate) >= pRampRate:  # self.control_apparent_power_command + pRampRate <= pGrid:
+                    #                     #print("Discharging at ramp")
+                    #                     self.control_apparent_power_command = self.control_apparent_power_command + pRampRate
+                    #                 elif (pGrid - pRampRate) >= 1:  # self.control_apparent_power_command + 1 <= pGrid:
+                    #                     #print("Inverter reduction")
+                    #                     self.control_apparent_power_command = self.control_apparent_power_command + 1
+                    #                 else:
+                    #                     pass
+                    #                     #print("test 4")
+                    #             else:
+                    #                 #print("Limiting to pExport")
+                    #                 self.control_apparent_power_command = self.control_apparent_power_command - 1
+                    #         else:
+                    #             if self.control_apparent_power_command >= pRampRate:
+                    #                 #print("Matching pMaxDChg at ramp")
+                    #                 self.control_apparent_power_command = self.control_apparent_power_command - pRampRate
+                    #             elif self.control_apparent_power_command >= 1:
+                    #                 #print("Matching pMaxDChg")
+                    #                 self.control_apparent_power_command = self.control_apparent_power_command - 1
+                    #             else:
+                    #                 pass
+                    #                 #print("test 3")
+                    #     # elif pGrid <= -1:   # Compensate for negative overshoot if AC Solar isn't doing it for us.
+                    #     #     if not acsolar_active:
+                    #     #         self.control_apparent_power_command = self.control_apparent_power_command - 1
+                    #     else:
+                    #         pass
+                    #         #print("test 2")
+                    #
 
+
+
+
+                    # LOAD SHIFT FOR TRUMPF UNITS AT ALL THE 3 PHASES:
+                    peak_active = True
+                    # Need to work each phase pGrid_kva_L1
+                    # pGrid_kva_L1
+                    # pGrid_kva_L2
+                    # pGrid_kva_L3
                     if (self.battery_charge_mode == "soc_charge" and (float(self.battery_min_discharge_soc) >= float(self.battery_soc))) or \
                        (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) >= int(self.battery_dcbus_voltage))):
 
-                        if pGrid >= 0:  # Hopefully this prevents the peak-shaving code from limiting solar (or other) import when we're exporting (-grid)
+                        if pGrid_kva >= 0:  # tired see the  total apparent power with Trumpf unit.
                             if (self.battery_charge_mode == "soc_charge" and (int(self.battery_min_discharge_soc) == int(self.battery_soc))) or \
                                (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) - 1 <= int(self.battery_dcbus_voltage) <= int(self.battery_min_discharge_voltage) + 1)):
                                 # Target recovered. zero commanded power. When in voltage mode the Kore value wanders a fair amount, hence the wide hysteresis. Ugh.
                                 #print("catch 6")
-                                self.control_real_power_command = 0
+                                self.control_apparent_power_command = 0
+                                self.control_apparent_power_command_L1 = 0
+                                self.control_apparent_power_command_L2 = 0
+                                self.control_apparent_power_command_L3 = 0
                                 #print("3. Zeroing")
 
                             elif (self.battery_charge_mode == "soc_charge" and (float(self.battery_min_discharge_soc) > float(self.battery_soc))) or \
                                  (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) > int(self.battery_dcbus_voltage))):
                                 if pDcBus > -1:  # Battery is exporting so we need to import to compensate
-                                    self.control_real_power_command = (self.control_real_power_command - 1)
+                                    self.control_apparent_power_command = (self.control_apparent_power_command - 1)
+                                    self.control_apparent_power_command_L1 = (self.control_apparent_power_command_L1 - 1)
+                                    self.control_apparent_power_command_L2 = (self.control_apparent_power_command_L2 - 1)
+                                    self.control_apparent_power_command_L3 = (self.control_apparent_power_command_L3 - 1)
+
                                     #print("2. Trickle-charging at 1kW")
                     else:
-                        if pGrid >= (peak_setpoint + 1):
+
+                        if pGrid_kva >= (peak_setpoint + 1):
                             if pMaxDChg > pDcBus:  # We *can* discharge
-                                if self.control_real_power_command < pExport:  # If we don't limit import, even if the inverter curtails the actual commanded power, the actual value of
-                                    if (pGrid - pRampRate) >= pRampRate:  # self.control_real_power_command + pRampRate <= pGrid:
+                                if self.control_apparent_power_command < pExport:  # If we don't limit import, even if the inverter curtails the actual commanded power, the actual value of
+                                    if (pGrid_kva - pRampRate) >= pRampRate:  # self.control_apparent_power_command + pRampRate <= pGrid:
                                         #print("Discharging at ramp")
-                                        self.control_real_power_command = self.control_real_power_command + pRampRate
-                                    elif (pGrid - pRampRate) >= 1:  # self.control_real_power_command + 1 <= pGrid:
+                                        self.control_apparent_power_command = self.control_apparent_power_command + pRampRate
+                                    elif (pGrid_kva - pRampRate) >= 1:  # self.control_apparent_power_command + 1 <= pGrid:
                                         #print("Inverter reduction")
-                                        self.control_real_power_command = self.control_real_power_command + 1
+                                        self.control_apparent_power_command = self.control_apparent_power_command + 1
                                     else:
                                         pass
                                         #print("test 4")
                                 else:
                                     #print("Limiting to pExport")
-                                    self.control_real_power_command = self.control_real_power_command - 1
+                                    self.control_apparent_power_command = self.control_apparent_power_command - 1
                             else:
-                                if self.control_real_power_command >= pRampRate:
+                                if self.control_apparent_power_command >= pRampRate:
                                     #print("Matching pMaxDChg at ramp")
-                                    self.control_real_power_command = self.control_real_power_command - pRampRate
-                                elif self.control_real_power_command >= 1:
+                                    self.control_apparent_power_command = self.control_apparent_power_command - pRampRate
+                                elif self.control_apparent_power_command >= 1:
                                     #print("Matching pMaxDChg")
-                                    self.control_real_power_command = self.control_real_power_command - 1
+                                    self.control_apparent_power_command = self.control_apparent_power_command - 1
                                 else:
                                     pass
                                     #print("test 3")
-                        elif pGrid <= -1:   # Compensate for negative overshoot if AC Solar isn't doing it for us.
-                            if not acsolar_active:
-                                self.control_real_power_command = self.control_real_power_command - 1  
                         else:
-                            pass
-                            #print("test 2")
+                            print("peak shaving/LOad Shift in overall pGrid_kva")
+
+
+                    
+
+
+
+
+
+
+
+
+
+
+
 
                 # ######################################################################################### #
                 # CLIENT TASKS - Customer stuff that doesn't fit into normal control patterns               #
@@ -1115,92 +1131,6 @@ class Module():
                     # - Dynamic containment operation within set times. Requires Shaun's kit as the Python response isn't quick enough.
                     ###############################################################################################################################################################
                     
-                    if self.client_tasks_client == "CXP-00780_4":
-                        
-                        mode = self.client_param2                                                   # 46008, Joulen Operational Mode
-                        mode = 1    # Forced into DBM / BAU mode until Joulen take control at a later date
-                        
-                        if mode == 0x00:                                                            # Idle, undocumented. Zero the inverter power until they select a mode.
-                            pass
-                        elif mode == 0x01:                                                          # (Mandatory) BOU / Dumb Mode
-                            
-                            # This might be easier than originally anticipated. Push power out to meet the load, whether it ultimately consists of Solar, Battery or either.
-                            # We don't necessarily know what's going in, just what's going out. The load reading won't diminish because they read beyond both Grid and BESS.
-                            
-                            # A little misleading, load here is the site load, grid is the power out of the battery/solar measured at the Acuvim
-                            if self.ac_meter_load_power > self.ac_meter_grid_power:
-                                print("one")
-                                peak_setpoint = self.ac_meter_load_power - self.ac_meter_grid_power
-                                
-                                # React on change only to avoid overshooting on slow-moving real power
-                                if peak_setpoint != self.client_peak_setpoint_last:
-                                    print("two")
-                                    self.client_peak_setpoint_last = peak_setpoint
-                                    
-                                    # Discharge as long as we're above the minimum limit, whether that's Battery SoC or Voltage.
-                                    if (self.battery_charge_mode == "soc_charge" and (float(self.battery_min_discharge_soc) >= float(self.battery_soc))) or \
-                                       (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) >= int(self.battery_dcbus_voltage))):
-                                        print("three")
-                                        
-                                        if self.control_real_power_command >= pRampRate:
-                                            print("five")
-                                            self.control_real_power_command = self.control_real_power_command - pRampRate
-                                        
-                                        elif self.control_real_power_command >= 1:
-                                            print("six")
-                                            self.control_real_power_command = self.control_real_power_command - 1
-                                
-                                    else:
-                                        if peak_setpoint > 0:
-                                            print("twelve")
-                                            if pMaxDChg > pDcBus:  # We *can* discharge
-                                                print("thirteen")
-                                                #if self.control_real_power_command < pExport:   # We want to discharge the battery but not exceed the inverter or site export limits, whichever is smaller.
-                                                if self.ac_meter_grid_power < pExport:   # We want to discharge the battery but not exceed the inverter or site export limits, whichever is smaller.
-                                                    print("fourteen")
-                                                    if peak_setpoint >= pRampRate:
-                                                        print("fifteen")
-                                                        self.control_real_power_command = self.control_real_power_command + pRampRate
-                                                    elif pDcBus >= 1: 
-                                                        print("sixteen")
-                                                        self.control_real_power_command = self.control_real_power_command + 1   
-                                                    #else:    # We overshot or EPH power dropped
-                                                    #    self.control_real_power_command = self.control_real_power_command - 1
-                                                    
-                                                else:
-                                                    print("seventeen")
-                                                    self.control_real_power_command = self.control_real_power_command - 1
-                                            else:
-                                                print("eighteen")
-                                                if self.control_real_power_command >= pRampRate:
-                                                    print("nineteen")
-                                                    self.control_real_power_command = self.control_real_power_command - pRampRate
-                                                
-                                                elif self.control_real_power_command >= 1:
-                                                    print("twenty")
-                                                    self.control_real_power_command = self.control_real_power_command - 1
-                                        else:
-                                            pass
-                                            print("Catch unknown")
-                                            
-                            elif self.ac_meter_grid_power >= self.ac_meter_load_power+1:# We're adding a little hysteresis on the overshoot to avoid hunting.
-                                print("twenty-one")
-                                # Overshoot so we back off again
-                                if self.control_real_power_command >= pRampRate:
-                                    print("twenty-two")
-                                    self.control_real_power_command = self.control_real_power_command - pRampRate
-                                
-                                elif self.control_real_power_command >= 1:
-                                    print("twenty-three")
-                                    self.control_real_power_command = self.control_real_power_command - 1
-                            
-                        elif mode == 0x02:                                                          # (Mandatory) PARIS Optimisation Mode
-                            pass
-                        elif mode == 0x04:                                                          # (Mandatory) Hold Charge Mode 
-                            pass
-                        elif mode == 0x100:                                                         # (Market Specific) DC Mode
-                            pass
-                    
                     ###############################################################################################################################################################
                     # CXP-00853 (Woodbine, York) is a 2-stack Flex OD system connected to an AMPT Solar array.                                                  
                     # No special operational code, only the default peak shaving is enabled to offset load power with DC-coupled Solar energy.
@@ -1214,274 +1144,25 @@ class Module():
                         # 3) Set Client Tasks to "Enabled", "None" so that Control Status reads "[4] Client SYstem Running" when the BESS is Enabled. 
                         pass
                     
-                    ###############################################################################################################################################################
-                    # CXP-00884 (EcoPark) Is a 4-stack Flex OD battery sponge using an AC Solar input but on a shared AC bus, so we can't do the usual and monitor negative grid 
-                    # meter swings as the data is provided to us via BACnet.
-                    # AC Solar data is read from 127.0.0.1 through an MSP MBTCP-Bacnet bridge application (BACnetServer.py) as a positive power for total Solar generation. 
-                    # We only absorb power above what EPH needs.
-                    # AC Load meter, EcoPark House (EPH) is an indication of the building's Import power.
-                    #
-                    # There is still a consideration to enable off-peak grid charging but the solar panels are so good, I'm not sure if it'll be needed, or desired.
-                    #
-                    # The system is wired like this:    [Grid / AC Solar]-----[AC Meter, EcoPark House (load)]-----[BESS]
-                    # So if Solar > Load, AC Meter will read the load of the building, even though it is likely to ge all Solar generated. This is confusing as it is net zero but
-                    # reporting the load regardless.
-                    # [Grid / AC Solar]->>>-[AC Meter, EcoPark House (load)]-----[BESS]
-                    #
-                    # If Load > Solar, we inject opposing available BESS power onto the AC bus equivalent to the load, until the AC Meter reads close to net zero 
-                    # [Grid / AC Solar]->>>-[AC Meter, EcoPark House (load)]-<<<-[BESS]
-                    #
-                    # It would have been preferable if the BESS sat between the Grid / AC Solar and EPH to maintain a reported 0 power throughout, but neverminnd. It still works.
-                    # Local operation with Remote monitoring only.
-                    #
-                    # Refer to "EPH Battery Charge & Discharge Cause & Effect", revision P02 (20/05/2022) for further details.
-                    ###############################################################################################################################################################
-                    
-                    if self.client_tasks_client == "CXP-00884":
-                        
-                        # So first of all we need to know if we're charging, discharging or idling.
-                        
-                        # EcoPark house is absorbing "self.ac_meter_grid_power worth" of "self.ac_solar_ac_power" on the AC bus, so we can use the remainder to charge the battery
-                        if self.ac_solar_ac_power > self.ac_meter_grid_power:
-                        
-                            peak_setpoint = self.ac_solar_ac_power - self.ac_meter_grid_power
-                            
-                            # React on change only to avoid overshooting on slow bacnet updates!
-                            if peak_setpoint != self.client_CXP00884_setpoint_last:
-                                self.client_CXP00884_setpoint_last = peak_setpoint
-                                
-                                # DUPLICATE #
-                                # The bacnet ac meter appears be updating so slowly, so if we react quickly, we'll often overshoot. 
-                                # Wait for the bus to settle on a new value before assessing it. TODO: if we go negative, the above code *does* overshoot.
-                                #if peak_setpoint != self.client_CXP00884_setpoint_last:
-                                #    self.client_CXP00884_setpoint_last = peak_setpoint
-                                    
-                                # Note: this is basically the same as the default AC Solar charge mode but instead of reading the grid export, we have a client-reported Solar Power value
-                                if (self.battery_charge_mode == "soc_charge" and (float(self.battery_max_charge_soc) <= float(self.battery_soc))) or \
-                                   (self.battery_charge_mode == "volt_charge" and (int(self.battery_max_charge_voltage) <= int(self.battery_dcbus_voltage))):   
-                                   
-                                   # Ramp down the import if we've hit the target. Any excess solar then goes out the door (grid)
-                                    if self.control_real_power_command <= -pRampRate:
-                                        self.control_real_power_command = self.control_real_power_command + pRampRate
-                                    elif self.control_real_power_command <= -1:
-                                        self.control_real_power_command = self.control_real_power_command + 1   # Which gets us to around 0kW
-                                   
-                                else:   # We haven't hit our target SoC / Voltage
-                                    ac_solar_setpoint = int(self.ac_solar_ac_power - self.ac_meter_grid_power)    # We can charge with whatever EcoPark House (EPH) isn't using
-                                    
-                                    if -pMaxChg < pDcBus:  # We *can* charge Because Kore says we haven't exceeded the DC Bus power budget
-
-                                        if self.control_real_power_command - pRampRate >= -ac_solar_setpoint:
-                                            self.control_real_power_command = self.control_real_power_command - pRampRate
-                                        elif self.control_real_power_command - 1 >= -ac_solar_setpoint:
-                                            self.control_real_power_command = self.control_real_power_command - 1
-                                    else:
-                                        if self.control_real_power_command <= -pRampRate:
-                                            self.control_real_power_command = self.control_real_power_command + pRampRate
-                                        elif self.control_real_power_command <= -1:
-                                            self.control_real_power_command = self.control_real_power_command + 1
-                        
-                        # There's little solar available, so we need to push the power difference into EPH from the battery.
-                        elif self.ac_meter_grid_power >= self.ac_solar_ac_power+1:
-                        
-                            peak_setpoint = self.ac_meter_grid_power - self.ac_solar_ac_power
-                            
-                            # React on change only to avoid overshooting on slow bacnet updates!
-                            if peak_setpoint != self.client_CXP00884_setpoint_last:
-                                self.client_CXP00884_setpoint_last = peak_setpoint
-                             
-                                # Note: this is basically like peak shaving but we're offsetting the difference between what EPH needs and the available solar. 
-                                # We have to use the DC Bus power as a reference to ensure wee're offsetting the load *and* the parasitic loads.
-                                if (self.battery_charge_mode == "soc_charge" and (float(self.battery_min_discharge_soc) >= float(self.battery_soc))) or \
-                                   (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) >= int(self.battery_dcbus_voltage))):
-
-                                    if (self.battery_charge_mode == "soc_charge" and (int(self.battery_min_discharge_soc) == int(self.battery_soc))) or \
-                                       (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) - 1 <= int(self.battery_dcbus_voltage) <= int(self.battery_min_discharge_voltage) + 1)):
-                                        # Target recovered. zero commanded power. When in voltage mode the Kore value wanders a fair amount, hence the wide hysteresis. Ugh.
-                                        self.control_real_power_command = 0
-                                        
-                                    elif (self.battery_charge_mode == "soc_charge" and (float(self.battery_min_discharge_soc) > float(self.battery_soc))) or \
-                                         (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) > int(self.battery_dcbus_voltage))):
-                                        
-                                        # pRampRate here? ----
-                                        
-                                        #else
-                                        if pDcBus > -1:  # Battery is exporting so we need to import to compensate
-                                            self.control_real_power_command = (self.control_real_power_command - 1)
-                                else:
-                                    if peak_setpoint > 0:
-                                        if pMaxDChg > pDcBus:  # We *can* discharge
-                                            if self.control_real_power_command < pExport:   # We want to discharge the battery but not exceed the inverter or site export limits, whichever is smaller.
-                                                if peak_setpoint >= pRampRate:
-                                                    self.control_real_power_command = self.control_real_power_command + pRampRate
-                                                elif pDcBus >= 1: 
-                                                    self.control_real_power_command = self.control_real_power_command + 1   
-                                                else:    # We overshot or EPH power dropped
-                                                    self.control_real_power_command = self.control_real_power_command - 1
-                                                
-                                            else:
-                                                self.control_real_power_command = self.control_real_power_command - 1
-                                        else:
-                                            if self.control_real_power_command >= pRampRate:
-                                                self.control_real_power_command = self.control_real_power_command - pRampRate
-                                            
-                                            elif self.control_real_power_command >= 1:
-                                                self.control_real_power_command = self.control_real_power_command - 1
-                        
-                        # We're nicely balanced, reduce inverter usage
-                        else:
-                            # Idle the inverter
-                            pass   
-                        
-                    ###############################################################################################################################################################
-                    # CXP-00957 (Cummins) allows the remote operator to select which source (Grid / PV / FC) he or she wishes to use in order to charge the primary battery.
-                    # There are a number of modes that can be selected to best use the available power but for our part they are only ended up being symbolic, because Cummins would 
-                    # select a mode on their HMI, then a power source (auto or manually driven), before charging or discharging the battery as required.
-                    # What started out as a complex state diagram became a switch on the subsystem task.
-                    #
-                    # Grid source entails starting and stopping the inverter in the usual way
-                    # PV is effectively always on, but we have to use GET/POST HTTP api requests to configure the optimizer output power (current lookup table) between 0 and >PV 
-                    # Setpoint.
-                    # - I've implemented it here, but set_pv_setpoint and its lookup table need to move to the AMPT driver.
-                    # FC is still a work in progress, at time of writing they haven't installed it yet, so there is driver work to complete.
-                    #
-                    # Dumb battery otherwise with Remote control by Cummins / University of Nottingham
-                    ###############################################################################################################################################################
-                    
-                    elif self.client_tasks_client == "CXP-00957":
-                        
-                        # PV SOURCE Selected
-                        if self.client_CXP00957_active_mode & (1 << 0):
-                        
-                            if not self.client_CXP00957_active_mode & (1 << 10):    # We don't want to enable the PV if OFF Mode is actively disabling it
-                                self.client_CXP00957_pv_active = True
-
-                                # if the setpoint changes, update it.
-                                if self.client_CXP00957_pv_output_setpoint_last != self.client_CXP00957_pv_output_setpoint:
-                                    self.client_CXP00957_pv_output_setpoint_last = self.client_CXP00957_pv_output_setpoint
-                                    self.set_pv_setpoint(self.client_CXP00957_pv_output_setpoint)
-
-                                # We can't turn the PV off at the moment so assume always on
-                                self.client_CXP00957_active_mode_echo |= (1 << 0)
-                            else:
-                                self.client_CXP00957_active_mode_echo &= ~(1 << 0)
-                                self.client_CXP00957_pv_active = False
-                            
-                        else:
-                            # Disable the PV by minimising import power
-                            if self.client_CXP00957_pv_active == True:
-                                self.set_pv_setpoint(0)
-                                self.client_CXP00957_pv_active = False
-
-                            # We can't turn it off yet, but we're echoing their inputs
-                            self.client_CXP00957_active_mode_echo &= ~(1 << 0)
-
-                        # Fuel Cell SOURCE Selected
-                        if self.client_CXP00957_active_mode & (1 << 1):
-                            self.client_CXP00957_fc_active = True
-
-                            # TODO: Report that it's active once it is
-                            self.client_CXP00957_active_mode_echo |= (1 << 1)
-                        else:
-                            self.client_CXP00957_active_mode_echo &= ~(1 << 1)
-                            self.client_CXP00957_fc_active = False
-                            
-                        # Grid SOURCE Selected
-                        if self.client_CXP00957_active_mode & (1 << 2):
-                            
-                            if not self.client_CXP00957_active_mode & (1 << 10):    # We don't want to enable the inverter if OFF Mode is actively disabling it
-                                # Check whether the Grid-Facing Inverter is in Following mode
-                                if self.inverter_following_enable:                                            
-                                    self.client_CXP00957_active_mode_echo |= (1 << 2)
-                                    self.client_CXP00957_grid_active = True
-                                else:                            
-                                    # Enable it!
-                                    print("catch 7")
-                                    self.control_real_power_command = 0  # TODO: Soft or hard ramp down
-                                    self.inverter_following_enable = True
-                                
-                                    self.client_CXP00957_active_mode_echo &= ~(1 << 2)
-                                    self.client_CXP00957_grid_active = False
-                              
-                            else:
-                                self.client_CXP00957_active_mode_echo &= ~(1 << 2)
-                                self.client_CXP00957_grid_active = False
-                        else:
-                            
-                            if self.inverter_following_enable: 
-                                self.client_CXP00957_active_mode_echo |= (1 << 2)
-                                self.client_CXP00957_grid_active = True
-                                
-                                # Disable it!
-                                print("catch 8")
-                                self.control_real_power_command = 0  # TODO: Soft or hard ramp down
-                                self.inverter_following_enable = False  
-                            else:
-                                self.client_CXP00957_active_mode_echo &= ~(1 << 2)
-                                self.client_CXP00957_grid_active = False
-                               
-                        # PV Bypass SOURCE Selected
-                        if self.client_CXP00957_active_mode & (1 << 3):
-                            self.client_CXP00957_pv_bypass_active = True
-                            self.client_CXP00957_active_mode_echo |= (1 << 3)
-                        else:
-                            self.client_CXP00957_active_mode_echo &= ~(1 << 3)
-                            self.client_CXP00957_pv_bypass_active = False
-                            
-                        # The control modes are well defined by Cummins but setting these bits does very little for the BESS. Control is generally via registers 255 / 257 and the above inputs.
-
-                        # Energy Store MODE #
-                        if self.client_CXP00957_active_mode & (1 << 8):
-                            self.client_CXP00957_active_mode_echo |= (1 << 8)
-                        else:
-                            self.client_CXP00957_active_mode_echo &= ~(1 << 8)
-
-                        # Peak Shave MODE #
-                        if self.client_CXP00957_active_mode & (1 << 9):
-                            self.client_CXP00957_active_mode_echo |= (1 << 9)
-                        else:
-                            self.client_CXP00957_active_mode_echo &= ~(1 << 9)
-
-                        # Off MODE #
-                        if self.client_CXP00957_active_mode & (1 << 10):
-                            self.client_CXP00957_active_mode_echo |= (1 << 10)
-                        else:
-                            self.client_CXP00957_active_mode_echo &= ~(1 << 10)
-
-
-                        self.client_tasks_params[2] = "Energy Store Mode" if self.client_CXP00957_active_mode & (1 << 8) else \
-                                                      "Peak Shave Mode" if self.client_CXP00957_active_mode & (1 << 9) else \
-                                                      "Off Mode" if self.client_CXP00957_active_mode & (1 << 10) else "Invalid Mode"
-                        self.client_tasks_params[3] = self.client_CXP00957_charge_setpoint
-                        self.client_tasks_params[4] = self.client_CXP00957_discharge_setpoint
-                        self.client_tasks_params[5] = self.client_CXP00957_pv_bypass_output_setpoint
-                        self.client_tasks_params[6] = self.client_CXP00957_grid_output_setpoint
-                        self.client_tasks_params[7] = self.client_CXP00957_pv_output_setpoint
-                        self.client_tasks_params[8] = self.client_CXP00957_fc_output_setpoint
-                        self.client_tasks_params[9] = "Active" if self.client_CXP00957_pv_bypass_active else ""
-                        self.client_tasks_params[10] = "Active" if self.client_CXP00957_grid_active else ""
-                        self.client_tasks_params[11] = "Active" if self.client_CXP00957_pv_active else ""
-                        self.client_tasks_params[12] = "Active" if self.client_CXP00957_fc_active else ""
-
-                        # Retrieve the data from the external controller and display it on screen
 
                     else:
                         pass
 
                 # Catch-all that drops the inverter to 0 if tou / peak time etc are not in operation
-                if not tou_active and not acsolar_active and not peak_active and not client_tasks_active:
+                # if not tou_active and not acsolar_active and not peak_active and not client_tasks_active:
+                if not tou_active and not peak_active and not client_tasks_active:
                     
                     # Reduce power if still commanded above zero
-                    if self.control_real_power_command >= pRampRate:
-                        self.control_real_power_command = self.control_real_power_command - pRampRate
-                    elif self.control_real_power_command >= 1:
-                        self.control_real_power_command = self.control_real_power_command - 1
+                    if self.control_apparent_power_command >= pRampRate:
+                        self.control_apparent_power_command = self.control_apparent_power_command - pRampRate
+                    elif self.control_apparent_power_command >= 1:
+                        self.control_apparent_power_command = self.control_apparent_power_command - 1
 
                     # Increase power if commanded below zero
-                    elif self.control_real_power_command <= -pRampRate:
-                        self.control_real_power_command = self.control_real_power_command + pRampRate
-                    elif self.control_real_power_command <= -1:
-                        self.control_real_power_command = self.control_real_power_command + 1
+                    elif self.control_apparent_power_command <= -pRampRate:
+                        self.control_apparent_power_command = self.control_apparent_power_command + pRampRate
+                    elif self.control_apparent_power_command <= -1:
+                        self.control_apparent_power_command = self.control_apparent_power_command + 1
 
                 self.system_status_text = "[4] Client System Running"
 
@@ -1601,11 +1282,11 @@ class Module():
                     else:
                         self.system_enabled = False
 
-                    # Commanded real power if we're operating in remote mode - this is going to be problematic if we're doing auto control in remote mode. Looking at you, Swadlincote! Force override flag?
-                    if dev[2][3] & (1 << 1):                                                        # Check RemLoc Echo bit
-                        print("catch 2")
-                        self.control_real_power_command = dev[2][4]                                 # Partitioned in the main loop if inverter count > 1
-                        #print("Real power command = " + str(self.control_real_power_command))
+                    # # Commanded real power if we're operating in remote mode - this is going to be problematic if we're doing auto control in remote mode. Looking at you, Swadlincote! Force override flag?
+                    # if dev[2][3] & (1 << 1):                                                        # Check RemLoc Echo bit
+                    #     print("catch 2")
+                    #     self.control_apparent_power_command = dev[2][4]                                 # Partitioned in the main loop if inverter count > 1
+                    #     print("Real power command = " + str(self.control_apparent_power_command))
             # Battery (module type 2)
             if self.inputs[ModTypes.BATTERY.value] is not None:
                 for dev in self.inputs[ModTypes.BATTERY.value]:                                     # A BESS usually has one, a site might have multiple BESSs
@@ -1659,7 +1340,10 @@ class Module():
 
                                 if self.inverter_following_state != 2:                              # Reset commanded power in fault conditions.
                                     print("catch 3")
-                                    self.control_real_power_command = 0
+                                    self.control_apparent_power_command = 0
+                                    self.control_apparent_power_command_L1 = 0
+                                    self.control_apparent_power_command_L2 = 0
+                                    self.control_apparent_power_command_L3 = 0
 
                                 import_limit = "client_inverter_import_limit_" + str(dev[0])
                                 if import_limit in self.dbData:
@@ -1689,6 +1373,9 @@ class Module():
                             if self.dbData[meter_location] == "Grid" or self.dbData[meter_location] == "Grid_and_Load":
                                 self.ac_meter_grid_power = dev[2][7]
                                 self.ac_meter_grid_power_kva = dev[2][13]
+                                self.ac_meter_grid_power_kva_L1 = dev[2][16]
+                                self.ac_meter_grid_power_kva_L2 = dev[2][17]
+                                self.ac_meter_grid_power_kva_L3 = dev[2][18]
                             elif self.dbData[meter_location] == "Load":
                                 self.ac_meter_load_power = dev[2][7]
 
@@ -2294,7 +1981,10 @@ class Module():
             for dev in mod_data[ModTypes.INVERTER.value]:
                 if dev[1]:
                     if len(mod_data[ModTypes.INVERTER.value]) == 1:                          # There's only one following inverter, no power management required
-                        dev[2][8] = self.control_real_power_command
+                        dev[2][24] = self.control_apparent_power_command
+                        dev[2][25] = self.control_apparent_power_command_L1
+                        dev[2][26] = self.control_apparent_power_command_L2
+                        dev[2][27] = self.control_apparent_power_command_L3
                     else:
                         pass
                         # TODO: else each FOLLOWING inverter will get a portion of self.real_power_command when calculated in the main loop.
