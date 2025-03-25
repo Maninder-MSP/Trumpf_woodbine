@@ -20,8 +20,9 @@ db = FlexTinyDB()
 
 loop_time = 0
 
+
 # Queued commands
-SYNC = 0  # Allows the Flex code to syncronise module polling loops using a single thread (TBD)
+SYNC = 0                                                                                            # Allows the Flex code to syncronise module polling loops using a single thread (TBD)
 SYNC_ACK = 1
 GET_INFO = 2
 GET_INFO_ACK = 3
@@ -37,6 +38,7 @@ SET_INPUTS = 12
 SET_INPUTS_ACK = 13
 ERROR = 100
 
+  
 '''
 class Interval(Thread):
     def __init__(self, event, process, interval):
@@ -104,12 +106,12 @@ class Module():
         self.inputs = [self.uid, False]
         self.enabled = False
         self.enabled_echo = False
-        self.outputs = [self.uid, self.enabled, [0] * 35]
+        self.outputs = [self.uid, self.enabled, [0]*35]
         self.heartbeat = 0
         self.heartbeat_echo = 0
         self.override = False
 
-        self.inverter_quantity = 1  # Always 1 at module level, may be greater at site level
+        self.inverter_quantity = 1                                                                  # Always 1 at module level, may be greater at site level
         self.inverter_heartbeat = 0
         self.inverter_operating_state = 0
         self.inverter_number_slaves = 0
@@ -132,6 +134,7 @@ class Module():
         self.inverter_commanded_apparent_power_L2 = 0
         self.inverter_commanded_apparent_power_L3 = 0
 
+
         self.inverter_commanded_real_power = 0
         self.inverter_real_power = 0
         self.inverter_commanded_reactive_power = 0
@@ -153,6 +156,7 @@ class Module():
         self.inverter_module_balancer_temperature = 0
         self.inverter_fan_speed = 0
 
+
         self.auto_fault_clear = "Manual"
         self.manual_fault_clear = False
 
@@ -165,9 +169,9 @@ class Module():
         self.fault_timeout_counter = 0
 
         # Inverter registers
-        self.inv_conn = 0  # Enable the inverter
-        self.inv_opt = 'ASYM'  # Opteration of Inverter
-        self.inv_reset = 0  # reset the alarm
+        self.inv_conn = 0                                                                          # Enable the inverter
+        self.inv_opt = 'ASYM'                                                                           # Opteration of Inverter
+        self.inv_reset = 0                                                                         # reset the alarm
         self.inv_rst_alm = False
 
         # Events
@@ -185,10 +189,10 @@ class Module():
         self.terA = 0
 
         # Start interval timer
-        # self.stop = Event()
-        # self.interval = 1  # Interval timeout in Seconds
-        # self.thread = Interval(self.stop, self.__process, self.interval)
-        # self.thread.start()
+        #self.stop = Event()
+        #self.interval = 1  # Interval timeout in Seconds
+        #self.thread = Interval(self.stop, self.__process, self.interval)
+        #self.thread.start()
 
         self.ext_hb_enabled = False
 
@@ -273,6 +277,8 @@ class Module():
                 self.tcp_timeout += 1
                 return
 
+
+
             # print('proscess running Trumpf')
             # print(self.inv_opt)
             # print(self.inverter_command_apparent_power , self.inverter_command_apparent_power_L1)
@@ -313,6 +319,7 @@ class Module():
                     # "Configuration AC set values for phases L1 - L3: 1 = symmetric; 0 = asymmetric (individual configuration possible);"
                     # 1) Resets current alarm and warning messages
 
+                    
                     # Set the Operational Mode to 0 = asymmetric
                     if self.override == True:
                         if self.inv_opt == 'ASYM' and rr.bits[1] is True:
@@ -342,7 +349,7 @@ class Module():
                     else:
                         # Set by default values at StartUp
                         # 1) it set to ASYM.
-                        if rr.bits[1] is True:
+                        '''if rr.bits[1] is True:
                             try:
                                 self.tcp_client.write_coil(4001, 0, timeout=0.25)
                                 print('Inverter set to ASYM First time')
@@ -353,7 +360,23 @@ class Module():
                             except Exception as e:
                                 print("Inverter: " + str(e))
                                 self.tcp_timeout += 1
+                                return'''
+
+                        # 1) it set to SYM.
+                        if rr.bits[1] is False:
+                            try:
+                                self.tcp_client.write_coil(4001, 1, timeout=0.25)
+                                print('Inverter set to SYM First time')
+                                self.inv_opt = 'ASYM'
+                                self.tcp_client.write_coil(4011, 0, timeout=0.25)
+                                print('De - Activated_SlaveAddressing_Over_Modbus_SlaveId')
+                                self.tcp_timeout = 0
+                            except Exception as e:
+                                print("Inverter: " + str(e))
+                                self.tcp_timeout += 1
                                 return
+
+
 
                     # Operational Mode
                     op_mode = rr.bits[0]
@@ -365,6 +388,7 @@ class Module():
                         except:
                             self.tcp_timeout += 1
                             return
+
 
                     self.tcp_timeout = 0
 
@@ -380,28 +404,28 @@ class Module():
                 # make sure inv is in asymmetric, and reset alarms (DONE)
                 if self.inv_conn:
                     # if self.inv_opt == 'ASYM':                                        # asymmetric enabled ?
-                    if self.inverter_operating_state != 3:
-                        self.inverter_command_apparent_power = 0  # Force zero power before starting
-                        self.inverter_command_apparent_power_L1 = 0  # Force zero power before starting
-                        self.inverter_command_apparent_power_L2 = 0  # Force zero power before starting
-                        self.inverter_command_apparent_power_L3 = 0  # Force zero power before starting
-                        if self.inverter_operating_state == 0:  # PowerUP
-                            pass
-                        elif self.inverter_operating_state == 1:  # Error
-                            # Reset the alarm/Error right now its manually
-                            pass
-                        elif self.inverter_operating_state == 2:  # Idle
-                            self.inverter_operating_mode = 1  # ActivatePowerStage Coil Enabled
-                        elif self.inverter_operating_state == 3:  # Operation/RUN
-                            pass
-                        elif self.inverter_operating_state == 4:  # Maintenance
-                            pass
+                        if self.inverter_operating_state != 3:
+                            self.inverter_command_apparent_power = 0                  # Force zero power before starting
+                            self.inverter_command_apparent_power_L1 = 0               # Force zero power before starting
+                            self.inverter_command_apparent_power_L2 = 0               # Force zero power before starting
+                            self.inverter_command_apparent_power_L3 = 0               # Force zero power before starting
+                            if self.inverter_operating_state == 0:                    # PowerUP
+                                pass
+                            elif self.inverter_operating_state == 1:                  # Error
+                                # Reset the alarm/Error right now its manually
+                                pass
+                            elif self.inverter_operating_state == 2:                  # Idle
+                                self.inverter_operating_mode = 1                      # ActivatePowerStage Coil Enabled
+                            elif self.inverter_operating_state == 3:                  # Operation/RUN
+                                pass
+                            elif self.inverter_operating_state == 4:                  # Maintenance
+                                pass
 
-                    else:
-                        self.enabled_echo = True
+                        else:
+                            self.enabled_echo = True
                 else:
-                    if self.inverter_operating_state == 3:  # Already in Operation
-                        self.inverter_operating_mode = 0  # ActivatePowerStage Coil Disabled
+                    if self.inverter_operating_state == 3:                            # Already in Operation
+                        self.inverter_operating_mode = 0                              # ActivatePowerStage Coil Disabled
                         # # TODO Reduce power (gracefully)
                         self.inverter_command_apparent_power = 0
                         self.inverter_command_apparent_power_L1 = 0
@@ -416,6 +440,8 @@ class Module():
                 self.tcp_timeout += 1
                 return
 
+
+
             # power command
             try:
                 rr = self.tcp_client.read_holding_registers(4195, 4, timeout=0.25)
@@ -423,6 +449,8 @@ class Module():
                     self.tcp_timeout += 1
                     return
                 else:
+
+
 
                     # Power Limit for the 25kW inv.
 
@@ -432,25 +460,31 @@ class Module():
                     new_power_L2 = int(self.inverter_command_apparent_power_L2 * 1000 / self.inverter_number_slaves)
                     new_power_L3 = int(self.inverter_command_apparent_power_L3 * 1000 / self.inverter_number_slaves)
 
-                    # Pre-defined the limits for 1x25kW TruConveter inv.
-                    power_limit = range(-25000 * self.inverter_number_slaves, 25000 * self.inverter_number_slaves)
-                    power_limit_L = range(-8333 * self.inverter_number_slaves, 8333 * self.inverter_number_slaves)
+                    # Pre-defined the limits for 1x25kW TruConveter inv. 
+                    power_limit = range(-25000*self.inverter_number_slaves, 25000*self.inverter_number_slaves)
+                    power_limit_L = range(-8333*self.inverter_number_slaves, 8333*self.inverter_number_slaves)
 
-                    if self.inv_opt == 'SYM':  # overall power
+                    
+                    
+                    self.inv_opt = 'SYM' # for testing mani
+                    # print('From inverter module : ' + str(self.inverter_commanded_apparent_power))
+                    
+                    if self.inv_opt == 'SYM':                                # overall power
                         # Reset phase power = 0 (F.E.)
                         self.inverter_commanded_apparent_power_L1 = 0
                         self.inverter_commanded_apparent_power_L2 = 0
                         self.inverter_commanded_apparent_power_L3 = 0
+
 
                         if new_power not in power_limit:
                             if new_power < min(power_limit):
                                 new_power = min(power_limit)
                             elif new_power > max(power_limit):
                                 new_power = max(power_limit)
-                        self.inverter_commanded_apparent_power = int(self.inverter_number_slaves * (new_power))
+                        self.inverter_commanded_apparent_power = int(self.inverter_number_slaves*(new_power))
 
                         command_power = self.int_to_twos_comp(new_power)
-
+                        
                         if command_power != rr.registers[0]:
                             try:
                                 self.tcp_client.write_register(4195, int(command_power))
@@ -460,37 +494,39 @@ class Module():
                                 self.tcp_timeout += 1
                                 return
 
-                    elif self.inv_opt == 'ASYM':  # Each phase power
+                    elif self.inv_opt == 'ASYM':                             # Each phase power
                         # Reset total phase power = 0 (F.E.)
                         self.inverter_commanded_apparent_power = 0
-
+                        
                         # L1 for F.E
                         if new_power_L1 not in power_limit_L:
                             if new_power_L1 < min(power_limit_L):
                                 new_power_L1 = min(power_limit_L)
                             elif new_power_L1 > max(power_limit_L):
                                 new_power_L1 = max(power_limit_L)
-                        self.inverter_commanded_apparent_power_L1 = int(self.inverter_number_slaves * (new_power_L1))
+                        self.inverter_commanded_apparent_power_L1 = int(self.inverter_number_slaves*(new_power_L1))
                         # L2 for F.E
                         if new_power_L2 not in power_limit_L:
                             if new_power_L2 < min(power_limit_L):
                                 new_power_L2 = min(power_limit_L)
                             elif new_power_L2 > max(power_limit_L):
                                 new_power_L2 = max(power_limit_L)
-                        self.inverter_commanded_apparent_power_L2 = int(self.inverter_number_slaves * (new_power_L2))
+                        self.inverter_commanded_apparent_power_L2 = int(self.inverter_number_slaves*(new_power_L2))
                         # L3 for F.E
                         if new_power_L3 not in power_limit_L:
                             if new_power_L3 < min(power_limit_L):
                                 new_power_L3 = min(power_limit_L)
                             elif new_power_L3 > max(power_limit_L):
                                 new_power_L3 = max(power_limit_L)
-                        self.inverter_commanded_apparent_power_L3 = int(self.inverter_number_slaves * (new_power_L3))
+                        self.inverter_commanded_apparent_power_L3 = int(self.inverter_number_slaves*(new_power_L3))
                         # print('command_power Line :' + str(self.inverter_commanded_apparent_power_L1), '  ' + str(new_power_L2))
+                        
+                        
 
                         command_power_L1 = self.int_to_twos_comp(new_power_L1)
                         command_power_L2 = self.int_to_twos_comp(new_power_L2)
                         command_power_L3 = self.int_to_twos_comp(new_power_L3)
-                        # remember new_power is 1/2 of the  power  for B.E.
+                        # remember new_power is 1/2 of the  power  for B.E. 
                         if command_power_L1 != rr.registers[1]:
                             try:
                                 self.tcp_client.write_register(4196, int(command_power_L1))
@@ -516,11 +552,16 @@ class Module():
                                 self.tcp_timeout += 1
                                 return
 
+                        
+
+
                     self.tcp_timeout = 0
             except Exception as e:
                 print("Inverter: " + str(e))
                 self.tcp_timeout += 1
                 return
+
+
 
             # CLear/Reset the Faults
             # Clear Faults (0x01) and Warnings (0x02)
@@ -548,6 +589,7 @@ class Module():
                     self.tcp_timeout += 1
                     return
 
+
             # Reading other useful data
             try:
                 rr = self.tcp_client.read_holding_registers(5180, 12, timeout=0.25)
@@ -557,14 +599,14 @@ class Module():
                     return
                 else:
 
-                    self.inverter_apparent_power_L1 = int(rr.registers[0] | rr.registers[1]) / 1000
-                    self.inverter_apparent_power_L2 = int(rr.registers[2] | rr.registers[3]) / 1000
-                    self.inverter_apparent_power_L3 = int(rr.registers[4] | rr.registers[5]) / 1000
-                    self.inverter_apparent_power = self.inverter_apparent_power_L1 + self.inverter_apparent_power_L2 + self.inverter_apparent_power_L3  # may be kVA in total
+                    self.inverter_apparent_power_L1 = int(rr.registers[0] | rr.registers[1])/1000
+                    self.inverter_apparent_power_L2 = int(rr.registers[2] | rr.registers[3])/1000
+                    self.inverter_apparent_power_L3 = int(rr.registers[4] | rr.registers[5])/1000
+                    self.inverter_apparent_power = self.inverter_apparent_power_L1 + self.inverter_apparent_power_L2 + self.inverter_apparent_power_L3 # may be kVA in total  
 
-                    real_power_L1 = int(self.twos_comp_to_int(rr.registers[7])) / 1000
-                    real_power_L2 = int(self.twos_comp_to_int(rr.registers[9])) / 1000
-                    real_power_L3 = int(self.twos_comp_to_int(rr.registers[11])) / 1000
+                    real_power_L1 = int(self.twos_comp_to_int(rr.registers[7]))/1000
+                    real_power_L2 = int(self.twos_comp_to_int(rr.registers[9]))/1000
+                    real_power_L3 = int(self.twos_comp_to_int(rr.registers[11]))/1000
                     self.inverter_real_power = int(real_power_L1 + real_power_L2 + real_power_L3)
 
                     self.tcp_timeout = 0
@@ -574,6 +616,7 @@ class Module():
                 self.tcp_timeout += 1
                 return
 
+
             try:
                 rr = self.tcp_client.read_holding_registers(5234, 6, timeout=0.25)
 
@@ -582,9 +625,9 @@ class Module():
                     return
                 else:
 
-                    reactive_power_L1 = int(self.twos_comp_to_int(rr.registers[1])) / 1000
-                    reactive_power_L2 = int(self.twos_comp_to_int(rr.registers[3])) / 1000
-                    reactive_power_L3 = int(self.twos_comp_to_int(rr.registers[5])) / 1000
+                    reactive_power_L1 = int(self.twos_comp_to_int(rr.registers[1]))/1000
+                    reactive_power_L2 = int(self.twos_comp_to_int(rr.registers[3]))/1000
+                    reactive_power_L3 = int(self.twos_comp_to_int(rr.registers[5]))/1000
                     self.inverter_reactive_power = int(reactive_power_L1 + reactive_power_L2 + reactive_power_L3)
                     self.tcp_timeout = 0
 
@@ -593,7 +636,8 @@ class Module():
                 self.tcp_timeout += 1
                 return
 
-            # --------------------------------------#
+
+            #--------------------------------------#
             # Accumulative params for no. of Slave #
             # --------------------------------------#
             total_freq = 0
@@ -604,7 +648,7 @@ class Module():
             total_mod_temp = 0
             total_mod_bal_temp = 0
             total_mod_fan_speed = 0
-            for noOfSlave in range(1, self.inverter_number_slaves + 1):
+            for noOfSlave in range(1, self.inverter_number_slaves+1):
                 # Grid current RMS
                 try:
                     rr = self.tcp_client.read_holding_registers(5150, 3, unit=noOfSlave, timeout=0.25)
@@ -612,13 +656,13 @@ class Module():
                         self.tcp_timeout += 1
                         return
                     else:
-                        total_ac_curr += (rr.registers[0] + rr.registers[1] + rr.registers[2]) / 3
+                        total_ac_curr += (rr.registers[0] + rr.registers[1] + rr.registers[2])/3
                         self.tcp_timeout = 0
                 except Exception as e:
                     print("Inverter: " + str(e))
                     self.tcp_timeout += 1
                     return
-
+                
                 # Grid voltage RMS
                 try:
                     rr = self.tcp_client.read_holding_registers(5160, 3, unit=noOfSlave, timeout=0.25)
@@ -626,7 +670,7 @@ class Module():
                         self.tcp_timeout += 1
                         return
                     else:
-                        total_ac_volt += (rr.registers[0] + rr.registers[1] + rr.registers[2]) / 3
+                        total_ac_volt += (rr.registers[0] + rr.registers[1] + rr.registers[2])/3
                         self.tcp_timeout = 0
                 except Exception as e:
                     print("Inverter: " + str(e))
@@ -669,7 +713,7 @@ class Module():
                         return
                     else:
                         total_mod_inl_temp += rr.registers[0]
-                        total_mod_temp += (rr.registers[1] + rr.registers[2] + rr.registers[3]) / 3
+                        total_mod_temp += (rr.registers[1] + rr.registers[2] + rr.registers[3])/3
                         total_mod_bal_temp += rr.registers[4]
                         total_mod_fan_speed += rr.registers[5]
                         self.tcp_timeout = 0
@@ -680,17 +724,17 @@ class Module():
                     return
 
             # Accumulative params
-            self.inverter_frequency = (total_freq / self.inverter_number_slaves) / 100
-            self.inverter_dc_voltage = total_intlDC_vol / self.inverter_number_slaves
-            self.inverter_ac_rms_phase_current = total_ac_curr / 100
-            self.inverter_ac_rms_phase_voltage = (total_ac_volt / self.inverter_number_slaves) / 10
-            self.inverter_inlet_air_temperature = (total_mod_inl_temp / self.inverter_number_slaves) / 10
-            self.inverter_avg_module_temperature = (total_mod_temp / self.inverter_number_slaves) / 10
-            self.inverter_module_balancer_temperature = (total_mod_bal_temp / self.inverter_number_slaves) / 10
-            self.inverter_fan_speed = (total_mod_fan_speed / self.inverter_number_slaves)
+            self.inverter_frequency = (total_freq/self.inverter_number_slaves)/100
+            self.inverter_dc_voltage = total_intlDC_vol/self.inverter_number_slaves
+            self.inverter_ac_rms_phase_current = total_ac_curr/100
+            self.inverter_ac_rms_phase_voltage = (total_ac_volt/self.inverter_number_slaves)/10
+            self.inverter_inlet_air_temperature = (total_mod_inl_temp/self.inverter_number_slaves)/10
+            self.inverter_avg_module_temperature = (total_mod_temp/self.inverter_number_slaves)/10
+            self.inverter_module_balancer_temperature = (total_mod_bal_temp/self.inverter_number_slaves)/10
+            self.inverter_fan_speed = (total_mod_fan_speed/self.inverter_number_slaves)
 
         if not self.override:
-            if self.enabled:  # The controller is asking us to enable the inverter
+            if self.enabled:                                                                            # The controller is asking us to enable the inverter
                 self.inv_conn = True
             else:
                 self.inv_conn = False
@@ -704,17 +748,19 @@ class Module():
         if self.inverter_operating_state == 1:  # PowerUP
             pass
         elif self.inverter_operating_state == 1:  # Error
-            trumpf_operating_state = 3  # Fault
+            trumpf_operating_state = 3    # Fault
         elif self.inverter_operating_state == 2:  # Idle
-            trumpf_operating_state = 1  # Ready
+            trumpf_operating_state = 1    # Ready
         elif self.inverter_operating_state == 3:  # Operation/RUN
-            trumpf_operating_state = 2  # Following
-        elif self.inverter_operating_state == 4:  # Maintenance
+            trumpf_operating_state = 2    # Following
+        elif self.inverter_operating_state == 4:                  # Maintenance
             pass
+
+        
 
         # Modify self.outputs
         self.outputs[2][0] = self.inverter_heartbeat
-        self.outputs[2][1] = trumpf_operating_state  # self.inverter_operating_state
+        self.outputs[2][1] = trumpf_operating_state # self.inverter_operating_state
         self.outputs[2][2] = self.inverter_frequency
         self.outputs[2][3] = self.inverter_ac_rms_phase_voltage
         self.outputs[2][4] = self.inverter_commanded_real_current
@@ -761,7 +807,7 @@ class Module():
                 self.set_state_text(State.ACTIVE)
             else:
                 self.set_state_text(State.CONNECTED)
-
+       
         # Loop time calculations for efficiency checking and monitoring performance
         loop_time = time.time() - s
 
@@ -776,31 +822,28 @@ class Module():
 
                         # Grid power Command limit from Client Module (Grid Charging / TOU:)
                         input_power = self.inputs[2][24]
-                        # input_power_per_phase = (self.inputs[2][8]) / 3
-                        input_power_L1 = self.inputs[2][25]
-                        input_power_L2 = self.inputs[2][26]
-                        input_power_L3 = self.inputs[2][27]
+                        # print(self.inputs[2])
+                        input_power_per_phase = (self.inputs[2][8])/3
 
                         # TODO: Neat as this is, we should be commanding the power *here* to avoid the process loop time (currently 1 second),
                         #  after we've already spent <0.5 seconds in Flex.py going from SCADA -> Client -> inverter
 
-                        if -25 * self.inverter_number_slaves < input_power < 25 * self.inverter_number_slaves:
+                        if -25*self.inverter_number_slaves < input_power < 25*self.inverter_number_slaves:
                             self.inverter_command_apparent_power = input_power
                             # print("inverter_command_apparent_power : " + str(self.inverter_command_apparent_power))
-                        if -8.3 * self.inverter_number_slaves < input_power_L1 < 8.3 * self.inverter_number_slaves:
-                            self.inverter_command_apparent_power_L1 = input_power_L1
-                        if -8.3 * self.inverter_number_slaves < input_power_L2 < 8.3 * self.inverter_number_slaves:
-                            self.inverter_command_apparent_power_L2 = input_power_L2
-                        if -8.3 * self.inverter_number_slaves < input_power_L3 < 8.3 * self.inverter_number_slaves:
-                            self.inverter_command_apparent_power_L3 = input_power_L3
+                        
+                        if -8.3*self.inverter_number_slaves < input_power_per_phase < 8.3*self.inverter_number_slaves:
+                            self.inverter_command_apparent_power_L1 = input_power_per_phase
+                            self.inverter_command_apparent_power_L2 = input_power_per_phase
+                            self.inverter_command_apparent_power_L3 = input_power_per_phase
 
         return [SET_INPUTS_ACK]
 
     def get_outputs(self):
         self.outputs[1] = self.enabled_echo
 
-        # outputs = copy.deepcopy(self.outputs)
-        # return outputs
+        #outputs = copy.deepcopy(self.outputs)
+        #return outputs
         return [GET_OUTPUTS_ACK, self.outputs]
 
     def set_page(self, page, form):  # Respond to GET/POST requests
@@ -816,14 +859,14 @@ class Module():
                     self.actions.insert(0, Actions.CTRL_OVERRIDE_CHANGE.value)
                     self.override = not self.override
 
-                elif "inverter_OptMod" in form:  # 1 = symmetric; 0 = asymmetric
+                elif "inverter_OptMod" in form:      # 1 = symmetric; 0 = asymmetric
                     # self.actions.insert(0, Actions.INVERTER_ENABLE_CHANGE.value)
                     input_opt = form[control]
                     if input_opt == 'SYM':
                         self.inv_opt = 'SYM'
                     else:
                         self.inv_opt = 'ASYM'
-
+                    
 
                 elif "inverter_enable_button_state" in form:
                     self.actions.insert(0, Actions.INVERTER_ENABLE_CHANGE.value)
@@ -837,7 +880,7 @@ class Module():
                     if not self.inv_rst_alm:
                         self.inv_rst_alm = True
                     # else:
-                    #   self.inv_rst_alm = False
+                     #   self.inv_rst_alm = False
 
                 elif "inverter_apparent_power_set" in form:
                     if self.override:
@@ -847,7 +890,7 @@ class Module():
                         # TODO: This needs to be compared against HMI Import and export limits
                         if -25 < input_power < 25:
                             self.inverter_command_apparent_power = input_power
-
+                
                 elif "inverter_apparent_power_set_L1" in form:
                     if self.override:
                         self.actions.insert(0, Actions.REAL_POWER_CHANGE.value)
@@ -856,7 +899,7 @@ class Module():
                         # TODO: This needs to be compared against HMI Import and export limits
                         if -8.3 < input_power_L1 < 8.3:
                             self.inverter_command_apparent_power_L1 = input_power_L1
-
+                
                 elif "inverter_apparent_power_set_L2" in form:
                     if self.override:
                         self.actions.insert(0, Actions.REAL_POWER_CHANGE.value)
@@ -865,7 +908,7 @@ class Module():
                         # TODO: This needs to be compared against HMI Import and export limits
                         if -8.3 < input_power_L2 < 8.3:
                             self.inverter_command_apparent_power_L2 = input_power_L2
-
+                
                 elif "inverter_apparent_power_set_L3" in form:
                     if self.override:
                         self.actions.insert(0, Actions.REAL_POWER_CHANGE.value)
@@ -1102,8 +1145,8 @@ class Alarms(Enum):
 
 class Faults(Enum):
     NONE = 0
-    CONFIG = 1  # "Fault: Inverter - Configuration"
-    LOSS_OF_COMMS = 2  # "Fault: Inverter - Loss of Comms"
+    CONFIG = 1                                                                                      # "Fault: Inverter - Configuration"
+    LOSS_OF_COMMS = 2                                                                               # "Fault: Inverter - Loss of Comms"
     ESTOP_SHUTDOWN = 3
     OVERCURRENT = 4
     OVERVOLTAGE = 5
