@@ -367,7 +367,7 @@ class Module():
                             try:
                                 self.tcp_client.write_coil(4001, 1, timeout=0.25)
                                 print('Inverter set to SYM First time')
-                                self.inv_opt = 'ASYM'
+                                self.inv_opt = 'SYM'
                                 self.tcp_client.write_coil(4011, 0, timeout=0.25)
                                 print('De - Activated_SlaveAddressing_Over_Modbus_SlaveId')
                                 self.tcp_timeout = 0
@@ -823,7 +823,7 @@ class Module():
                         # Grid power Command limit from Client Module (Grid Charging / TOU:)
                         input_power = self.inputs[2][24]
                         # print(self.inputs[2])
-                        input_power_per_phase = (self.inputs[2][8])/3
+                        input_power_per_L1 = (self.inputs[2][25])
 
                         # TODO: Neat as this is, we should be commanding the power *here* to avoid the process loop time (currently 1 second),
                         #  after we've already spent <0.5 seconds in Flex.py going from SCADA -> Client -> inverter
@@ -832,10 +832,11 @@ class Module():
                             self.inverter_command_apparent_power = input_power
                             # print("inverter_command_apparent_power : " + str(self.inverter_command_apparent_power))
                         
-                        if -8.3*self.inverter_number_slaves < input_power_per_phase < 8.3*self.inverter_number_slaves:
-                            self.inverter_command_apparent_power_L1 = input_power_per_phase
-                            self.inverter_command_apparent_power_L2 = input_power_per_phase
-                            self.inverter_command_apparent_power_L3 = input_power_per_phase
+                        if -8.3*self.inverter_number_slaves < input_power_per_L1 < 8.3*self.inverter_number_slaves:
+                            self.inverter_command_apparent_power_L1 = input_power_per_L1
+                            #self.inverter_command_apparent_power_L2 = input_power_per_phase
+                            #self.inverter_command_apparent_power_L3 = input_power_per_phase
+                            # print('inverter_commanded_apparent_power_L1 : ' + str(self.inverter_commanded_apparent_power_L1))
 
         return [SET_INPUTS_ACK]
 
