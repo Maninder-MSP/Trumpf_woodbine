@@ -962,7 +962,7 @@ class Module():
 
                 # Now we know what we need to command from the inverter, we can filter it through other tasks
                 if self.peak_shave1_active or self.peak_shave2_active or self.peak_shave3_active:
-                    peak_active = True
+                    '''peak_active = True
                     
                     # print('l1 l2 l3 : ' + str(pGrid_L1), str(pGrid_L2), str(pGrid_L3))
                     
@@ -1017,13 +1017,15 @@ class Module():
                             pass
                             print("test 2")
                         
-                        print(pGrid, self.control_apparent_power_command)
+                        print(pGrid, self.control_apparent_power_command)'''
 
 
 
-                    '''# LOAD SHIFT FOR TRUMPF UNITS AT ALL THE 3 PHASES:
+                    # LOAD SHIFT FOR TRUMPF UNITS AT ALL THE 3 PHASES:
                     peak_active = True
                     # Need to work each phase
+
+                    
                     
                     if (self.battery_charge_mode == "soc_charge" and (float(self.battery_min_discharge_soc) >= float(self.battery_soc))) or \
                        (self.battery_charge_mode == "volt_charge" and (int(self.battery_min_discharge_voltage) >= int(self.battery_dcbus_voltage))):
@@ -1076,10 +1078,9 @@ class Module():
                             pass
                             print("test 2")
                         
-                        print(pGrid_L1, self.control_apparent_power_command_L1)'''
+                        print(pGrid_L1, self.control_apparent_power_command_L1)
                     
 
-                            
 
                     
 
